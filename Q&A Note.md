@@ -361,3 +361,119 @@ function debounce(fn, delay) {
 
 这段代码后面加了一个chrome=1，如果用户的电脑里安装了 chrome，就可以让电脑里面的IE不管是哪个版本的都可以使用Webkit引擎及V8引擎进行排版及运算，如果没有安装，就显示IE最新的渲染模式
 ```
+---
+## 19. JavaScript的基本类型
+
+
+- 19.1 基本数据类型：
+
+ number、string、boolean、null、undefined
+
+- 19.2 引用数据类型：
+
+ function、object、Array
+
+- 19.3 undefined和null区别：
+
+ undefined:表示变量声明单位初始化的值
+
+ null:表是用来保存对象，还没有真正使用保存对象的值，从逻辑角度来看，null表示一个空对象指针
+
+ ECMA标准中 object属于复杂类型。null值用typeof检测出来的结果是object，而未初始化的定义值typeof检测为undefined。事实上undefined值是派生于null值，ECMA规定对两者进行相等性判断要返回true。
+
+- 19.4 原始数据类型
+
+ Undefined,Null,Boolean,String,Symbol,Number
+
+Object的类型:function、Array、Date、RegExp等
+
+ typeOf可以用来区分除Null类型以外的原始数据类型，对象的类型可以从普通对象中识别出函数 
+ ```
+    typeof null // "object"
+    typeof function() {} // "function"
+    typeof {} // "object"
+    使用全等运算符判断是否为null
+```
+```
+    typeof Number(1) // "number"
+    typeof String("1") // "string"
+    参数转化为相应的原始数据类型,类似强制类型转换
+
+    Array(1, 2, 3)// 而Array()等价于new Array(1, 2, 3)
+
+    typeof new Number(1) // "object"
+    typeof new String(1) // "object"
+
+```
+- 19.5 对象类型
+
+ instanceof不能用于判断原始数据类型的数据,而可以用来判断对象类型
+```
+var date = new Date()
+date instanceof Date // true
+var number = new Number()
+number instanceof Number // true
+var string = new String()
+string instanceof String // true
+
+```
+但instanceof的结果不一定可靠，该方法无法区分数字类型和数字对象类型，同理也无法判断字符串类型与字符串对象类型、布尔型和布尔对象类型且ECMAScript7规范中，可以通过自定义Symbol.hasInstance方法来覆盖默认行为，Symbol.toStringTag属性来覆盖默认行为
+```
+Array.isArray(value)可以用来判断value是否是数组
+```
+
+- 19.6 创建对象
+```
+      //字面量对象，默认这个对象的原型指向object
+     var o1 = {name: '01'};
+
+     //通过new Object声明一个对象
+     var o11 = new Object({name: '011'});
+
+      //使用显式的构造函数创建对象
+     var M = function(){this.name='o2'};
+     var o2 = new M(); // o2的构造函数是M,o2这个普通函数，是M这个构造函数的实例
+     o2.__proto__=== M.prototype
+
+     //object.create()创建对象
+     var o3 = Object.create(o1);
+
+```
+- 19.7 创建函数
+
+```
+    function sum1(num1,num2){
+     return num1+num2;
+    } //函数声明式
+    var sum2 = function(num1,num2){
+      return num1+num2;
+    } //函数表达式
+    var sum3 = new Function("num1","num2","return num1+num2"); //函数对象式
+```
+---
+## 20.    用函数来模拟Class
+- 20.1 可以用有参构造函数来实现
+```
+function Pet(name,age,hobby){
+this.name=name;//this 作用域：当前对象
+this.age=age;
+this.hobby=hobby;
+this.eat=function(){
+alert("我叫"+this.name+",我喜欢"+this.hobby+",也是个吃货");
+}
+}
+var maidou =new Pet("麦兜",5,"睡觉");//实例化/创建对象
+maidou.eat();//调用 eat 方法(函数)
+
+```
+- 20.2 工厂方式来创建（Object 关键字）
+ ```
+ var wcDog =new Object();
+wcDog.name="旺财";
+wcDog.age=3;
+wcDog.work=function(){
+alert("我是"+wcDog.name+",汪汪汪......");
+}
+wcDog.work();
+```
+P81
