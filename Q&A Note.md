@@ -476,4 +476,162 @@ alert("我是"+wcDog.name+",汪汪汪......");
 }
 wcDog.work();
 ```
-P81
+- 20.3 prototype 关键字，使用原型对象
+
+```
+function Dog(){
+}
+Dog.prototype.name="旺财";
+Dog.prototype.eat=function(){
+alert(this.name+"是个吃货");
+}
+var wangcai =new Dog();
+wangcai.eat();
+```
+- 20.4 混合模式(原型和构造函数)
+
+```
+function Car(name,price){
+this.name=name;
+this.price=price;
+}
+Car.prototype.sell=function(){
+alert("我是"+this.name+"，我现在卖"+this.price+"万元");
+}
+var camry =new Car("凯美瑞",27);
+camry.sell();
+```
+
+- 20.5 动态原型
+```
+function Car(name,price){
+this.name=name;
+this.price=price;
+if(typeof Car.sell=="undefined"){
+Car.prototype.sell=function(){
+alert("我是"+this.name+"，我现在卖"+this.price+"万元");
+}
+Car.sell=true;
+}
+}
+var camry =new Car("凯美瑞",27);
+camry.sell();
+```
+---
+## 21. JavaScript宿主对象和原生对象的区别
+
+本地对象：Object、Function、Array、String、Boolean、Number、
+Date、RegExp、Error、EvalError、RangeError、ReferenceError、SyntaxError、TypeError、URIError 
+
+ ECMA-262 只定义了两个内置对象，即 Global 和 Math。 根据定义，每个内置对象都是本地对象
+
+ - ECMA-262 把本地对象（native object）定义为“独立于宿主环境的 ECMAScript 实现 提
+供的对象” 。由此可以看出，本地对象就是 ECMA-262 定义的类（引用类型）
+
+宿主对象：ECMAScript中的“宿主”当然就是我们网页的运行环境，即“操作系统”和“浏览器”，
+
+所有的BOM和DOM都是宿主对象。
+
+ - ECMAScript官方未定义的对象都属于宿主对象，因为其未定义的对象大多数是自己通过ECMAScript程序创建的对象。
+---
+## 21. 常用的JavaScript内置对象，以及对应方法
+
+- 常用对象： Arguments(函数参数)，Array，Boolean，Date，Function，Math，Number，Object（所有对象的超类）、RegExp、String
+
+- 21.1 Arguments
+
+Arguments[ ] 函数参数的数组，Arguments 一个函数的参数和其他属性，Arguments.callee 当前正在运行的函数，Arguments.length 传递给函数的参数的个数
+
+- 21.2 Array
+
+length 属性 返回数组长度
+
+join(",")连接符链接并返回字符串
+
+reverse()反转 
+
+delete 运算符，数组长度不变删除值
+
+shift() ,pop() 分别为删除数字的第一个和最后一个元素，并返回删除的那个值，数组长度-1
+
+unshift(a,b,c) , push(a,b,c) 分别为向数组前面和后面添加元素，长度改变
+
+concat() 连接数组
+
+slice(start,end) 返回数组选定的一部分。
+
+splice(index,delNum,item1,.....,itemX) 向/从数组中添加/删除元素，然后返回被删除的项目，**改变原数组**
+
+forEach((item,index)=>{}) 遍历所有元素
+
+every(checkFunction) 判断所有元素是否**都**符合条件,且剩余的元素不会再进行检测。
+
+  - 有一个不满足条件即返回 *false*，检测停止（不检测空数组，不改变原数组）
+
+some(checkFunction) 判断所有元素是否**有**满足条件,且剩余的元素不会再进行检测。
+
+  - 存在一个满足条件即返回 *true*，检测停止 （不检测空数组，不改变原数组）
+```
+sort() 数组中的ASCII排序
+     sort((a,b)={
+  // 从小到大  
+      return a-b;
+  // 从大到小
+      return b-a;})
+```
+map((item,index,arr)={return //新数组的每一项}) 对元素重新组装，**返回新数组**
+
+filter(checkFunction) 过滤返回符合条件的元素的**新数组**
+
+- 21.3 Function 函数构造器
+
+**apply，call，bind 均为改变函数运行上下文，即改变函数内部this指向**
+
+*bind 是返回对应函数，便于稍后调用；apply 、call 则是立即调用*
+
+apply(this, [arg1, arg2]) 将函数作为一个对象的方法调用
+```
+1、thisobj是调用function的对象，函数体内thisobj为this，如果参数为null则使用全局对象
+2、参数可封装为数组形式传入返回调用函数function的返回值
+```
+call(this, arg1, arg2) 将函数作为对象的方法调用
+```
+1、thisobj是调用function的对象，函数体内thisobj为this，如果参数为null则使用全局对象
+2、返回调用函数function的返回值
+```
+bind(thisArg[, arg1[, arg2[, ...]]]) 将函数绑定到一个对象，返回一个新函数，通过可选的指定参数，作为指定对象的方法调用该方法
+```
+传参和call或apply类似
+不会执行对应的函数，call或apply会自动执行对应的函数
+返回对函数的引用,需要再使用()调用执行
+```
+arguments[] 传递给函数的参数
+
+caller  ==>() 调用当前函数
+
+prototype 对象类的原型
+
+-21.4 Math 数学对象
+
+PI  圆周率
+
+abs() 取绝对值
+
+ceil() 向上取整
+
+floor() 向下取整
+
+round() 四舍五入
+
+pow(x,y) x的y次幂
+
+sqrt() 求平方根
+
+max，min([...]) 取数组最值
+
+
+
+
+
+
+
