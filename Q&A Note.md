@@ -579,7 +579,7 @@ sort() 数组中的ASCII排序
   // 从大到小
       return b-a;})
 ```
-map((item,index,arr)={return //新数组的每一项}) 对元素重新组装，**返回新数组**
+map((item,index,arr)=>{return //新数组的每一项}) 对元素重新组装，**返回新数组**
 
 filter(checkFunction) 过滤返回符合条件的元素的**新数组**
 
@@ -628,6 +628,18 @@ pow(x,y) x的y次幂
 sqrt() 求平方根
 
 max，min([...]) 取数组最值
+
+
+---
+22.Vue.nextTick()
+
+以下两个情况下需要用到Vue.nextTick()
+
+1. Vue声明周期的created() 钩子函数进行的DOM操作一定要放在Vue.nextTick() 的回调函数中，因为created() 执行的时候DOM实际上并未进行任何渲染
+
+2. 在数据变化后要执行的某个操作，而这个操作需要使用随数据改变而改变的DOM结构的时候，这个操作应该放进Vue.nextTick() 的回调函数中
+
+*数据改变*之后的操作跟改变之后的*DOM*有关，那么就应该使用Vue.nextTick()
 
 
 
