@@ -620,6 +620,19 @@ map((item,index,arr)=>{return //新数组的每一项}) 对元素重新组装，
 
 filter(checkFunction) 过滤返回符合条件的元素的**新数组**
 
+reduce(fun(ret,cur,curIndex,arr),init) 接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
+```
+var numbers = [15.5, 2.3, 1.1, 4.7];
+ 四舍五入后计算数组元素的总和：
+function getSum(total, num) {
+    return total + Math.round(num);
+}
+function myFunction(item) {
+  //定义初始值0
+    return numbers.reduce(getSum, 0);
+}
+```
+
 - 21.3 Function 函数构造器
 
 **apply，call，bind 均为改变函数运行上下文，即改变函数内部 this 指向**
@@ -770,12 +783,95 @@ undefined :是一个表示"无"的原始值或者说表示"缺少值"，就是�
 
 ```
 4.1 作为函数的参数，表示该函数的参数不是对象
-4.2 作为对象原型链的终点
+4.2 ** _作为对象原型链的终点_**
 ```
 
 ---
 
-**_22_**.Vue.nextTick()
+## 23. 区分对象和数组的方法
+
+1. 通过ES6中的Array.isArray来识别
+```
+Array.isArray([]) //true
+Array.isArray({}) //false
+```
+2. 通过instanceof来识别
+```
+[] instanceof Array //true
+{} instanceof Array //false
+```
+3. 通过调用constructor来识别
+```
+{}.constructor //返回object
+[].constructor //返回Array
+```
+4. 通过Object.prototype.toString.call方法来识别
+```
+Object.prototype.toString.call([]) //["object Array"]
+Object.prototype.toString.call({}) //["object Object"]
+```
+
+---
+
+## 23. 判断两对象相等的思路和方法
+
+ps. ES6中 Object\. is(a,b)仅是判断了两对象引用地址是否一致，而无法比较内容是否相同
+
+想要比较两个对象内容是否一致，思路是要遍历对象的所有键名和键值是否都一致：
+
+  - 1、判断两个对象是否指向同一内存
+
+  - 2、使用Object.getOwnPropertyNames获取对象所有键名数组
+
+  - 3、判断两个对象的键名数组是否相等
+
+  - 4、遍历键名，判断键值是否都相等
+
+```
+function isObjectValueEqual(a, b) {
+// 判断两个对象是否指向同一内存，指向同一内存返回true
+if (a === b) return true
+// 获取两个对象键值数组
+let aProps = Object.getOwnPropertyNames(a)
+let bProps = Object.getOwnPropertyNames(b)
+// 判断两个对象键值数组长度是否一致，不一致返回false
+if (aProps.length !== bProps.length) return false
+// 遍历对象的键值
+for (let prop in a) {
+// 判断a的键值，在b中是否存在，不存在，返回false
+if (b.hasOwnProperty(prop)) {
+// 判断a的键值是否为对象，是则递归，不是对象直接判断键值是否相等，不相等返回false
+if (typeof a[prop] === 'object') {
+if (!isObjectValueEqual(a[prop], b[prop])) return false
+    } else if (a[prop] !== b[prop]) {
+return false
+    }
+  } else {
+return false
+    }
+}
+return true
+}
+
+```
+
+- ES2017 引入了跟Object.keys配套的Object.values和Object.entries，作为遍历一个对象的补充手段，供for...of循环使用。 
+方法返回一个数组,成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
+
+  ```
+  const obj = { 100: 'a', 2: 'b', 7: 'c' };
+  Object.values(obj)
+  // ["b", "c", "a"]
+  ```
+ps. 属性名为数值的属性，是按照数值大小，从小到大遍历的
+
+
+
+
+
+---
+
+**_？？？_**.Vue.nextTick()
 
 以下两个情况下需要用到 Vue.nextTick()
 
@@ -785,4 +881,3 @@ undefined :是一个表示"无"的原始值或者说表示"缺少值"，就是�
 
 *数据改变*之后的操作跟改变之后的*DOM*有关，那么就应该使用 Vue.nextTick()
 
-# P91
