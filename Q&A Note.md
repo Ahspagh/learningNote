@@ -456,7 +456,7 @@ Array.isArray(value)可以用来判断value是否是数组
      var o2 = new M(); // o2的构造函数是M,o2这个普通函数，是M这个构造函数的实例
      o2.__proto__=== M.prototype
 
-     //object.create()创建对象
+     //object.create()使用现有的对象来提供新创建的对象的__proto__。
      var o3 = Object.create(o1);
 
 ```
@@ -864,6 +864,54 @@ return true
   // ["b", "c", "a"]
   ```
 ps. 属性名为数值的属性，是按照数值大小，从小到大遍历的
+
+## 24. 类数组（伪数组）
+
+1、具有length属性
+
+2、按索引方式储存数据
+
+3、不具备push pop等数组方法，但仍可遍历内容典型的是函数document.childnodes之类的，它们返回的nodeList对象都属于伪数组
+
+- 转为数组的方法
+1. Array.from()
+2. [].slice.call(eleArr)或Array.prototype.slice.call(eleArr)
+
+
+## 25. 遍历对象上属性的方法
+
+1. Object.keys()
+
+遍历自身可枚举，非继承属性,返回可枚举的属性的数组，顺序同for...in遍历时返回（但不包括原型链上的属性）
+
+2. Object.getOwnPropertyNames()
+
+遍历自身的所有属性(可枚举，不可枚举，非继承属性,但不包括Symbol值作为名称的属性)
+
+3. for...in 
+
+遍历可枚举的自身属性和继承属性
+
+hasOwnProperty()方法判断对象是有某个属性(本身的属性，不是继承的属性)
+
+4. 遍历所有的自身属性和继承属性
+```
+(function () {
+var getAllPropertyNames = function (obj) {
+var props = [];
+do {
+props = props.concat(Object.getOwnPropertyNames(obj));
+} while (obj = Object.getPrototypeOf(obj));
+return props;
+}
+var propertys = getAllPropertyNames(window);
+alert(propertys.length); //276
+alert(propertys.join("\n")); //toString等
+})()
+```
+
+
+
 
 
 
