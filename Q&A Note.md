@@ -632,6 +632,21 @@ function myFunction(item) {
     return numbers.reduce(getSum, 0);
 }
 ```
+Array.from(input,map,context)
+
+将伪数组对象或可遍历对象转换为真数组
+```
+  input: 你想要转换的类似数组对象和可遍历对象,
+
+  map: 类似于数组的map方法，用来对每个元素进行处理，将处理后的值放入返回的数组,
+      Array.from({ length: 2 }, () => 'jack')// ['jack', 'jack']
+  context: 绑定map中用到的this
+```
+Array.of( ) 
+
+新建数组--用来替代Array()或解决new Array(v1,v2,v3...)参数混乱的情况
+
+只接受参数作为数组元素，单参数不会导致特殊数组
 
 - 21.3 Function 函数构造器
 
@@ -900,7 +915,7 @@ hasOwnProperty()方法判断对象是有某个属性(本身的属性，不是继
 var getAllPropertyNames = function (obj) {
 var props = [];
 do {
-props = props.concat(Object.getOwnPropertyNames(obj));
+    props = props.concat(Object.getOwnPropertyNames(obj));
 } while (obj = Object.getPrototypeOf(obj));
 return props;
 }
@@ -910,14 +925,125 @@ alert(propertys.join("\n")); //toString等
 })()
 ```
 
+## 25. src与href的区别
 
+- src（source）指向外部资源的位置，当解析到该元素时，会暂停其他资源的下载和处理，直到该资源加载、编译、执行完毕，请求src资源时会把其指向的资源下载并应用到文档当前标签所在位置。
 
-
-
-
+- href （hypertext reference/超文本引用） 能建立当前元素（锚点）或当前文档（链接）之间的链接，可以并行下载资源并不会停止对当前文档的处理。
 
 
 ---
+
+
+## 26. 为某一元素绑定多个事件
+
+```
+addEventListener("click",hello1,2？);
+```
+
+---
+
+## 27. 实现比较两个对象的方法
+因为等号比较的是他们的引用（内存地址），而不是基本类型 。
+
+像数字和字符串这样的基本类型只需对比他们的值 
+
+当一个对象赋值给另一个新对象时，使用等号进行对比，他们就会相等。因为他们的引用
+（内存地址）是同一个。
+
+- 只对普通对象、数组、函数、日期和基本类型的数据结构进行对比
+
+```
+function isDeepEqual(obj1, obj2, testPrototypes = false) 
+//使用参数来控制是否对原型链进行比较
+{
+  if (obj1 === obj2) {
+  return true
+  }
+  if (typeof obj1 === "function" && typeof obj2 === "function") {
+  return obj1.toString() === obj2.toString()
+  }
+  if (obj1 instanceof Date && obj2 instanceof Date) {
+  return obj1.getTime() === obj2.getTime()
+  }
+  if (
+    Object.prototype.toString.call(obj1) !==
+  Object.prototype.toString.call(obj2) ||
+  typeof obj1 !== "object"
+  ) {
+  return false
+  }
+const prototypesAreEqual = testPrototypes ? 
+isDeepEqual(
+Object.getPrototypeOf(obj1),
+Object.getPrototypeOf(obj2),
+true)
+: true
+const obj1Props = Object.getOwnPropertyNames(obj1)
+const obj2Props = Object.getOwnPropertyNames(obj2)
+  return (
+    obj1Props.length === obj2Props.length &&
+  prototypesAreEqual &&
+  obj1Props.every(prop => isDeepEqual(obj1[prop], obj2[prop]))
+  )
+}
+```
+## 28. JavaScript作用域、预解析、变量声明提升
+
+- 1、 块级作用域 包含 函数作用域
+
+- 2、 词法作用域 与 块级作用域、函数作用域之间没有任何交集， 他们从两个角度描述了作用域的规则。
+
+  词法作用域描述的是，变量的查找规则，块级作用域和函数作用域描述的是，什么东西可以划分变量的作用域
+
+- ES6 之前 JavaScript 采用的是函数作用域+词法作用域，ES6采用的是块级作用域+词法作用域
+
+  **局部作用域：在函数的外面无法访问函数内的变量**
+
+
+- 预解析：代码执行前的预编译期间会将变量声明与函数声明提升至其*对应作用域*的最顶端
+
+    **当函数内部定义的一个变量与外部相同时，那么函数体内的这个变量就会被上升到最顶端**
+
+1. 把变量的声明提升到当前作用域的最前面，只会提升声明，不会提升赋值
+
+2. 把函数的声明提升到当前作用域的最前面，只会提升声明，不会提升调用
+
+3. 先提升var，再提升function
+
+    使用 var 关键字定义的变量，被称为变量声明
+
+    函数声明Function foo() {}
+
+    函数表达式var foo = function() {} 不存在函数提升
+
+  **函数声明提升的特点是，在函数声明的前面，可以调用这个函数，函数提升的优先级大于变量提升的优先级，即函数提升在变量提升之上**
+
+## 29. 作用域链
+
+由子级作用域返回父级作用域中寻找变量，就叫做作用域链。
+
+作用域链前端始终都是当前执行的代码所在环境的变量对象，如果环境是函数，则将其活动对象作为变量对象
+
+延长作用域链：在作用域链的前端临时增加一个变量对象，该变量对象会在代码执行后被移除.执行这两个语句时，作用域链都会得到加强
+
+ 1. try - catch 语句的catch块；会创建一个新的变量对象，包含的是被抛出的错误对象的声明
+
+ 2. with 语句。with 语句会将指定的对象添加到作用域链中
+
+---
+
+## 29. JavaScript中变量储存方式及类型
+
+1. 值类型和引用类型
+
+2. 值类型存储的是值 ，赋值之后原变量的值不改变
+
+3. 引用类型存储的是地址 ，赋值之后是把原变量的引用地址赋值给新变量 ，新变量改变 原来的会跟着改变
+
+----
+## 30. 
+
 
 **_？？？_**.Vue.nextTick()
 

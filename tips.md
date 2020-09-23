@@ -66,3 +66,35 @@ function flattenDeep(arr1) {
 .join(',').split(',').map(item=>Number(item)) 
 ```
 ---
+
+## 数组元素随机排序
+```
+let arr =[1,2,3,4,5,6,7,8,9]
+arr.sort(()=>{
+	return Math.random() - 0.5
+})
+```
+```
+function randSort1(arr){
+	for(var i = 0,len = arr.length;i <len; i++ ){
+	var rand = parseInt(Math.random()*len);
+	//var temp = arr[rand];
+	//arr[rand] = arr[i];
+	//arr[i] = temp; 
+	//结构赋值交换数组元素位置
+	[arr[i],arr[rand]]=[arr[rand],arr[i]]
+	}
+return arr;
+}
+```
+```
+function randSort2(arr){
+var mixedArray = [];
+	while(arr.length > 0){
+	var randomIndex = parseInt(Math.random()*arr.length);
+	mixedArray.push(arr[randomIndex]);
+	arr.splice(randomIndex, 1);
+	}
+return mixedArray;
+}
+```
