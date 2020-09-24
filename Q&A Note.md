@@ -1042,8 +1042,148 @@ const obj2Props = Object.getOwnPropertyNames(obj2)
 3. 引用类型存储的是地址 ，赋值之后是把原变量的引用地址赋值给新变量 ，新变量改变 原来的会跟着改变
 
 ----
-## 30. 
+## 30. WebAPI DOM相关
+BOM是Browser Object Model的缩写，即浏览器对象模型。
+没有相关标准。最根本对象是window
 
+DOM 是 Document Object Model（文档对象模型）的缩写，一种树形结构的数据结构,DOM最根本对象是document（实际上是window.document）
+
+W3C DOM 标准被分为 3 个不同的部分
+
+1. 核心 DOM - 针对任何结构化文档的标准模型
+2. XML DOM - 针对 XML 文档的标准模型
+3. HTML DOM - 针对 HTML 文档的标准模型
+
+dom 操作的常用api 有
+
+1. 获取dom节点
+getElementById、getElementsByTagName、getElementsByClassName、
+
+querySelector、querySelectorAll
+
+2. property（js对象的property）
+
+nodeName是p的property，即nodeName是p的属性
+
+3. attribute
+
+.getAttribute('data-name')、.setAttribute('data-name', 'imooc');
+
+非自定义的属性(id/src/href/name/value等)，通过setAttribute修改其特性值可以
+同步作用到property 上，而通过.property修改属性值有的(value)时候不会同步到attribute上，即不会反应到html
+
+4. dom事件 DOM一级中没有事件
+
+1、dom0 element.οnclick=function(){}
+
+2、dom2 element.addEventListener(‘click’, function(){}, false) // 默认是false。false：冒泡阶段执行，true：捕获阶段产生。
+
+3、dom3 element.addEventListener(‘keyup’, function(){}, false) // 事件类型增加了很多，鼠标事件、键盘事件
+
+DOM事件模型分为两种：事件捕获和事件冒泡
+
+事件捕获从外到内依次触发：根—目标的祖先素—目标的父元素—目标元素
+
+事件冒泡和事件捕获截然相反。发生点击事件时，事件会从目标元素上开始触发，向外传播，一直到根元素停止。从内到外依次触发：目标元素—目标元素的父元素—父元素的父元素—根
+
+阻止事件冒泡的几种方法
+
+一：event.stopPropagation();  //阻止冒泡
+
+二：return false;
+
+三：event.preventDefault();  //阻止默认行为
+
+
+
+---
+
+## 31. JavaScript动画和CSS3动画
+
+CSS3 动画优势：
+
+1. 浏览器可以对动画进行优化。
+```
+浏览器使用与 requestAnimationFrame 类似的机制，requestAnimationFrame比起setTimeout，setInterval设置动画的优势主要是:1)requestAnimationFrame 会把每一帧中的所有DOM操作集中起来，在一次重绘或回流中就完成,并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率,一般来说,这个频率为每秒60帧。2)在隐藏或不可见的元素中requestAnimationFrame不会进行重绘或回流，这当然就意味着更少的的cpu，gpu和内存使用量。
+1.1.2)强制使用硬件加速 （通过 GPU 来提高动画性能）
+
+```
+2. 代码相对简单,性能调优方向固定
+
+3. 对于帧速表现不好的低版本浏览器，CSS3可以做到自然降级，而JS则需要撰写
+额外代码
+
+- 缺点：运行过程控制较弱,无法附加事件绑定回调函数。CSS动画只能暂停,不能在动画
+中寻找一个特定的时间点，不能在半路反转动画，不能变换时间尺度，不能在特定的位置
+添加回调函数或是绑定回放事件,无进度报告。
+
+JS动画 ：
+1. JavaScript动画控制能力很强, 可以在动画播放过程中对动画进行控制：开始、暂停、
+回放、终止、取消都是可以做到的。
+2. 动画效果比css3动画丰富,有些动画效果，比如曲线运动,冲击闪烁,视差滚动效果，只
+有JavaScript动画才能完成。
+3. CSS3有兼容性问题，而JS大多时候没有兼容性问题。
+- 缺点 ： JavaScript在浏览器的主线程中运行，而主线程中还有其它需要运行的JavaScript
+脚本、样式计算、布局、绘制任务等,对其干扰导致线程可能出现阻塞，从而造成丢帧的情
+况。
+- 代码的复杂度高于CSS动画
+
+```
+总结：
+  如果动画只是简单的状态切换，不需要中间过程控制，在这种情况下，css动画是优选方案。它可以让你将动画逻辑放在样式文件里面，而不会让你的页面充斥 Javascript 库。
+
+  然而如果你在设计很复杂的富客户端界面或者在开发一个有着复杂UI状态的 APP。那么你应该使用js动画，这样你的动画可以保持高效，并且你的工作流也更可控。
+
+  所以，在实现一些小的交互动效的时候，就多考虑考虑CSS动画。对于一些复杂控制的动画，使用javascript比较可靠。
+
+```
+---
+## 32. 事件
+
+给一个按钮自己增加一个事件，在其他地方触发，而不是用回调的方式触发
+```
+var ev = document.getElementById('ev');
+var eve = new Event('custome'); // eve：事件对象
+ev.addEventListener('custome', function(){
+  console.log('custome');
+});
+ev.dispatchEvent(eve);
+```
+- 通用的事件监听函数
+
+```
+function bindEvent(elem, type, selector, fn) {
+  if (fn == null) {
+  fn = selector;
+  selector = null;
+  }
+elem.addEventListner(type, function(e) {
+  var target;
+  if (selector) {
+    target = e.target;
+    if (target.matches(selector)) {
+    fn.call(target, e);
+    }
+  } else {
+  fn(e);
+  }
+})
+}
+```
+// 使用代理  代码简洁,减少浏览器内存占用;事件冒泡
+```
+var div1 = document.getElementById('div1');
+bindEvent(div1, 'click', 'a', function(e) {
+console.log(this.innerHTML);
+});
+```
+// 不使用代理
+```
+var a = document.getElementById('a1');
+bindEvent(div1, 'click', function(e) {
+console.log(a.innerHTML);
+})
+---
 
 **_？？？_**.Vue.nextTick()
 
@@ -1055,3 +1195,4 @@ const obj2Props = Object.getOwnPropertyNames(obj2)
 
 *数据改变*之后的操作跟改变之后的*DOM*有关，那么就应该使用 Vue.nextTick()
 
+# P113
