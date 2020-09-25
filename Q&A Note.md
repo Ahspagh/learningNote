@@ -12,6 +12,8 @@ typeof 判断所有变量的类型，返回值有 number，boolean，string，fu
 - 2.2 vite vue3.0 支持 TS 的按需编译工具--前端在开发环境下一种新的打包工具
   https://zhuanlan.zhihu.com/p/220603467
 
+- 2.3 deno http://www.ruanyifeng.com/blog/2020/01/deno-intro.html
+
 ## 3. flex 可以做的事
 
 - 3.1 双飞翼布局 左右固定中间自适应
@@ -1184,6 +1186,12 @@ bindEvent(div1, 'click', function(e) {
 console.log(a.innerHTML);
 })
 ---
+```
+- 事件委托
+
+  当我们需要对很多元素添加事件的时候，可以通过将事件添加到它们的上级元素而将事件委托给上级元素来触发处理函数。
+
+  事件代理用到了两个在JavaSciprt事件中常被忽略的特性：事件冒泡以及目标元素。
 
 **_？？？_**.Vue.nextTick()
 

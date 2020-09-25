@@ -99,5 +99,65 @@ return mixedArray;
 }
 ```
 
-## 
+## 绑定与解除绑定事件的封装
+
+```
+function addEvent(obj,sEv,fn){
+if(obj.addEventListener){
+	obj.addEventListener(sEv,fn,false); 
+	//支持ie9+ chrom firfox,false(冒泡)
+	}else{
+	obj.attachEvent('on'+sEv,fn);
+	//兼容ie 6-8
+	}
+};
+
+function removeEvent(obj,sEv,fn){
+if(obj.removeEventListener){
+obj.removeEventListener(sEv,fn,false);
+}else{
+obj.detachEvent('on'+sEv,fn);
+}
+```
+
+## 运动函数的封装 
+```
+function startMove(obj,json,fnEnd){
+clearInterval(obj.timer); //先清除之前的定时器
+obj.timer = setInterval(function(){
+var bStop = true; // 假设所有的值都到了
+for( var attr in json ){ //遍历json属性
+	var cur = (attr == 'opacity') ? Math.round(parseFloat(getStyle(obj,attr))*100) :
+	parseInt(getStyle(obj,attr)); //对opacity 特殊处理
+	var speed = (json[attr] - cur)/6;
+	speed = speed > 0 ? Math.ceil(speed) : Math.floor(speed); //speed 数字转化，防止不能到达目标的bug
+	if( cur != json[attr]) bStop = false; //如果没有达到目标值，则bStop设为false;
+	if(attr == 'opacity'){
+		obj.style.filter = 'alpha(opacity='+ (cur + speed) +')';
+		obj.style.opacity = (cur + speed)/100;
+	}else{
+	obj.style[attr] = cur + speed + 'px';
+	}
+}
+	if(bStop){
+		clearInterval(obj.timer);
+		if(fnEnd) fnEnd(); //执行回调函数
+	}
+},30);
+}
+
+function getStyle(obj,name){
+return obj.currentStyle ? obj.currentStyle[name] : window.getComputedStyle(obj,null)[name]; //浏览器兼容性处理，注意getComputedStyle为只读属性
+}
+
+function getByClass(oParent,sClass){
+var aEle = oParent.getElementsByTagName('*');
+var aResult =[];
+var re = new RegExp('\\b' + sClass + '\\b','i');
+for(var i=0; i<aEle.length;i++ ){
+	if(re.test(aEle[i].className)) aResult.push(aEle[i]);
+	}
+return aResult;
+}
+
 ```
