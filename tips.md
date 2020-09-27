@@ -161,3 +161,35 @@ return aResult;
 }
 
 ```
+## 获得所有checkbox节点方法
+```
+		var domList = document.getElementsByTagName(‘input’);
+		var checkBoxList = [];
+		var len = domList.length;//缓存到局部变量
+		while (len--) {//使用while的效率会比for循环更高
+		if (domList[len].type == ‘checkbox’) {
+			checkBoxList.push(domList[len]);
+			}
+		}
+```
+## 延迟加载JS——动态创建DOM
+
+function downloadJSAtOnload(){
+	var element = document.createElement("script");
+	element.srv= "defer.js"//需要延迟加载的js文件
+	document.body.appendChild(element);
+
+}
+if(window.addEventListener) 
+	window.addEventListener("load",downloadJSAtOnload)
+else if(window.attachEvent)  //兼容浏览器-但绑定多个事件执行顺序是随机的
+	window.attachEvent("onload,downloadJSAtOnload)
+else window.onload = downloadJSAtOnload;
+
+```
+<!-- 放置在</body>标签之前 HTML文档底部 -->
+<script>
+
+</script>
+
+```

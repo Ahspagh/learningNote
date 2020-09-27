@@ -1193,6 +1193,103 @@ console.log(a.innerHTML);
 
   事件代理用到了两个在JavaSciprt事件中常被忽略的特性：事件冒泡以及目标元素。
 
+
+  ---
+## 33.JS拖动原理
+1. mousedown 鼠标按下事件
+2. mousemove 鼠标移动事件
+3. mouseup 鼠标抬起事件
+
+- 点击dom的时候，记录当前鼠标的坐标值，也就是x、y值，以及被拖拽的dom的top、left值，
+
+- 在鼠标按下的回调函数里添加鼠标移动的事件：
+```
+  document.addEventListener("mousemove", moving, false)和添加鼠标抬起的事件
+  document.addEventListener("mouseup",function()
+  { document.removeEventListener("mousemove", moving, false);}, false);
+```
+  这个抬起的事件是为了解除鼠标移动的监听，因为只有在鼠标按下才可以拖拽，抬起就停止不会移动了。
+- 那么这个被拖拽的dom的top和left值就是：
+
+    top=鼠标按下时记录的dom的top值+（移动中的y值 - 鼠标按下时的y值）
+
+    left=鼠标按下时记录的dom的left值+（移动中的x值 - 鼠标按下时的x值）;
+```
+    window.onload = function() {
+    var dom = document.getElementById("draggle");
+    dom.addEventListener(
+    'mousedown',
+    function(event) {
+        var x = event.clientx;
+        var y = event.clientY;
+        var marginLeft = parseInt(dom . offsetLeft);
+        var marginTop = parseInt (dom. offsetTop); 
+    function moving(e) {
+        var movedx = e.clientx-x;
+        var movedY = e.clientY-y;
+        dom.sty1e.marginLeft = marginLeft + movedX + "px" ;
+        dom.sty1e.marginTop = marginTop + movedY + "px" ;
+      }
+      document.addEventListener('mousemove', moving, false);
+      document.addEventListener('mouseup', function(){
+      document.removeEventListener('mousemove', moving, false);
+      }, false);
+    },
+    false
+    )
+  };
+```
+---
+
+## 33.浏览器渲染
+
+1. 浏览器的渲染过程：
+
+解析HTML构建 DOM(DOM树)，并行请求 css/image/js
+
+CSS 文件下载完成，开始构建 CSSOM(CSS树)
+
+CSSOM 构建结束后，和 DOM 一起生成 Render Tree(渲染树)
+
+布局(Layout)：计算出每个节点在屏幕中的位置
+
+显示(Painting)：通过显卡把页面画到屏幕上
+
+2. DOM树 和 (render)渲染树 的区别
+
+DOM树与CSS树的合并生成render树
+
+DOM树与HTML标签一一对应，包括head和隐藏元素
+
+渲染树不包括head和隐藏元素，大段文本的每一个行都是独立节点，每一个节点都有对应的css属性
+
+
+---
+
+## 34. 页面重绘和回流
+
+回流必定触发重绘，而重绘不一定触发回流
+
+回流是当**render tree 的一部分或全部的元素**因改变了自身的宽高，布局，显示或隐藏，或者元素内部的文字结构发生变化 导致需要重新构建页面的时候。
+
+当**一个元素**自身的宽高，布局，及显示或隐藏没有改变，而只是改变了元素
+的外观风格的时候，就会产生重绘。例如你改变了元素的background-color
+
+- 最小化重绘repaint与回流reflow
+
+需要要对元素进行复杂的操作时，可以先隐藏(display:"none")，操作完成后再显示
+
+需要创建多个DOM节点时，使用DocumentFragment创建完后一次性的加入document
+
+缓存Layout属性值，如：var left = elem.offsetLeft; 这样，多次使用 left 只产生一次回流
+
+尽量避免用table布局（table元素一旦触发回流就会导致table里所有的其它元素回流）
+
+避免使用css表达式(expression)，因为每次调用都会重新计算值（包括加载页面）
+
+
+尽量使用 css 属性简写，如：用 border 代替 border-width, border-style, bordercolor批量修改元素样式：elem.className 和 elem.style.cssText 代替 elem.style.xxx
+
 **_？？？_**.Vue.nextTick()
 
 以下两个情况下需要用到 Vue.nextTick()
@@ -1203,4 +1300,4 @@ console.log(a.innerHTML);
 
 *数据改变*之后的操作跟改变之后的*DOM*有关，那么就应该使用 Vue.nextTick()
 
-# P113
+
