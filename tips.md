@@ -193,3 +193,83 @@ else window.onload = downloadJSAtOnload;
 </script>
 
 ```
+
+## 条件语句书写建议
+
+1. 多重判断时使用 Array.includes
+```
+  const redFruits = ['apple', 'strawberry', 'cherry', 'cranberries'];
+
+  if (redFruits.includes(fruit)) {
+    console.log('red');
+  }
+```
+
+2. 更少的嵌套，尽早 return
+```
+const redFruits = ['apple', 'strawberry', 'cherry', 'cranberries'];
+
+  // 条件 1: 尽早抛出错误
+  if (!fruit) throw new Error('No fruit!');
+  // 条件 2: 当水果不是红色时停止继续执行
+  if (!redFruits.includes(fruit)) return; 
+  //倒置判断
+  console.log('red');
+
+  // 条件 3: 必须是大质量的
+  if (quantity > 10) {
+    console.log('big quantity');
+  }
+```
+
+3. 使用默认参数和解构
+```
+默认参数：function test(fruit, quantity = 1)
+解构： function test({name} = {})
+```
+4. 倾向于遍历对象而不是 Switch 语句
+```
+1、
+const fruitColor = {
+  red: ['apple', 'strawberry'],
+  yellow: ['banana', 'pineapple'],
+  purple: ['grape', 'plum']
+};
+
+function test(color) {
+  return fruitColor[color] || [];
+}
+
+2、
+  const fruitColor = new Map()
+    .set('red', ['apple', 'strawberry'])
+    .set('yellow', ['banana', 'pineapple'])
+    .set('purple', ['grape', 'plum']);
+
+function test(color) {
+  return fruitColor.get(color) || [];
+}
+3、
+ const fruits = [
+    { name: 'apple', color: 'red' }, 
+    { name: 'strawberry', color: 'red' }, 
+    { name: 'banana', color: 'yellow' }, 
+    { name: 'pineapple', color: 'yellow' }, 
+    { name: 'grape', color: 'purple' }, 
+    { name: 'plum', color: 'purple' }
+];
+
+function test(color) {
+  return fruits.filter(f => f.color == color);
+}
+```
+
+5. 对 所有/部分 判断使用 Array.every & Array.some
+
+```
+条件：所有水果都是红色
+	const isAllRed = fruits.every(f => f.color == 'red');
+
+条件：任何一个水果是红色
+	const isAnyRed = fruits.some(f => f.color == 'red');
+```
