@@ -493,12 +493,12 @@ Array.isArray(value)可以用来判断value是否是数组
 
 ```
 function Pet(name,age,hobby){
-this.name=name;//this 作用域：当前对象
-this.age=age;
-this.hobby=hobby;
-this.eat=function(){
-alert("我叫"+this.name+",我喜欢"+this.hobby+",也是个吃货");
-}
+  this.name=name;//this 作用域：当前对象
+  this.age=age;
+  this.hobby=hobby;
+  this.eat=function(){
+  alert("我叫"+this.name+",我喜欢"+this.hobby+",也是个吃货");
+  }
 }
 var maidou =new Pet("麦兜",5,"睡觉");//实例化/创建对象
 maidou.eat();//调用 eat 方法(函数)
@@ -520,11 +520,10 @@ wcDog.work();
 - 20.3 prototype 关键字，使用原型对象
 
 ```
-function Dog(){
-}
+function Dog(){}
 Dog.prototype.name="旺财";
 Dog.prototype.eat=function(){
-alert(this.name+"是个吃货");
+  alert(this.name+"是个吃货");
 }
 var wangcai =new Dog();
 wangcai.eat();
@@ -534,8 +533,8 @@ wangcai.eat();
 
 ```
 function Car(name,price){
-this.name=name;
-this.price=price;
+  this.name=name;
+  this.price=price;
 }
 Car.prototype.sell=function(){
 alert("我是"+this.name+"，我现在卖"+this.price+"万元");
@@ -548,14 +547,14 @@ camry.sell();
 
 ```
 function Car(name,price){
-this.name=name;
-this.price=price;
-if(typeof Car.sell=="undefined"){
-Car.prototype.sell=function(){
-alert("我是"+this.name+"，我现在卖"+this.price+"万元");
-}
-Car.sell=true;
-}
+  this.name=name;
+  this.price=price;
+  if(typeof Car.sell=="undefined"){
+    Car.prototype.sell=function(){
+    alert("我是"+this.name+"，我现在卖"+this.price+"万元");
+    }
+    Car.sell=true;
+  }
 }
 var camry =new Car("凯美瑞",27);
 camry.sell();
@@ -607,7 +606,7 @@ concat() 连接数组
 
 slice(start,end) 返回数组选定的一部分。
 
-splice(index,delNum,item1,.....,itemX) 向/从数组中添加/删除元素，然后返回被删除的项目，**改变原数组**
+splice(index,delNum,item1,.....,itemX) 向数组中删除元素（可以实现增删改操作），然后返回*被删除的项目*，**改变原数组**
 
 forEach((item,index)=>{}) 遍历所有元素
 
@@ -745,6 +744,8 @@ max，min([...]) 取数组最值
   .toLocalString() , .toString() 返回对象的本地字符串表示和 定义一个对象的字符串表示
 
 - 21.6 RegExp 正则表达式对象
+
+https://www.runoob.com/regexp/regexp-syntax.html
 
   .exec() 通用匹配模式
 
@@ -1267,7 +1268,7 @@ console.log(a.innerHTML);
 ```
 ---
 
-## 33.浏览器渲染
+## 34.浏览器渲染
 
 1. 浏览器的渲染过程：
 
@@ -1292,7 +1293,7 @@ DOM树与HTML标签一一对应，包括head和隐藏元素
 
 ---
 
-## 34. 页面重绘和回流
+## 35. 页面重绘和回流
 
 回流必定触发重绘，而重绘不一定触发回流
 
@@ -1318,7 +1319,7 @@ DOM树与HTML标签一一对应，包括head和隐藏元素
 
 ---
 
-## 35. 内存泄漏
+## 36. 内存泄漏
 
 内存泄漏指任何对象当不再拥有或不需要使用的时候依然存在
 
@@ -1326,9 +1327,66 @@ DOM树与HTML标签一一对应，包括head和隐藏元素
   1. 垃圾回收器定期扫描对象，并计算引用了每个对象的其他对象的数量。如果一个对象的引用数量为 0（没有其他对象引用过该对象），或对该对象的惟一引用是循环的，那么该对象的内存即可回收
   2. setTimeout 的第一个参数使用字符串而非函数的话，会引发内存泄漏
   3. 闭包、控制台日志、循环（在两个对象彼此引用且彼此保留时，就会产生一个循环）
-- 解决方式：
-1. global variables：对未声明的变量的引用在全局对象内创建一个新变量。
-2.
+
+---
+## 37. 原型 prototype
+
+JavaScript的对象中都包含了一个” prototype”内部属性，这个属性所对应的就是该对象的原型，原型也是一个对象，通过原型可以实现对象的属性继承，
+
+ECMA新标准中引入了标准对象原型访问器”Object.getPrototype(object)”
+
+原型的主要作用就是为了实现继承与扩展对象
+
+- 原型链： JavaScript对象属性的一种查找机制用来实现继承
+
+**通过引用来传递的，我们创建的每个新对象实体中并没有一份属于自己的原型副本。当我们修改原型时，与之相关的对象也会继承这一改变**
+
+---
+
+## 38. this的情况
+
+1. 以函数形式调用时，this永远都是window
+2. 以方法的形式调用时，this是调用方法的对象
+3. 以构造函数的形式调用时，this是新创建的那个对象
+4. 使用call和apply调用时，this是指定的那个对象
+5. 箭头函数：箭头函数的this看外层是否有函数 如果有，外层函数的this就是内部箭头函数的this如果没有，就是window
+6. 特殊情况：通常意义上this指针指向为最后调用它的对象。这里需要注意的一点就是如果返回值是一个对象，那么this指向的就是那个返回的对象，如果返回值不是一个对象那么this还是指向函数的实例
+
+
+---
+
+## 39. for...in 和for... of
+
+1. 推荐在循环对象属性的时候使用for...in，在遍历数组、map、set、Arguments数据结构的时候的时候使用for...of
+
+2. for...in循环出的是key，for...of循环出的是value， map结构可循环[key, value]支持break、continue、return 和 throw
+```
+for (const [key, value] of iterableMap)
+```
+
+3. for...of是ES6新引入的特性。修复了ES5引入的for...in的不足
+
+4. for...of不能循环普通的对象，需要通过和Object.keys()搭配使用或添加length属性使用Array.from()类数组转化为数组实例
+```
+    （由object.keys(obj)先将要循环的普通对象key返回为一个数组）
+    for(var key of Object.keys(obj))
+    (搭配实例方法entries()，同时输出数组内容和索引)
+    for (let [index, val] of arr.entries())
+```
+---
+## 40. New操作符
+
+1、创建一个空对象: 并且this变量引入该对象,同时还继承了函数的原型
+
+2、设置原型链 空对象指向构造函数的原型对象
+
+3、执行函数体 修改构造函数this指针指向空对象,并执行函数体
+
+4、判断返回值 返回对象就用该对象,没有的话就创建一个对象
+
+
+---
+## 41. 
 
 
 
@@ -1336,13 +1394,7 @@ DOM树与HTML标签一一对应，包括head和隐藏元素
 
 
 
-
-
-
-
-
-
-
+---
 **_？？？_**.Vue.nextTick()
 
 以下两个情况下需要用到 Vue.nextTick()

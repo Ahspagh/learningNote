@@ -29,7 +29,7 @@ html[theme='dark-mode'] img{
 
 :visible.sync 与 v-if同时使用即可。
 
-## flat函数的实现
+## flat函数的实现 ES10新增Array内置方法
 
 https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
 
@@ -163,14 +163,14 @@ return aResult;
 ```
 ## 获得所有checkbox节点方法
 ```
-		var domList = document.getElementsByTagName(‘input’);
-		var checkBoxList = [];
-		var len = domList.length;//缓存到局部变量
-		while (len--) {//使用while的效率会比for循环更高
-		if (domList[len].type == ‘checkbox’) {
-			checkBoxList.push(domList[len]);
-			}
+var domList = document.getElementsByTagName(‘input’);
+var checkBoxList = [];
+var len = domList.length;//缓存到局部变量
+while (len--) {//使用while的效率会比for循环更高
+	if (domList[len].type == ‘checkbox’) {
+		checkBoxList.push(domList[len]);
 		}
+	}
 ```
 ## 延迟加载JS——动态创建DOM
 
@@ -272,4 +272,143 @@ function test(color) {
 
 条件：任何一个水果是红色
 	const isAnyRed = fruits.some(f => f.color == 'red');
+```
+
+## 实现冒泡排序
+```
+//升序算法
+function sort(arr){
+	for (var i = 0; i <arr.length-1; i++) {
+		//外层 将最大交换到最后一位
+		//-1：最后一轮即最大最小，可防止角标越界
+		for (var j = 0; j <arr.length-1-i; j++) {
+			//内层 将最大交换到倒数位 每轮比较需要排序的长度减小轮数
+			if(arr[j]>arr[j+1]){
+			<!-- var c=arr[j];//交换两个变量的位置
+			arr[j]=arr[j+1];
+			arr[j+1]=c; -->
+			[arr[j],arr[j+1]]=[arr[j+1],arr[j]]
+			}
+		};
+	};
+	return arr.toString();
+}
+```
+
+## 生成a-b之间的n个随机数并排序返回到目标数组
+```
+function randomNub(aArray=[], len, min, max) {
+	if (len >= (max - min)) {
+		return `超过${min}-${max}之间的个数范围${max - min - 1}个的总数`
+	}
+	if (aArray.length >= len) {
+		aArray.sort(function(a, b) {
+		return a - b
+		});
+		return aArray;
+	}
+	var nowNub = parseInt(Math.random() * (max - min - 1)) + (min + 1);
+
+	for (var j = 0; j < aArray.length; j++) {
+		if (nowNub == aArray[j]) {
+		randomNub(aArray, len, min, max);
+		return;
+		}
+	}
+
+	aArray.push(nowNub);
+	randomNub(aArray, len, min, max);
+	return aArray;
+}
+
+var arr=[];
+randomNub(arr,n,a,b);
+
+```
+## aa-bb-cc转成驼峰式aaBbCc
+```
+function combo(msg){
+//首先划分为单词数组
+var arr=msg.split("-");
+for(var i=1;i<arr.length;i++){
+	//i=1 从第二个单词开始首字母大写 
+	arr[i]=arr[i].charAt(0).toUpperCase()+arr[i].substr(1,arr[i].length-1);
+	}
+msg=arr.join("");
+return msg;
+}
+
+```
+
+## 提取 URL 中的各个 GET 参数并返回key-value格式
+例http://item.taobao.com/item.htm?a=1&b=2&c=&d=xxx&e 
+
+返回{a: "1", b: "2", c: "", d: "xxx", e: undefined}
+```
+function serilizeUrl(url) {
+	var urlObject = {};
+	if (/\?/.test(url)) {
+		//正则/\?/检验是否存在地址请求参数
+		var urlString = url.substring(url.indexOf("?") + 1);
+		//截取参数部分字符串 （？字符后的部分）
+		var urlArray = urlString.split("&");
+		//分割参数字段 （每个参数由字符&分割）
+		for (var i = 0, len = urlArray.length; i < len; i++) {
+			var urlItem = urlArray[i];
+			var item = urlItem.split("=");
+			urlObject[item[0]] = item[1];
+		}
+		return urlObject;
+	}
+	return null;
+}
+```
+## 清除字符串前后空格 trim（）
+```
+用自带接口 trim()考虑兼容性：
+
+if (!String.prototype.trim) {
+	String.prototype.trim = function() {
+		//依次匹配替换前空格和后空格为""
+	return this.replace(/^\s+/, "").replace(/\s+$/,"");
+	}
+}
+```
+
+## 统计字符串中字符的个数
+```
+var str = 'asdfssaaasasasasaa';
+var json = {};
+for (var i = 0; i < str.length; i++) {
+	if(!json[str.charAt(i)]){
+		json[str.charAt(i)] = 1;
+	}else{
+		json[str.charAt(i)]++;
+	}
+};
+//json {a: 9, s: 7, d: 1, f: 1}
+<!-- var iMax = 0;
+var iIndex = '';
+for(var i in json){
+	if(json[i]>iMax){
+		iMax = json[i];
+		iIndex = i;
+	}`
+} -->
+```
+
+## 将金额数字从后每三位增加一个逗号
+```
+15732426 => 15,732,426
+
+num.
+//思路：先将数字转为字符， str= str + '' ;
+//利用反转函数，每三位字符加一个 ','最后一位不加； re()是自定义的反转函数，最后再反转回去！str.split("").reverse().join("")
+
+for(var i = 1; i <= re(str).length; i++){
+	tmp += re(str)[i - 1];
+	if(i % 3 == 0 && i != re(str).length){
+	tmp += ',';
+	}
+}
 ```
