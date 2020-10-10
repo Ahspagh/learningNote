@@ -412,3 +412,151 @@ for(var i = 1; i <= re(str).length; i++){
 	}
 }
 ```
+
+## 深度clone 
+```
+function clone(obj)
+{
+	if(typeof obj==‘object‘)
+	{
+		if(obj instanceof Array)
+		{
+			var result=[];
+			for(var i=0;i<obj.length;i++)
+			{
+			result[i]=clone(obj[i]);
+			}
+			return result;
+		}
+		else
+		{
+			var result={};
+			for(var i in obj)
+			{
+			result[i]=clone(obj[i]);
+			}
+		return result;
+		}
+	}
+	else
+	{
+	return obj;
+	}
+}
+
+```
+
+## JS去重方法
+1. 利用for嵌套for，然后splice去重（ES5中最常用）
+```
+function unique(arr){            
+        for(var i=0; i<arr.length; i++){
+            for(var j=i+1; j<arr.length; j++){
+                if(arr[i]===arr[j]){         //第一个等同于第二个，splice方法删除第二个
+                    arr.splice(j,1);
+                    j--;
+                }
+            }
+        }
+return arr;
+}
+```
+//双层for循环添加数组元素法
+function unique(arr,res=[]){
+	for(var i = 0 ; i< arr.length; i++) 
+	{
+	for(var j = 0 ; j < res.length ; j++) {
+		if( arr[i] === res[j]){
+		break;
+		};
+	};
+	if(j == res.length){
+		res.push(arr[i]);	
+	};
+	};
+	return res
+}
+
+```
+////NaN和{}没有去重，null使用全等兼容处理
+```
+2. includes API
+```
+function unique(arr) {
+    if (!Array.isArray(arr)) {
+        console.log('type error!')
+        return
+    }
+    var array =[];
+    for(var i = 0; i < arr.length; i++) {
+            if( !array.includes( arr[i]) ) {//includes 检测数组是否有某个值
+                    array.push(arr[i]);
+              }
+    }
+    return array
+}
+//高阶  return arr.reduce((prev,cur) => prev.includes(cur) ? prev : [...prev,cur],[]);
+//{}没有去重
+```
+3. Filter
+```
+Map数据结构
+let unique = (arr)=> {
+	let seen = new Map();
+	return arr.filter((item) => {
+	return !seen.has(item) && seen.set(item,1);
+	});
+};
+```
+```
+indexof
+let unique = (arr) => {
+	return arr.filter((item,index) => {
+	return arr.indexOf(item) === index;
+	}) 
+};
+//NaN、{}没有去重	
+```
+4. splice API
+```
+function unique(arr){ 
+	for(vari=0; i<arr.length;i++)
+	{ 
+		for(varj=i+1; j<arr.length; j++){ 
+			if(arr[i]==arr[j]){	//第一个等同于第二个，splice方法删除第二个 
+			arr.splice(j,1); j--; 
+			} 
+		}
+ 	} 
+	returnarr;
+}
+```
+5. 递归
+```
+function unique(arr) {
+        var array= arr;
+        var len = array.length;
+
+    array.sort(function(a,b){   //排序后更加方便去重
+        return a - b;
+    })
+
+    function loop(index){
+        if(index >= 1){
+            if(array[index] === array[index-1]){
+                array.splice(index,1);
+            }
+            loop(index - 1);    //递归loop，然后数组去重
+        }
+    }
+    loop(len-1);
+    return array;
+}
+```
+6. ES6 [...new Set(arr)]
+```
+function unique (arr) {
+  return Array.from(new Set(arr))
+}
+//无法去掉“{}”空对象
+```

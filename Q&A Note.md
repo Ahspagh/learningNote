@@ -1386,7 +1386,39 @@ for (const [key, value] of iterableMap)
 
 
 ---
-## 41. 
+## 41. Javascript垃圾回收机制
+
+- 在IE中虽然JavaScript对象通过标记清除的方式进行垃圾回收，但BOM与DOM对象却是通过
+引用计数回收垃圾的，也就是说只要涉及BOM及DOM就会出现循环引用问题
+- 标记清除（mark and sweep）
+
+  这是JavaScript最常见的垃圾回收方式，当变量进入执行环境的时候，比如函数中声明一个变量，垃圾回收器将其标记为“进入环境”，
+
+  当变量离开环境的时候（函数执行结束）将其标记为“离开环境”垃圾回收器会在运行的时候给存储在内存中的所有变量加上标记，
+
+  然后去掉环境中的变量以及被环境中变量所引用的变量（闭包），在这些完成之后仍存在标记的就是要删除的变量了。
+
+- 引用计数(reference counting)
+
+  在低版本IE中经常会出现内存泄露，很多时候就是因为其采用引用计数方式进行垃圾回收。引用计数的策略是跟踪记录每个值被使用的次数，
+
+  当声明了一个 变量并将一个引用类型赋值给该变量的时候这个值的引用次数就加1，如果该变量的值变成了另外一个，则这个值得引用次数减1，当这个值的引用次数变为0的时候，说明没有变量在使用，这个值没法被访问了，因此可以将其占用的空间回收。
+
+---
+
+## 42. class是构造函数的语法糖
+
+```
+typeof MathHandle //'function'  //class类型判断为function
+MathHandle.prototype.constructor === MathHandle //constructor 方法是类的构造函数 
+m.__proto__ === MathHandle.prototype
+
+```
+- class B extends A
+
+1. super作为函数使用 ES6 要求，子类的构造函数（constructor）必须先执行一次 super 函数 ，代表了父类的构造函数，super() 内部的 this 指向的是子类
+
+2.  super作为对象使用 指向父类原型对象 ，通过 super 调用父类的方法时，super 会绑定子类的 this。
 
 
 
