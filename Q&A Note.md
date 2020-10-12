@@ -1387,9 +1387,14 @@ for (const [key, value] of iterableMap)
 
 ---
 ## 41. Javascript垃圾回收机制
+- JS事件循环：
 
-- 在IE中虽然JavaScript对象通过标记清除的方式进行垃圾回收，但BOM与DOM对象却是通过
-引用计数回收垃圾的，也就是说只要涉及BOM及DOM就会出现循环引用问题
+主线程从"任务队列"中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称
+为 Event Loop（事件循环）
+
+JS的垃圾回收机制是为了以防内存泄漏
+
+- 在IE中虽然JavaScript对象通过标记清除的方式进行垃圾回收，但BOM与DOM对象却是通过**引用计数**回收垃圾的，也就是说只要涉及BOM及DOM就会出现循环引用问题
 - 标记清除（mark and sweep）
 
   这是JavaScript最常见的垃圾回收方式，当变量进入执行环境的时候，比如函数中声明一个变量，垃圾回收器将其标记为“进入环境”，
@@ -1420,7 +1425,9 @@ m.__proto__ === MathHandle.prototype
 
 2.  super作为对象使用 指向父类原型对象 ，通过 super 调用父类的方法时，super 会绑定子类的 this。
 
+---
 
+## 43.  
 
 
 

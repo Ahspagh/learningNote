@@ -28,7 +28,7 @@ html[theme='dark-mode'] img{
 ## 每次打开子组件弹窗都进行初始化
 
 :visible.sync 与 v-if同时使用即可。
-
+---
 ## flat函数的实现 ES10新增Array内置方法
 
 https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
@@ -98,7 +98,7 @@ var mixedArray = [];
 return mixedArray;
 }
 ```
-
+---
 ## 绑定与解除绑定事件的封装
 
 ```
@@ -119,7 +119,7 @@ obj.removeEventListener(sEv,fn,false);
 obj.detachEvent('on'+sEv,fn);
 }
 ```
-
+---
 ## 运动函数的封装 
 ```
 function startMove(obj,json,fnEnd){
@@ -161,6 +161,7 @@ return aResult;
 }
 
 ```
+---
 ## 获得所有checkbox节点方法
 ```
 var domList = document.getElementsByTagName(‘input’);
@@ -172,6 +173,7 @@ while (len--) {//使用while的效率会比for循环更高
 		}
 	}
 ```
+---
 ## 延迟加载JS——动态创建DOM
 
 function downloadJSAtOnload(){
@@ -193,7 +195,7 @@ else window.onload = downloadJSAtOnload;
 </script>
 
 ```
-
+---
 ## 条件语句书写建议
 
 1. 多重判断时使用 Array.includes
@@ -273,7 +275,7 @@ function test(color) {
 条件：任何一个水果是红色
 	const isAnyRed = fruits.some(f => f.color == 'red');
 ```
-
+---
 ## 实现冒泡排序
 ```
 //升序算法
@@ -294,7 +296,7 @@ function sort(arr){
 	return arr.toString();
 }
 ```
-
+---
 ## 生成a-b之间的n个随机数并排序返回到目标数组
 ```
 function randomNub(aArray=[], len, min, max) {
@@ -325,6 +327,7 @@ var arr=[];
 randomNub(arr,n,a,b);
 
 ```
+---
 ## aa-bb-cc转成驼峰式aaBbCc
 ```
 function combo(msg){
@@ -339,7 +342,7 @@ return msg;
 }
 
 ```
-
+---
 ## 提取 URL 中的各个 GET 参数并返回key-value格式
 例http://item.taobao.com/item.htm?a=1&b=2&c=&d=xxx&e 
 
@@ -374,7 +377,7 @@ if (!String.prototype.trim) {
 	}
 }
 ```
-
+---
 ## 统计字符串中字符的个数
 ```
 var str = 'asdfssaaasasasasaa';
@@ -396,7 +399,7 @@ for(var i in json){
 	}`
 } -->
 ```
-
+---
 ## 将金额数字从后每三位增加一个逗号
 ```
 15732426 => 15,732,426
@@ -412,7 +415,7 @@ for(var i = 1; i <= re(str).length; i++){
 	}
 }
 ```
-
+---
 ## 深度clone 
 ```
 function clone(obj)
@@ -445,7 +448,7 @@ function clone(obj)
 }
 
 ```
-
+---
 ## JS去重方法
 1. 利用for嵌套for，然后splice去重（ES5中最常用）
 ```
@@ -560,3 +563,22 @@ function unique (arr) {
 }
 //无法去掉“{}”空对象
 ```
+
+---
+
+## 计算字符串字符数
+```
+function strNum(s){
+	if(!arguments.length||!s) return null;
+	if(""==s) return 0;
+	var l=0;
+	for(var i=0;i<s.length;i++){
+	if(s.charCodeAt(i)>255) 
+	l+=2;  //charCodeAt()得到的是 unCode 码
+	else l+=1;   //汉字的 unCode 码大于 255bit 就是两个字节
+	 }
+	return l
+}
+
+```
+---
