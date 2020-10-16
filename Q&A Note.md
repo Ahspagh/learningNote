@@ -669,6 +669,10 @@ Array.of( )
 
 只接受参数作为数组元素，单参数不会导致特殊数组
 
+ES6修复了indexof无法找到NaN的bug([NaN].indexOf(NaN) === -1)
+新增了copyWithin(), includes(), fill(),flat()等方法，可方便的用于字符串的查找，补全,转 换
+等。
+
 - 21.3 Function 函数构造器
 
 **apply，call，bind 均为改变函数运行上下文，即改变函数内部 this 指向**
@@ -702,6 +706,12 @@ arguments[] 传递给函数的参数
 caller ==>() 调用当前函数
 
 prototype 对象类的原型
+
+ES6新增了双冒号运算符，用来取代以往的bind（），call（）,和apply（）
+
+foo::bar;等同于bar.bind(foo);
+
+foo::bar(...arguments)等同于bar.apply(foo, arguments);
 
 - 21.4 Math 数学对象
 
@@ -771,7 +781,7 @@ https://www.runoob.com/regexp/regexp-syntax.html
 
   .concat( ) 连接字符串
 
-  .indexOf( ) 返回一个子字符串在原始字符串中的索引值(查找顺序从左往右查找)。如果没有找到，则返回-1
+  .indexOf( ) 返回一个子字符串在原始字符串中的索引值(查找顺序从左往右查找)。如果没有找到，则返回-1 ES6中使用includes()替代 没查到返回false
 
   .match( ) 找到一个或多个正则表达式的匹配
 
@@ -780,6 +790,8 @@ https://www.runoob.com/regexp/regexp-syntax.html
   .search( ) 检索与正则表达式相匹配的子串
 
   .slice( ) 同 Array.slice 抽取一个子串 如果是负数，则该参数规定的是从字符串的尾部开始算起的位置。
+
+  新增，可方便的用于查找 startsWith(), endsWith(),等方法，补全 padStart(),padEnd(),repeat()字符串。
 
 ---
 
@@ -1421,10 +1433,19 @@ m.__proto__ === MathHandle.prototype
 ```
 - class B extends A
 
+0. extends是ES6引入的关键字，其本质仍然是构造函数+原型链的组合式继承。Class类可以通过extends实现继承。
+
 1. super作为函数使用 ES6 要求，子类的构造函数（constructor）必须先执行一次 super 函数 ，代表了父类的构造函数，super() 内部的 this 指向的是子类
 
 2.  super作为对象使用 指向父类原型对象 ，通过 super 调用父类的方法时，super 会绑定子类的 this。
 
+
+- Class和ES5构造函数的不同点
+
+1. 类的内部定义的所有方法，都是不可枚举的。
+2. ES6的class类必须用new命令操作，而ES5的构造函数不用new也可以执行。
+3. ES6的class类不存在变量提升，必须先定义class之后才能实例化，不像ES5中可以将构造函数写在实例化之后。
+4. ES5 的继承，实质是先创造子类的实例对象this，然后再将父类的方法添加到this上面。 ES6 的继承机制完全不同，实质是先将父类实例对象的属性和方法，加到this上面（所以必须先调用super方法），然后再用子类的构造函数修改this。
 ---
 
 ## 43.  eval
@@ -1482,8 +1503,29 @@ m.__proto__ === MathHandle.prototype
 
     3.2 异步任务：不进入主线程，而进入“任务队列”的任务，只有“任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行
 
+---
+## 45. ES6的module、export、import
 
+module、export、import是ES6用来统一前端模块化方案的设计思路和实现方案。整合规范了浏览器/服务端的模块化方法。
 
+import引入的模块是静态加载（编译阶段加载）而不是动态加载（运行时加载）。
+
+import引入export导出的接口值是动态绑定关系，即通过该接口，可以取到模块内部实时的值。
+
+## 46. 数组和对象的解构赋值
+```
+对象：
+let {apple, orange} = {apple: 'red appe', orange: 'yellow orange'};
+=>
+let [apple, orange] = ['red appe', 'yellow orange'];
+let myFruits = {apple, orange}; 
+// let myFruits = {apple: 'red appe', orange: 'yellow orange'};
+数组：
+let [a,b,c] = [1,2,3]
+无中间变量交换位置
+[arr[i],arr[j]]=[arr[i],arr[j]]
+
+```
 ---
 **_？？？_**.Vue.nextTick()
 
