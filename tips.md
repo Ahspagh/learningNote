@@ -582,3 +582,83 @@ function strNum(s){
 
 ```
 ---
+
+## 实现一个类模板字符串的功能
+```
+let name = 'sunny';
+let age = 21;
+let str = '你好，${name} 已经 ${age}岁了'
+str = str.replace(/\$\{([^}]*)\}/g,function(){
+return eval(arguments[1]);
+})
+```
+---
+
+## 实现Promise
+```
+var Promise = new Promise((resolve, reject) => {
+if (操作成功) {
+resolve(value)
+} else {
+reject(error)
+}
+})
+Promise.then(function (value) {
+// success
+}, function (value) {
+// failure
+})
+
+```
+- Class实现：
+```
+//创建一个Promise的类
+class Promise{
+	constructor(executer){//构造函数constructor里面是个执行器
+		this.status = 'pending';//默认的状态 pending
+		this.value = undefined//成功的值默认undefined
+		this.reason = undefined//失败的值默认undefined
+		//状态只有在pending时候才能改变
+		let resolveFn = value =>{
+			//判断只有等待时才能resolve成功
+			if(this.status == pending){
+				this.status = 'resolve';
+				this.value = value;
+			}
+		}
+		//判断只有等待时才能reject失败
+		let rejectFn = reason =>{
+			if(this.status == pending){
+				this.status = 'reject';
+				this.reason = reason;
+			}
+		}
+		try{
+			//把resolve和reject两个函数传给执行器executer
+			executer(resolve,reject);
+		}catch(e){
+			reject(e);//失败的话进catch
+		}
+	}
+	then(onFufilled,onReject){
+		//如果状态成功调用onFufilled
+		if(this.status = 'resolve'){
+			onFufilled(this.value);
+		}
+		//如果状态失败调用onReject
+		if(this.status = 'reject'){
+			onReject(this.reason);
+		}
+	}
+}
+```
+---
+## Set结构，打印出的size值
+```
+let s = newSet();
+s.add([1]);s.add([1]);
+console.log(s.size);//2
+解析：两个数组[1]并不是同一个值，它们分别定义的数组，在内存中分别对应着不同的存
+储地址，因此并不是相同的值
+都能存储到Set结构中，所以size为2
+```
