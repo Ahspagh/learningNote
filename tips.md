@@ -662,3 +662,51 @@ console.log(s.size);//2
 储地址，因此并不是相同的值
 都能存储到Set结构中，所以size为2
 ```
+
+
+## Sticky footer 布局 
+
+1. 利用flex布局对视窗高度进行分割。footer的flex设为0，这样footer获得其固有的高度;content的flex设为1，这样它会充满除去footer的其他部分。
+```
+
+wrapper { 
+    display: flex; 
+    flex-flow: column; 
+    min-height: 100vh;
+}
+.content {
+    flex: 1; 
+}
+.footer{
+    flex: 0;      
+}
+```
+2. 负margin方式 
+
+content元素的padding-bottom与footer元素的高度以及footer元素的margin-top值必须要保持一致。
+
+```
+.wrapper {
+    min-height: 100%;
+}
+
+.wrapper .content{
+    padding-bottom: 50px; /* footer区块的高度 */
+}
+
+.footer {
+    position: relative;
+    margin-top: -50px;  /* 使footer区块正好处于content的padding-bottom位置 */
+    height: 50px;
+    clear: both;
+}
+
+.clearfix::after {
+    display: block;
+    content: ".";
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+```
+这种负margin的布局方式，是兼容性最佳的布局方案，各大浏览器均可完美兼容，适合各种场景，但使用这种方式的前提是必须要知道footer元素的高度，且结构相对较复杂

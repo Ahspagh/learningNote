@@ -16,6 +16,10 @@ typeof 判断所有变量的类型，返回值有 number，boolean，string，fu
 
 https://mp.weixin.qq.com/s/J7qX9j-II19Am4RwUTUiBQ
 
+- 2.4 Sticky footer 布局 
+
+https://segmentfault.com/a/1190000015123189
+
 ## 3. flex 可以做的事
 
 - 3.1 双飞翼布局 左右固定中间自适应
@@ -1285,6 +1289,28 @@ console.log(a.innerHTML);
 
 ## 34.浏览器渲染
 
+0. 加载过程
+
+    1、浏览器查找域名对应的IP地址(DNS 查询：浏览器缓存->系统缓存->路由器缓存->ISP DNS 缓存->根域名服务器)
+
+    2、浏览器向 Web 服务器发送一个 HTTP 请求（TCP三次握手）
+
+    3、服务器 301 重定向（从 HTTP://example.com 重定向到 HTTP://www.example.com）
+
+    4、浏览器跟踪重定向地址，请求另一个带 www 的网址
+
+    5、服务器处理请求（通过路由读取资源）
+
+    6、服务器返回一个 HTTP 响应（报头中把 Content-type 设置为 'text/html'）
+
+    7、浏览器进 DOM 树构建
+
+    8、浏览器发送请求获取嵌在 HTML 中的资源（如图片、音频、视频、CSS、JS等）
+
+    9、浏览器显示完成页面
+    
+    10、浏览器发送异步请求
+
 1. 浏览器的渲染过程：
 
 解析HTML构建 DOM(DOM树)，并行请求 css/image/js
@@ -1554,6 +1580,40 @@ import引入的模块是静态加载（编译阶段加载）而不是动态加�
 
 import引入export导出的接口值是动态绑定关系，即通过该接口，可以取到模块内部实时的值。
 
+导入模块
+
+通过import关键字
+
+// 只导入一个
+import {sum} from "./example.js"
+
+// 导入多个
+import {sum,multiply,time} from "./exportExample.js"
+
+// 导入一整个模块
+import * as example from "./exportExample.js"
+
+导出模块
+
+导出通过export关键字
+
+//可以将export放在任何变量,函数或类声明的前面
+
+export var firstName = 'Chen';
+
+//也可以使用大括号指定所要输出的一组变量
+
+//使用export default时，对应的import语句不需要使用大括号
+
+export default bosh;
+import crc from 'crc';
+
+//不使用export default时，对应的import语句需要使用大括号
+
+export bosh;
+import {crc} from 'crc';
+
+---
 ## 46. 数组和对象的解构赋值和拓展运算符号
 ```
 对象：
@@ -1642,11 +1702,86 @@ async较Generator的优势
 4、返回值是 Promise
 
 
+---
 
+## 49. Ajax的实现流程
 
+1、创建XMLHTTPRequest对象,也就是创建一个异步调用对象.
 
+2、创建一个新的HTTP请求,并指定该HTTP请求的方法、URL及验证信息.
 
+3、设置响应HTTP请求状态变化的函数.
 
+4、发送HTTP请求.
+
+5、获取异步调用返回的数据.
+
+6、使用JavaScript和DOM实现局部刷新.
+```
+var HTTPRequest;
+function checkUsername() {
+  //创建 XMLHTTPRequest 对象
+  if(window.XMLHTTPRequest) {
+    //在IE6以上的版本以及其他内核的浏览器(Mozilla)等
+    HTTPRequest = new XMLHTTPRequest();
+  }else if(window.ActiveXObject) {
+    //在IE6以下的版本
+    HTTPRequest = new ActiveXObject();
+  }
+  //创建HTTP请求
+  HTTPRequest.open("POST", "Servlet1", true);
+  //因为我使用的是post方式，所以需要设置消息头
+  HTTPRequest.setRequestHeader("Content-type", "application/x-www-formurlencoded");
+  //指定回调函数
+  HTTPRequest.onreadystatechange = response22;
+  //得到文本框的数据
+
+  var name = document.getElementById("username").value;
+  //发送HTTP请求，把要检测的用户名传递进去
+  HTTPRequest.send("username=" + name);
+}
+//接收服务器响应数据
+function response22() {
+//判断请求状态码是否是4【数据接收完成】
+  if(HTTPRequest.readyState==4) {
+    //再判断状态码是否为200【200是成功的】
+    if(HTTPRequest.status==200) {
+      //得到服务端返回的文本数据
+      var text = HTTPRequest.responseText;
+      //把服务端返回的数据写在div上
+      var div = document.getElementById("result");
+      div.innerText = text;
+      }
+    }
+}
+```
+## 50. 跨域及解决方式
+
+指的是浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的,是浏览器对
+javascript施加的安全限制，防止他人恶意攻击网站
+
+解决方式：
+
+1. jsonP
+
+  利用script标签的src属性中的链接可以访问跨域的js脚本这个特性，通过动态创建script标签的src属性获取js文件中的js脚本，该脚本的内容是一个函数调用，参数就是服务器返回的数据
+
+为了处理这些返回的数据，需要事先在页面定义好回调函数，本质上使用的并不是Ajax技术，服务端不返回json格式的数据，而是返回调用某个函数的js代码，在src中进行了调用，这样就实现了跨域
+
+2. CORS：跨域资源共享
+
+原理：服务器设置Access-Control-Allow-OriginHTTP响应头之后，浏览器将会允许跨域请求
+
+限制：浏览器需要支持HTML5，可以支持POST，PUT等方法兼容ie9以上
+需要后台设置
+
+Access-Control-Allow-Origin: * //允许所有域名访问，或者
+
+Access-Control-Allow-Origin: HTTP://a.com //只允许所有域名访问
+
+3. 反向代理
+
+4. window+iframe
 
 
 
@@ -1658,6 +1793,8 @@ async较Generator的优势
 
 **_？？？_**.Vue.nextTick()
 
+$refs相对document.getElementById的方法，会减少获取dom节点的消耗。
+
 以下两个情况下需要用到 Vue.nextTick()
 
 1. Vue 声明周期的 created() 钩子函数进行的 DOM 操作一定要放在 Vue.nextTick() 的回调函数中，因为 created() 执行的时候 DOM 实际上并未进行任何渲染
@@ -1666,4 +1803,6 @@ async较Generator的优势
 
 *数据改变*之后的操作跟改变之后的*DOM*有关，那么就应该使用 Vue.nextTick()
 
+  
+---
 
