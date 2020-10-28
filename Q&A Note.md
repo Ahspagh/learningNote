@@ -1,8 +1,16 @@
 ## 1.typeof 和 instanceof 的区别：
 
-typeof 可以判断所有变量的类型，判断对象时只能返回 Object。instanceof 可以对不同的对象实例进行判断。
+typeof 可以判断所有变量的类型，判断对象时只能返回 Object。instanceof 可以对不同的对象实例进行判断。，instanceof可以精准判断引用数据类型（Array，Function，Object），而基本数据类型不能被instanceof精准判断。
 
 typeof 判断所有变量的类型，返回值有 number，boolean，string，function，object，undefined
+
+```
+console.log(2 instanceof Number);                    // false
+console.log(true instanceof Boolean);                // false 
+console.log('str' instanceof String);                // false  
+
+instanceof判断一个对象是否是数据类型的实例。在这里字面量值，2， true ，'str'不是实例，所以判断值为false。
+```
 
 ---
 
@@ -19,6 +27,9 @@ https://mp.weixin.qq.com/s/J7qX9j-II19Am4RwUTUiBQ
 - 2.4 Sticky footer 布局 
 
 https://segmentfault.com/a/1190000015123189
+
+- 2.5 《CSS揭秘》实用技巧总结
+https://mp.weixin.qq.com/s/OvyYCQ5lK0QS_AVBWEqeRw
 
 ## 3. flex 可以做的事
 
@@ -64,6 +75,9 @@ function func(){
   closure; 
 }
 ```
+闭包的第一个用途是使我们在函数外部能够访问到函数内部的变量。通过使用闭包，我们可以通过在外部调用闭包函数，从而在外部访问到函数内部的变量，可以使用这种方法来创建私有变量。
+
+函数的另一个用途是使已经运行结束的函数上下文中的变量对象继续留在内存中，因为闭包函数保留了这个变量对象的引用，所以这个变量对象不会被回收
 
 ---
 
@@ -409,7 +423,10 @@ function、object、Array
 
 undefined:表示变量声明单位初始化的值
 
-null:表是用来保存对象，还没有真正使用保存对象的值，从逻辑角度来看，null 表示一个空对象指针
+
+null:表是用来保存对象，还没有真正使用保存对象的值，从逻辑角度来看，null 表示一个空对象指针 
+
+*其实 null 不是对象，虽然 typeof null 会输出 object，但是这只是 JS 存在的一个悠久 Bug。在 JS 的最初版本中使用的是 32 位系统，为了性能考虑使用低位存储变量的类型信息，000 开头代表是对象，然而 null 表示为全零，所以将它错误的判断为 object 。虽然现在的内部类型判断代码已经改变了，但是对于这个 Bug 却是一直流传下来。*
 
 ECMA 标准中 object 属于复杂类型。null 值用 typeof 检测出来的结果是 object，而未初始化的定义值 typeof 检测为 undefined。事实上 undefined 值是派生于 null 值，ECMA 规定对两者进行相等性判断要返回 true。
 
@@ -612,7 +629,7 @@ concat() 连接数组
 
 slice(start,end) 返回数组选定的一部分。
 
-splice(index,delNum,item1,.....,itemX) 向数组中删除元素（可以实现增删改操作），然后返回*被删除的项目*，**改变原数组**
+splice(index,delNum,item1,.....,itemX) 向数组中删除元素（可以实现增删改操作），然后返回 *被删除的项目* ，**改变原数组**
 
 forEach((item,index)=>{}) 遍历所有元素
 
@@ -676,8 +693,7 @@ Array.of( )
 只接受参数作为数组元素，单参数不会导致特殊数组
 
 ES6修复了indexof无法找到NaN的bug([NaN].indexOf(NaN) === -1)
-新增了copyWithin(), includes(), fill(),flat()等方法，可方便的用于字符串的查找，补全,转 换
-等。
+新增了copyWithin(), includes(), fill(),flat()等方法，可方便的用于字符串的查找，补全,转换等。
 
 - 21.3 Function 函数构造器
 
