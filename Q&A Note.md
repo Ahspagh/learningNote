@@ -60,10 +60,34 @@ https://mp.weixin.qq.com/s/OvyYCQ5lK0QS_AVBWEqeRw
 
 ### 闭包就是能够读取其他函数内部变量的函数
 
-```
+
 js并不是为了创造闭包而创造，完全只是因为js允许函数嵌套，还能return返回子函数，以及js特有的事件循环机制，导致这些子函数不是立即调用，让父函数不敢注销自己作用域中的数据，才会产生所谓闭包。
 
 也正因为这个闭包这个特性，闭包函数可以让父函数的数据一直驻留在内存中保存，从而这也是后来js模块化的基础。
+
+```
+function CoolModule() {
+      var something = "cool";
+      var another = [1, 2, 3];
+  
+      function doSomething() {
+          alert( something );
+      }
+      function doAnother() {
+          alert( another.join( " ! " ) );
+    }
+     return {
+         doSomething: doSomething,
+         doAnother: doAnother
+     };
+ }
+ var foo = CoolModule();
+ foo.doSomething(); // cool
+ foo.doAnother(); // 1 ! 2 ! 3
+CoolModule() 只是一个函数，必须要通过调用它来创建一个模块实例 产生闭包和内部作用域返回的对象中含有对内部函数而不是内部数据变量的引用。我们保持内部数据变量是隐藏且私有的状态
+```
+
+```
 
 闭包可以理解成“定义在一个函数内部的函数“。在本质上，闭
 包是将函数内部和函数外部连接起来的桥梁。”
@@ -609,7 +633,10 @@ ECMA-262 只定义了两个内置对象，即 Global 和 Math。 根据定义，
 
 - 21.1 Arguments
 
-Arguments[ ] 函数参数的数组，Arguments 一个函数的参数和其他属性，Arguments.callee 当前正在运行的函数，Arguments.length 传递给函数的参数的个数
+Arguments[ ] 函数参数的类数组，Arguments 一个函数的参数和其他属性，Arguments.callee 当前正在运行的函数，Arguments.length 传递给函数的参数的个数 
+
+[].slice.call() 常用来将类数组转化为真正的数组
+[].push.apply(a, b) 将b追加到a里面，如果a为数组，也可以写成a.push(b)
 
 - 21.2 Array
 
@@ -703,6 +730,21 @@ _bind 是返回对应函数，便于稍后调用；apply 、call 则是立即调
 
 apply(this, [arg1, arg2]) 将函数作为一个对象的方法调用
 
+实现原理：
+
+1.判断调用对象是否为函数，即使我们是定义在函数的原型上的，但是可能出现使用 call 等方式调用的情况。
+
+2.判断传入上下文对象是否存在，如果不存在，则设置为 window 。
+
+3.将函数作为上下文对象的一个属性。
+
+4.判断参数值是否传入
+
+5.使用上下文对象来调用这个方法，并保存返回结果。
+
+6.删除刚才新增的属性
+
+返回结果
 ```
 1、thisobj是调用function的对象，函数体内thisobj为this，如果参数为null则使用全局对象
 2、参数可封装为数组形式传入返回调用函数function的返回值
@@ -710,12 +752,37 @@ apply(this, [arg1, arg2]) 将函数作为一个对象的方法调用
 
 call(this, arg1, arg2) 将函数作为对象的方法调用
 
+实现原理：
+
+1.判断调用对象是否为函数，即使我们是定义在函数的原型上的，但是可能出现使用 call 等方式调用的情况。
+
+2.判断传入上下文对象是否存在，如果不存在，则设置为 window 。
+
+3.处理传入的参数，截取第一个参数后的所有参数。
+
+4.将函数作为上下文对象的一个属性。
+
+5.使用上下文对象来调用这个方法，并保存返回结果。
+
+6.删除刚才新增的属性。
+
+7.返回结果。
+
 ```
 1、thisobj是调用function的对象，函数体内thisobj为this，如果参数为null则使用全局对象
 2、返回调用函数function的返回值
 ```
+实现原理：
 
 bind(thisArg[, arg1[, arg2[, ...]]]) 将函数绑定到一个对象，返回一个新函数，通过可选的指定参数，作为指定对象的方法调用该方法
+
+1.判断调用对象是否为函数，即使我们是定义在函数的原型上的，但是可能出现使用 call 等方式调用的情况。
+
+2.保存当前函数的引用，获取其余传入参数值。
+
+3.创建一个函数返回
+
+4.函数内部使用 apply 来绑定函数调用，需要判断函数作为构造函数的情况，这个时候需要传入当前函数的 this 给 apply 调用，其余情况都传入指定的上下文对象。
 
 ```
 传参和call或apply类似
@@ -1390,7 +1457,15 @@ DOM树与HTML标签一一对应，包括head和隐藏元素
 
 JavaScript的对象中都包含了一个” prototype”内部属性，这个属性所对应的就是该对象的原型，原型也是一个对象，通过原型可以实现对象的属性继承，
 
-ECMA新标准中引入了标准对象原型访问器”Object.getPrototype(object)”
+- 获得原型的方法
+
+*p.proto*
+
+*p.constructor.prototype*
+
+ECMA新标准中引入了标准对象原型访问器”Object.getPrototypeOf(object)”  
+
+
 
 原型的主要作用就是为了实现继承与扩展对象
 
@@ -1433,6 +1508,8 @@ for (const [key, value] of iterableMap)
 ---
 ## 40. New操作符
 
+new 运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例
+
 1、创建一个空对象: 并且this变量引入该对象,同时还继承了函数的原型
 
 2、设置原型链 空对象指向构造函数的原型对象
@@ -1440,7 +1517,20 @@ for (const [key, value] of iterableMap)
 3、执行函数体 修改构造函数this指针指向空对象,并执行函数体
 
 4、判断返回值 返回对象就用该对象,没有的话就创建一个对象
-
+```
+模拟过程
+function objectFactory(){
+    var obj = {};
+    //取得该方法的第一个参数(并删除第一个参数)，该参数是构造函数
+    var Constructor = [].shift.apply(arguments);
+    //将新对象的内部属性__proto__指向构造函数的原型，这样新对象就可以访问原型中的属性和方法
+    obj.__proto__ = Constructor.prototype;
+    //取得构造函数的返回值
+    var ret = Constructor.apply(obj, arguments);
+    //如果返回值是一个对象就返回该对象，否则返回构造函数的一个实例对象
+    return typeof ret === "object" ? ret : obj;
+}
+```
 
 ---
 ## 41. Javascript垃圾回收机制
@@ -1465,6 +1555,7 @@ JS的垃圾回收机制是为了以防内存泄漏
   在低版本IE中经常会出现内存泄露，很多时候就是因为其采用引用计数方式进行垃圾回收。引用计数的策略是跟踪记录每个值被使用的次数，
 
   当声明了一个 变量并将一个引用类型赋值给该变量的时候这个值的引用次数就加1，如果该变量的值变成了另外一个，则这个值得引用次数减1，当这个值的引用次数变为0的时候，说明没有变量在使用，这个值没法被访问了，因此可以将其占用的空间回收。
+
 
 ---
 
@@ -1534,14 +1625,20 @@ m.__proto__ === MathHandle.prototype
 - 一个程序至少一个进程，一个进程至少一个线程，进程中的多个线程是共享进
 程的堆和方法区资源但是每个线程有自己的程序计数器，栈区域
 
+
+ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的数据，最后出栈；使用队列存储数据，讲究 "先进先出"，即最先进队列的数据，也最先出队列。
+
 - 任务队列（task queue）
+
+除了同步任务和异步任务，任务还可以更加细分为macrotask(宏任务)和microtask(微任务)，*js引擎会优先执行微任务*
+
 1. 宏任务（macrotask）：在新标准中叫task
 
     1.1主要包括：script(整体代码)，setTimeout，setInterval，setImmediate，I/O,uirendering
 
 2. 微任务（microtask）：在新标准中叫jobs
 
-    2.1 主要包括：process.nextTick， Promise，MutationObserver（html5新特性）
+    2.1 主要包括：process.nextTick， Promise，MutationObserver（html5新特性）**process.nextTick指定的异步任务总是发生在所有异步任务之前，因此先执行**
 
 3. 扩展：
 
@@ -1629,6 +1726,29 @@ import crc from 'crc';
 export bosh;
 import {crc} from 'crc';
 
+- ES6 模块与 CommonJS 模块、AMD、CMD 的差异
+
+1. CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用
+
+CommonJS一旦输出一个值，模块内部的变化就影响不到这个值
+
+ES6 模块的运行机制与 CommonJS 不一样。JS 引擎对脚本静态分析的时候，遇到模块加载命令 import，就会生成一个只读引用。等到脚本真正执行时，再根据这个只读引用，到被加载的那个模块里面去取值
+
+2. CommonJS 模块就是对象，即在输入时是先加载整个模块，生成一个对象，然后再从这个对象上面读取方法，这种加载称为“运行时加载”。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
+
+- AMD 和 CMD 规范的区别
+
+AMD 是 RequireJS 在推广过程中对模块定义的规范化产出。
+
+CMD 是 SeaJS 在推广过程中对模块定义的规范化产出。
+
+1. 模块定义时对依赖的处理不同。AMD推崇依赖前置，在定义模块的时候就要声明其依赖 CMD可以就近声明
+
+2. 依赖模块的执行时机处理不同。首先 AMD 和 CMD 对于模块的加载方式都是异步加载 AMD 是提前执行，CMD 是延迟执行（不过 RequireJS 从 2.0 开始，也改成可以延迟执行）根据写法不同）
+
+ require.js 的核心原理是通过动态创建 script 脚本来异步引入模块，然后对每个脚本的 load 事件进行监听，如果每个脚本都加载完成了，再调用回调函数
+
+
 ---
 ## 46. 数组和对象的解构赋值和拓展运算符号
 ```
@@ -1678,7 +1798,7 @@ Class类里新增super关键字总是指向当前函数所在对象的原型对�
 
 6. Object.assign(target, source1, source2);
 
-合并的对象target只能合并source1、source2中的自身属性，并不会并 source1、 source2中的继承属性，也不会合并不可枚举的属性，且无法正确复制get和set 属性（会直接执行get/set函数，取return的值）。
+合并的对象target只能合并source1、source2中的自身属性，并不会并 source1、 source2中的继承属性，也不会合并不可枚举的属性，且无法正确复制get和set 属性（会直接执行get/set函数，取return的值）。常用于浅拷贝
 
 7. getOwnPropertyDescriptor()方法，可以获取指定对象所有自身属性的描述对象。结合defineProperties()方法，可以完美复制对象，包括复制get和set属性。
  
@@ -1760,7 +1880,7 @@ function checkUsername() {
 function response22() {
 //判断请求状态码是否是4【数据接收完成】
   if(HTTPRequest.readyState==4) {
-    //再判断状态码是否为200【200是成功的】
+    //��判断状态码是否为200【200是成功的】
     if(HTTPRequest.status==200) {
       //得到服务端返回的文本数据
       var text = HTTPRequest.responseText;
@@ -1770,6 +1890,57 @@ function response22() {
       }
     }
 }
+ - 手写原生
+
+//1：创建Ajax对象
+var xhr = window.XMLHttpRequest?new XMLHttpRequest():new ActiveXObject('Microsoft.XMLHTTP');// 兼容IE6及以下版本
+//2：配置 Ajax请求地址
+xhr.open('get','index.xml',true);
+//3：发送请求
+xhr.send(null); // 严谨写法
+//4:监听请求，接受响应
+xhr.onreadysatechange=function(){
+     if(xhr.readySate==4&&xhr.status==200 || xhr.status==304 )
+          console.log(xhr.responsetXML)
+}
+
+// promise 封装实现：
+
+function getJSON(url) {
+  // 创建一个 promise 对象
+  let promise = new Promise(function(resolve, reject) {
+    let xhr = new XMLHttpRequest();
+
+    // 新建一个 http 请求
+    xhr.open("GET", url, true);
+
+    // 设置状态的监听函数
+    xhr.onreadystatechange = function() {
+      if (this.readyState !== 4) return;
+
+      // 当请求成功或失败时，改变 promise 的状态
+      if (this.status === 200) {
+        resolve(this.response);
+      } else {
+        reject(new Error(this.statusText));
+      }
+    };
+
+    // 设置错误监听函数
+    xhr.onerror = function() {
+      reject(new Error(this.statusText));
+    };
+
+    // 设置响应的数据类型
+    xhr.responseType = "json";
+
+    // 设置请求头信息
+    xhr.setRequestHeader("Accept", "application/json");
+
+    // 发送 http 请求
+    xhr.send(null);
+  });
+
 ```
 ## 50. 跨域及解决方式
 
@@ -1799,8 +1970,85 @@ Access-Control-Allow-Origin: HTTP://a.com //只允许所有域名访问
 
 4. window+iframe
 
+---
+## 51. 深浅拷贝
 
+浅拷贝： 创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本类型，拷贝的就是基本类型的值，如果属性是引用类型，拷贝的就是内存地址 ，所以如果其中一个对象改变了这个地址，就会影响到另一个对象。
 
+深拷贝： 将一个对象从内存中完整的拷贝一份出来,从堆内存中开辟一个新的区域存放新对象,且修改新对象不会影响原对象。
+
+浅拷贝实现方法：
+
+Object.assign() 方法： 用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。它将返回目标对象。
+
+Array.prototype.slice()：slice() 方法返回一个新的数组对象，这一对象是一个由 begin和end（不包括end）决定的原数组的浅拷贝。原始数组不会被改变。
+
+拓展运算符...：
+
+深拷贝的实现方式： 
+
+JSON.parse(JSON.stringify(object))，缺点诸多（会忽略undefined、symbol、函数；不能解决循环引用；不能处理正则、new Date()）
+
+浅拷贝+递归：
+```
+function cloneDeep(target,map = new WeakMap()) {
+  if(typeOf taret ==='object'){
+     let cloneTarget = Array.isArray(target) ? [] : {};
+      
+     if(map.get(target)) {
+        return target;
+    }
+     map.set(target, cloneTarget);
+     for(const key in target){
+        cloneTarget[key] = cloneDeep(target[key], map);
+     }
+     return cloneTarget
+  }else{
+       return target
+  }
+ 
+}
+```
+## 52. 函数的柯里化
+
+// 函数柯里化指的是一种将使用多个参数的一个函数转换成一系列使用一个参数的函数的技术,Function.prototype.bind 方法也是柯里化应用
+
+//详解https://www.cnblogs.com/planetwithpig/p/11734821.html 
+
+直译：可以传任意多个参数，当不传参数时输出结果；柯里化了的函数，它返回一个新的函数，新的函数接收可分批次接受新的参数，延迟到最后一次计算
+
+```
+//通用的函数柯里化函数
+function curry(fn, args) {
+  // 获取函数需要的参数长度
+  let length = fn.length;
+
+  args = args || [];
+
+  return function() {
+    let subArgs = args.slice(0);
+
+    // 拼接得到现有的所有参数
+    for (let i = 0; i < arguments.length; i++) {
+      subArgs.push(arguments[i]);
+    }
+
+    // 判断参数的长度是否已经满足函数所需参数的长度
+    if (subArgs.length >= length) {
+      // 如果满足，执行函数
+      return fn.apply(this, subArgs);
+    } else {
+      // 如果不满足，递归返回柯里化的函数，等待参数的传入
+      return curry.call(this, fn, subArgs);
+    }
+  };
+}
+<!-- fn.length 函数的形参个数  arguments.callee参数对象的函数递归调用 -->
+// es6 实现
+function curry(fn, ...args) {
+  return fn.length <= args.length ? fn(...args) : curry.bind(null, fn, ...args);
+}
+```
 
 
 
@@ -1822,3 +2070,4 @@ $refs相对document.getElementById的方法，会减少获取dom节点的消耗�
   
 ---
 
+##

@@ -417,7 +417,7 @@ for(var i = 1; i <= re(str).length; i++){
 }
 ```
 ---
-## 深度clone 
+## 深度clone 深拷贝简易实现
 ```
 function clone(obj)
 {
@@ -610,6 +610,46 @@ Promise.then(function (value) {
 // failure
 })
 
+//面试手写基础版：
+function myPromise(constructor){
+    let self=this;
+    self.status="pending" //定义状态改变前的初始状态
+    self.value=undefined;//定义状态为resolved的时候的状态
+    self.reason=undefined;//定义状态为rejected的时候的状态
+    function resolve(value){
+        //两个==="pending"，保证了状态的改变是不可逆的
+       if(self.status==="pending"){
+          self.value=value;
+          self.status="resolved";
+       }
+    }
+    function reject(reason){
+        //两个==="pending"，保证了状态的改变是不可逆的
+       if(self.status==="pending"){
+          self.reason=reason;
+          self.status="rejected";
+       }
+    }
+    //捕获构造异常
+    try{
+       constructor(resolve,reject);
+    }catch(e){
+       reject(e);
+    }
+}
+// 定义链式调用的then方法
+myPromise.prototype.then=function(onFullfilled,onRejected){
+   let self=this;
+   switch(self.status){
+      case "resolved":
+        onFullfilled(self.value);
+        break;
+      case "rejected":
+        onRejected(self.reason);
+        break;
+      default:       
+   }
+}
 ```
 - Class实现：
 ```
@@ -944,4 +984,218 @@ var f=new Fn();
  
 console.log(f.constructor===Fn);    // false
 console.log(f.constructor===Array); // true 
+
+```
+
+
+## 实现Array.prototype.map、filter和reduce  
+
+```
+
+function map(arr, mapCallback) {
+  // 首先，检查传递的参数是否正确。
+  if (!Array.isArray(arr) || !arr.length || typeof mapCallback !== 'function') { 
+    return [];
+  } else {
+    let result = [];
+    // 每次调用此函数时，我们都会创建一个 result 数组
+    // 因为我们不想改变原始数组。
+    for (let i = 0, len = arr.length; i < len; i++) {
+      result.push(mapCallback(arr[i], i, arr)); 
+      // 将 mapCallback 返回的结果 push 到 result 数组中
+    }
+    return result;
+  }
+}
+
+
+function filter(arr, filterCallback) {
+  // 首先，检查传递的参数是否正确。
+  if (!Array.isArray(arr) || !arr.length || typeof filterCallback !== 'function') 
+  {
+    return [];
+  } else {
+    let result = [];
+     // 每次调用此函数时，我们都会创建一个 result 数组
+     // 因为我们不想改变原始数组。
+    for (let i = 0, len = arr.length; i < len; i++) {
+      // 检查 filterCallback 的返回值是否是真值
+      if (filterCallback(arr[i], i, arr)) { 
+      // 如果条件为真，则将数组元素 push 到 result 中
+        result.push(arr[i]);
+      }
+    }
+    return result; // return the result array
+  }
+}
+
+function reduce(arr, reduceCallback, initialValue) {
+  // 首先，检查传递的参数是否正确。
+  if (!Array.isArray(arr) || !arr.length || typeof reduceCallback !== 'function') 
+  {
+    return [];
+  } else {
+    // 如果没有将initialValue传递给该函数，我们将使用第一个数组项作为initialValue
+    let hasInitialValue = initialValue !== undefined;
+    let value = hasInitialValue ? initialValue : arr[0];
+   、
+
+    // 如果有传递 initialValue，则索引从 1 开始，否则从 0 开始
+    for (let i = hasInitialValue ? 1 : 0, len = arr.length; i < len; i++) {
+      value = reduceCallback(value, arr[i], i, arr); 
+    }
+    return value;
+  }
+}
+```
+## 手写最终版深拷贝
+```
+const mapTag = '[object Map]';
+const setTag = '[object Set]';
+const arrayTag = '[object Array]';
+const objectTag = '[object Object]';
+const argsTag = '[object Arguments]';
+
+const boolTag = '[object Boolean]';
+const dateTag = '[object Date]';
+const numberTag = '[object Number]';
+const stringTag = '[object String]';
+const symbolTag = '[object Symbol]';
+const errorTag = '[object Error]';
+const regexpTag = '[object RegExp]';
+const funcTag = '[object Function]';
+
+const deepTag = [mapTag, setTag, arrayTag, objectTag, argsTag];
+
+
+function forEach(array, iteratee) {
+    let index = -1;
+    const length = array.length;
+    while (++index < length) {
+        iteratee(array[index], index);
+    }
+    return array;
+}
+
+function isObject(target) {
+    const type = typeof target;
+    return target !== null && (type === 'object' || type === 'function');
+}
+
+function getType(target) {
+    return Object.prototype.toString.call(target);
+}
+
+function getInit(target) {
+    const Ctor = target.constructor;
+    return new Ctor();
+}
+
+function cloneSymbol(targe) {
+    return Object(Symbol.prototype.valueOf.call(targe));
+}
+
+function cloneReg(targe) {
+    const reFlags = /\w*$/;
+    const result = new targe.constructor(targe.source, reFlags.exec(targe));
+    result.lastIndex = targe.lastIndex;
+    return result;
+}
+
+function cloneFunction(func) {
+    const bodyReg = /(?<={)(.|\n)+(?=})/m;
+    const paramReg = /(?<=\().+(?=\)\s+{)/;
+    const funcString = func.toString();
+    if (func.prototype) {
+        const param = paramReg.exec(funcString);
+        const body = bodyReg.exec(funcString);
+        if (body) {
+            if (param) {
+                const paramArr = param[0].split(',');
+                return new Function(...paramArr, body[0]);
+            } else {
+                return new Function(body[0]);
+            }
+        } else {
+            return null;
+        }
+    } else {
+        return eval(funcString);
+    }
+}
+
+function cloneOtherType(targe, type) {
+    const Ctor = targe.constructor;
+    switch (type) {
+        case boolTag:
+        case numberTag:
+        case stringTag:
+        case errorTag:
+        case dateTag:
+            return new Ctor(targe);
+        case regexpTag:
+            return cloneReg(targe);
+        case symbolTag:
+            return cloneSymbol(targe);
+        case funcTag:
+            return cloneFunction(targe);
+        default:
+            return null;
+    }
+}
+
+function clone(target, map = new WeakMap()) {
+
+    // 克隆原始类型
+    if (!isObject(target)) {
+        return target;
+    }
+
+    // 初始化
+    const type = getType(target);
+    let cloneTarget;
+    if (deepTag.includes(type)) {
+        cloneTarget = getInit(target, type);
+    } else {
+        return cloneOtherType(target, type);
+    }
+
+    // 防止循环引用
+    if (map.get(target)) {
+        return map.get(target);
+    }
+    map.set(target, cloneTarget);
+
+    // 克隆set
+    if (type === setTag) {
+        target.forEach(value => {
+            cloneTarget.add(clone(value, map));
+        });
+        return cloneTarget;
+    }
+
+    // 克隆map
+    if (type === mapTag) {
+        target.forEach((value, key) => {
+            cloneTarget.set(key, clone(value, map));
+        });
+        return cloneTarget;
+    }
+
+    // 克隆对象和数组
+    const keys = type === arrayTag ? undefined : Object.keys(target);
+    forEach(keys || target, (value, key) => {
+        if (keys) {
+            key = value;
+        }
+        cloneTarget[key] = clone(target[key], map);
+    });
+
+    return cloneTarget;
+}
+
+module.exports = {
+    clone
+};
+
 ```
