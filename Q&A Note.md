@@ -29,7 +29,18 @@ https://mp.weixin.qq.com/s/J7qX9j-II19Am4RwUTUiBQ
 https://segmentfault.com/a/1190000015123189
 
 - 2.5 《CSS揭秘》实用技巧总结
+
 https://mp.weixin.qq.com/s/OvyYCQ5lK0QS_AVBWEqeRw
+
+- 2.6 ES2020新功能
+求幂运算符** == Math.pow()
+BigInt 》》 pow(2, 53) - 1     // ******n
+空值合并操作符：??  检测出undefined 或者 null
+动态引入const module= await import()
+可选链 x.prop?.mightExistProp?.mightExistFunc?.()
+Promise.allSettled 接收一组 Promise，并且会返回所有的结果
+str.matchAll(regexp)  返回一个迭代器，依次的返回所有匹配
+https://mp.weixin.qq.com/s/8_cEFs0Nsb5q_DXDBE89lA
 
 ## 3. flex 可以做的事
 
@@ -1538,6 +1549,12 @@ function objectFactory(){
 
 主线程从"任务队列"中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称
 为 Event Loop（事件循环）
+```
+1.所有同步任务都在主线程上执行，形成一个执行栈
+2.当主线程中的执行栈为空时，检查事件队列是否为空，如果为空则继续检查，如不为空执行下一步
+3.取出任务队列首部，加入执行栈
+4.执行任务，接着检查执行栈；如果执行栈为空，则跳回第二步；如不为空，则继续检查
+```
 
 JS的垃圾回收机制是为了以防内存泄漏
 
@@ -1742,6 +1759,8 @@ AMD 是 RequireJS 在推广过程中对模块定义的规范化产出。
 
 CMD 是 SeaJS 在推广过程中对模块定义的规范化产出。
 
+大致：AMD用户体验好，因为没有延迟，依赖模块提前执行；CMD性能好，因为用户需要时才执行
+
 1. 模块定义时对依赖的处理不同。AMD推崇依赖前置，在定义模块的时候就要声明其依赖 CMD可以就近声明
 
 2. 依赖模块的执行时机处理不同。首先 AMD 和 CMD 对于模块的加载方式都是异步加载 AMD 是提前执行，CMD 是延迟执行（不过 RequireJS 从 2.0 开始，也改成可以延迟执行）根据写法不同）
@@ -1800,7 +1819,7 @@ Class类里新增super关键字总是指向当前函数所在对象的原型对�
 
 合并的对象target只能合并source1、source2中的自身属性，并不会并 source1、 source2中的继承属性，也不会合并不可枚举的属性，且无法正确复制get和set 属性（会直接执行get/set函数，取return的值）。常用于浅拷贝
 
-7. getOwnPropertyDescriptor()方法，可以获取指定对象所有自身属性的描述对象。结合defineProperties()方法，可以完美复制对象，包括复制get和set属性。
+7. getOwnPropertyDescriptor()方法，可以获取指定对象所有自身属性的描述对象。结合defineProperties()方法，可以完美复制对象，包括复制**get和set属性。**
  
 8. ES6在Object原型上新增了getPrototypeOf()和setPrototypeOf()方法，用来获取或设置当前对象的prototype对象。而不是使用浏览器厂商私加的__proto__属性来实现
 
@@ -1831,6 +1850,37 @@ async函数返回一个 Promise 对象，可以使用then方法添加回调函�
 
 当函数执行的时候，一旦遇到await就会先返回，等到异步操作完成，再接着执行函数体内后面的语句
 
+```
+对比使用then和async
+
+function doIt() {
+    console.time("doIt");
+    const time1 = 300;
+    step1(time1)
+        .then(time2 => step2(time2))
+        .then(time3 => step3(time3))
+        .then(result => {
+            console.log(`result is ${result}`);
+        });
+}
+doIt();
+// step1 with 300
+// step2 with 500
+// step3 with 700
+// result is 900
+
+
+使用async/await
+async function doIt() {
+    console.time("doIt");
+    const time1 = 300;
+    const time2 = await step1(time1);
+    const time3 = await step2(time2);
+    const result = await step3(time3);
+    console.log(`result is ${result}`);
+}
+doIt();
+```
 async较Generator的优势
 1、内置执行器
 2、更好的语义
@@ -1942,6 +1992,19 @@ function getJSON(url) {
   });
 
 ```
+
+AJAX浏览器缓存解决方案：
+
+1、在Ajax发送请求前加上 anyAjaxObj.setRequestHeader("If-Modified-Since","0")。
+
+2、在Ajax发送请求前加上 anyAjaxObj.setRequestHeader("Cache-Control","no-cache")。
+
+3、在URL后面加上一个随机数： "fresh=" + Math.random();。
+
+4、在URL后面加上时间戳："nowtime=" + new Date().getTime();。
+
+5、如果是使用jQuery，直接这样就可以了 $.AjaxSetup({cache:false})。这样页面的所有Ajax 都会执行这条语句就是不需要保存缓存记录
+
 ## 50. 跨域及解决方式
 
 指的是浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的,是浏览器对
@@ -2050,11 +2113,141 @@ function curry(fn, ...args) {
 }
 ```
 
+## websocket 
+
+- websocket是一种网络通信协议，是HTML5开始提供的一种在单个TCP连接上进行全双工通信的协议，这个对比着HTTP协议来说，HTTP协议是一种无状态的、无连接的、单向的应用层协议，通信请求只能由客户端发起，服务端对请求做出应答处理。HTTP协议无法实现服务器主动向客户端发起消息，websocket 连接允许客户端和服务器之间进行全双工通信，以便任一方都可以通过建立的连接将数据推送到另一端。websocket只需要建立一次连
+接，就可以一直保持连接状态
+- 兼容低浏览器
+
+Adobe Flash Socket 、
+ActiveX HTMLFile (IE) 、
+基于 multipart 编码发送 XHR 、
+基于长轮询的 XHR
+
+## MVVM和MVC区别
+
+视图模型(ViewModel)是MVVM模式的核心，是连接view视图和 model模型的桥梁，有两个方向：
+
+一是将模型Model 转化为视图View，即将后端传递的数据转化成所看到页面，实现的方式是：数据绑定
+
+二是将视图（view）转化成模型（Model），即将所看到的页面转化成后端的数据，实现的方式是：DOM事件监听；这两方面都实现的称之为数据的双向绑定
+
+MVC中的MV与MVVM中的MV相同，C指的是页面业务逻辑Controller，使用MVC的目的是M和V的代码分离。MVC是单向通信。也就是View跟Model，必须通过Controller来承上启下
+
+MVVM主要解决的是MVC中大量的DOM操作使页面渲染性能降低，加载速度变慢。 Vue数据驱动，通过数据来显示数图层而不是节点操作。场景: 数据操作比较多的场景，比如大量操作DOM元素时，才用MVVM的开发方式，让开发者关注在数据的变化上而非繁琐的操作DOM元素
+
+MVC和MVVM的区别并不是VM完全取代了C,只是在MVC的基础上增加了一层VM，弱化了C的概念，ViewModel存在的目的在于抽离Controller中展示的业务逻辑，而不是替代，也就是说实现的是业务逻辑组件的重用，是开发更高效结构更清晰。
 
 
+---
+
+## VUE技术概述 
+
+Vue 组件通过 prop 进行数据传递，并实现了数据总线系统EventBus，组件集成了EventBus进行事件注册监听、事件触发，使用slot进行内容分发。
+
+除此以外，实现了一套声明式模板系统，在runtime或者预编译是对模板进行编译，生成渲染函数，供组件渲染视图使用。
+
+Vue.js 是一款 MVVM 的JS框架，当对数据模型data进行修改时，视图会自动得到更新，即框架帮我们完成了更新DOM的操作，而不需要我们手动的操作DOM。
+
+Vue.js 实现了一套声明式渲染引擎，并在runtime或者预编译时将声明式的模板编译成渲染函数，挂载在观察者 Watcher 中，在渲染函数中（touch），响应式系统使用响应式数据的getter方法对观察者进行依赖收集（Collect as Dependency），使用响应式数据的setter方法通知（notify）所有观察者进行更新，此时观察者 Watcher 会触发组件的渲染函数（Trigger re-render），组件执行的 render 函数，生成一个新的 Virtual DOM Tree，此时 Vue 会对新老 Virtual DOM Tree 进行 Diff，查找出需要操作的真实 DOM 并对其进行更新。
+
+ps. 声明式如map函数 不考虑中间过程直接通过实现条件返回结果 命令式如for循环处理，关心流程的每一步，用命令去实现。
+
+---
+##  Vue 插槽
+
+Vue实现了一套遵循 Web Components 规范草案 的内容分发系统，即将<slot>元素作为承载分发内容的出口。
+
+插槽slot，也是组件的一块HTML模板，这一块模板显示不显示、以及怎样显示由父组件来决定。
+
+插槽分默认插槽、一个组件只能有一个该类插槽。具名插槽,具名插槽可以在一个组件中出现N次，出现在不同的位置，只需要使用不同的name属性区分即可
+```
+<template>
+<!-- 父组件 parent.vue -->
+<div class="parent">
+    <h1>父容器</h1>
+    <child>
+        <div class="tmpl" slot="up">
+            <span>菜单up-1</span>
+        </div>
+        <div class="tmpl" slot="down">
+            <span>菜单down-1</span>
+        </div>
+        <div class="tmpl">
+            <span>菜单->1</span>
+        </div>
+    </child>
+</div>
+</template>
+
+<template>
+    <div class="child">
+        <!-- 具名插槽 -->
+        <slot name="up"></slot>
+        <h3>这里是子组件</h3>
+        <!-- 具名插槽 -->
+        <slot name="down"></slot>
+        <!-- 匿名插槽 -->
+        <slot name="default"></slot>
+    </div>
+</template>
+```
+
+- 作用域插槽:作用域插槽可以为 slot 标签绑定数据，让其父组件可以获取到子组件的数据。父组件可以通过slot-scope属性获取到数据
+
+```
+<template>
+    <!-- parent.vue -->
+    <div class="parent">
+        <h1>这是父组件</h1>
+        <current-user>
+            <template slot="default" slot-scope="slotProps">
+                {{ slotProps.user.name }}
+            </template>
+        </current-user>
+    </div>
+</template>
+
+<template>
+    <!-- child.vue -->
+    <div class="child">
+        <h1>这是子组件</h1>
+        <slot :user="user"></slot>
+    </div>
+</template>
+```
+
+slot 实现原理：当子组件vm实例化时，获取到父组件传入的 slot 标签的内容，存放在vm.$slot中，默认插槽为vm.$slot.default，具名插槽为vm.$slot.xxx，xxx 为插槽名，当组件执行渲染函数时候，遇到<slot>标签，使用$slot中的内容进行替换，此时可以为插槽传递数据，若存在数据，则可称该插槽为作用域插槽。
+
+---
+## VNode 
+
+ 在VUE中，template被编译成浏览器可执行的render function，然后配合响应式系统，将render function挂载在render-watcher中，当有数据更改的时候，调度中心Dep通知该render-watcher执行render function，完成视图的渲染与更新。
+
+ Vue 使用 JS 对象将浏览器的 DOM 进行的抽象，这个抽象被称为 Virtual DOM。Virtual DOM 的每个节点被定义为VNode，当每次执行render function时，Vue 对更新前后的VNode进行Diff对比，找出尽可能少的我们需要更新的真实 DOM 节点，然后只更新需要更新的节点，从而解决频繁更新 DOM 产生的性能问题。
+
+ ps. Vue.js 内部的 diff 被称为patch，其算法的是通过同层的树节点进行比较，而非对树进行逐层搜索遍历的方式，所以时间复杂度只有O(n)，是一种相当高效的算法。
+
+---
+
+## VUE的双向绑定原理
+
+Vue.js采用数据劫持结合发布者-订阅者模式的方式，通过Object。defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
+
+1. 需要observe的数据对象进行递归遍历，包括子属性对象的属性，都加上setter，getter，这样的话对这个对象某个值赋值，就会触发setter，那么就能监听到数据变化
+
+2. compile解析模板指令，将模板中的变量替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知更新视图。
+
+3. Watch订阅者主要做的是：
+
+在自身实例化时往属性订阅器（dep）里面添加自己
+
+自身必须有个update()方法
+
+待属性变动dep。notice()通知时，能调用自身的update(),并触发conpile中的回调
 
 
-
+MVVM作为数据绑定的入口，整合Observer，Compile和watcher三者，通过Observer来监听自己的model的数据变化，通过Compile来解析编译模板指令，最终利用watch搭起Observer和Compile之间的通信桥梁，达到 数据变化 ->视图更新 ; 视图交互变化 ->数据model 变更的双向绑定效果。
 **_？？？_**.Vue.nextTick()
 
 $refs相对document.getElementById的方法，会减少获取dom节点的消耗。
@@ -2070,4 +2263,355 @@ $refs相对document.getElementById的方法，会减少获取dom节点的消耗�
   
 ---
 
-##
+## git的一些说明
+
+配置指令：
+
+git config --global user.email "you@example.com"
+
+git config --global user.name "your name"
+
+查看配置 git config --list
+
+工作流程：
+
+0. 在本地文件夹简历工作目录作为本地代码仓库 git init
+1. 在工作目录中修改某些文件  添加到本地仓库 git add helloworld.md/ -A
+2. 对修改后的文件进行快照，然后保存进暂存区域 git commit -m "修改注释"
+3. 提交更新，将保存在暂存区域的文件快照永久转储到Git目录中 git push origin dev
+
+项目执行流程
+
+git branch -a (查看所有分支)
+
+git clone 地址  克隆代码到本地
+
+git pull origin master 拉取线上master最新代码
+
+git checkout dev 切换到开发分支
+
+git merge master 合并master本地分支
+
+ 修改文件开发结束
+
+git status 查看当前文件更改状态
+
+git add -A 把所有更改代码放到缓存区
+
+查看当前更改状态
+
+git commit -m "本次更改注释"
+
+git push origin dev 代码推送到远程仓库
+
+git checkout master  git pull origin master  git merge dev
+达到上线标准则合并代码到master分支 先切换拉取master 然后合并dev分支到master  最后上传 git push origin master
+
+git tag -a 命名规则  上线后 用tag标签标记发布节点命名规则（prod_版本_上线日期）
+
+把本地仓库的内容推向一个空的远程仓库
+
+首先保证本地仓库与远程之间是连通的。
+
+git remote add origin 远程仓库地址
+
+第一次推送  -u是指定origin为默认主分支
+
+git push -u origin master
+
+之后的提交 
+
+git push origin master
+
+缓存区的应用 
+
+1. 合并别人的代码进来
+   git stash  把自己代码放入缓存
+
+   git stash pop#恢复最近一次的缓存
+
+   git stash list 查看你有哪些队列
+
+   git stash drop stash@{0} 删除第一个队列
+
+2. 需要切换分支
+   git add -A
+
+   git stash save 'demo'
+
+   git stash list
+
+   git stash applt stash@{0}
+
+补充指令
+
+git reflog 查看提交记录命令
+
+git show   查看某次提交内容 git show $id
+
+git rm <file> 从版本库删除文件
+
+git reset HEAD^ 放弃上次提交后的所有修改
+
+git diff <file> 比较当前文件和暂存区文件差异
+
+git log -p <file> 查看每次详细修改内容的diff  -graph 分支合并图
+
+git branch -r 查看远程分支
+
+git merge <branch>  将branch分支合并到当前分支
+
+git stash pop git pull 抓取远程仓库所有分支更新并合并到本地
+
+git oush origin master  将本地主分支推送远程主分支
+
+git branch 分支名 创建分支
+
+git checkout 分支名 切换分支
+
+git checkout -b 创建并切换分支
+
+git branch --merge/git branch --no-merge 查看已经合并/未合并的分支
+
+git branch -d git branch -D 删除的已合并的/未合并的分支
+
+ssh -T git@github.com 验证ssh的key是否正常工作
+
+发生冲突的命令解决：
+
+git stash 把工作区修改提交到栈区，目的是保存工作区的修改
+
+git pull 拉取远程分支上的代码合并到本地分支，目的是消除冲突
+
+git stash pop 把保存在栈区的修改部分合并到最新的工作空间中
+
+分支提交冲突：当分支发生修改后，切换到主分支也该对该部分修改使用git merge 进行合并，需要将两个修改进行合并产生冲突。
+
+git reset HEAD file 撤销提交到索引区的文件
+
+git reset -soft HEAD^n 恢复当前分支的版本库至上一次提交的状态
+，索引区和工作空间不变更
+
+git reset -mixed HEAD^n 工作区不变更
+
+git reset -hard HEAD^n 恢复当前分支的版本库、索引区和工作空间之上一次提交的状态
+
+git rebase -i HEAD~3 修改提交的历史信息
+i键修复  pick为edit ；:wq退出 
+
+git commit --amend --reset-author 重置用户信息
+
+git rebase --continue 回到正常状态
+
+查看分支的提交历史记录
+
+git log -number 查看当前分支的前number个提交记录
+
+git log -number -pretty =oneline 上一命令的显示简化
+
+git reflog -number 查看所有分支前number个的提交记录
+
+git reflog -number -pretty=oneline
+
+以上命令加上文件名则查看某文件的提交历史记录 没有number则查全部
+
+---
+### git stash 命令
+
+命令 git stash 是把工作区修改的内容储存在栈区
+
+使用场景
+
+1. 解决冲突文件时 先执行git stash 然后解决冲突
+
+2. 遇到紧急开发任务但目前不能提交时，先执行git stash 然后开发
+，最后用过git stash pop 取出栈区的内容继续开发
+
+3. 切换分支时，当前的工作内容不能提交时，先执行git stash 再进行分支切换
+---
+
+## git与svn
+
+git是分步式版本控制，svn是集中式版本控制；git相对于svn的优势是不需要网络即可版本控制；git把内容按数据方式储存，而svn是按文件；git可以公用可以分享，svn基本是项目内网才能访问；git不依赖中央服务器，即使服务器有问题也不受影响，svn依赖服务器；git没有一个全局的版本号，svn有
+
+---
+## git fetch 、git merge、git pull
+
+git pull 相当于 git fetch + git merge
+即更新远程仓库的代码到本地仓库，然后合并到当前分支
+
+命令从中央储存库中提取特定的分支的新更改或提交，并更新本地储存库中的目标分支
+
+git fetch 会从所需的分支中提取所有新提交，并将其存储在本地存储库中的新分支中，如果要在目标分支中反映这些更改，必须之后执行git merge 合并获取分支和目标分支后才会更新目标分支。
+
+
+---
+
+## nodejs
+
+node是一个JavaScript运行环境，依赖于Chrome V8 引擎进行代码解释
+特征： 单线程（一个应用程序对应一个进程，一个进程线面会有多个线程，每个线程用于处理任务）、时间驱动、非阻塞I/O（适合做大量I/O的应用如聊天室、表单提交、消息系统（socketio）等大量计算的功能）、轻量、可伸缩、适用于实时数据交互应用；
+
+node无法直接渲染静态页面、提供静态服务
+
+node没有根目录概念
+
+node必须通过路由程序指定文件才能渲染文件
+
+node比其他服务端性能更好，速度更快
+
+node服务端设置跨域
+
+```
+app.use(async(ctx,next)=>{
+  ctx,set('Access-Control-Allow-Origin','*')
+  //指定服务端允许进行跨域资源访问的来源域，使用通配符“*“表示允许任何域的JS访问资源
+  ctx.set('Access-Control-Allow-Credentials',true)
+  //表示是否允许客户端跨域请求时携带身份信息（cook'ie或Http认证信息）
+  ctx.set('Access-Control-Allow-Methods','OPTIONS,GET,PUT,POST,DELETE')
+  //指定服务器允许进行跨域资源访问的请求方法列表，一般用在响应预检请求上
+  ctx.set('Access-Control-Allow-Headers','x-requested-with,accept,origin,content-type')
+  //指定服务器允许进行跨域资源访问的请求头列表，一般用在响应预检请求上
+  ctx.set('Content-Type','application/json;charset=utf-8')
+  //标识信息，告诉客户端返回数据的MINE的类型
+  if(ctx.request.method=='OPTIONS'){
+    ctx.response.status=200
+  }
+  await next()
+})
+
+```
+- 缺点及解决方案
+
+单进程单线程特点不适合CPU密集型应用；如果有长时间运行的运算，将会导致CPU时间片无法释放，后续I/O无法发起；应凤姐大型运算为多个小任务，使得运算能够适时释放，不阻塞I/O发起;只支持单核CPU，不能充分利用CPU，可靠性低，一旦某一环节出错，整个系统都出错。使用nginx反向代理，负载均衡，开多个进程，绑定多个端口；开多个进程监听同一个端口，使用cluster模块
+
+
+- web框架 express和koa
+
+koa是由express原班人马打造，致力于成为更小、更富有表现力、更健壮的web框架，通过组合不同的generator，可以免除繁琐的毁掉函数嵌套，极大地提升错误处理的效率；不在内核方法中绑定任何中间件，仅提供了一个轻量优雅的函数库，使用node新特性的中间件框架
+
+- express：
+
+express.router解决了直接把app暴露给其他模块使得app有被滥用的风险，可以认为是一个微型的只用来处理中间件与控制器的app，与app类似的用法 如get post all use等。
+
+线性逻辑：路由和中间件完美融合，通过中间件形式把业务逻辑细分，简化，一个请求经过来一系列中间件处理；处理后再响应给用户，复杂业务线性化。
+
+express是基于callback来组合业务逻辑，不可组合，且异常不可捕获
+
+
+express获取路由的参数 ：
+
+  get： req.params.key    （支持通配符？ + * and() ）
+
+  post: req.body.key       (表单传入参数)
+
+express 的response常用方法：
+
+res.download()弹出文件下载（）
+res.end() 结束response
+res.json() 返回json在这里插入代码片
+res.jsonp() 返回jsonp
+res.redirect() 重定向请求
+res.render() 渲染模板
+res.send() 返回多种形式数据
+res.sendFile 返回文件
+res.sendStatus() 返回状态
+
+- 中间件：
+
+当调用next时，才会执行下一个中间件函数，express本身就是功能极简的完全由路由和中间件构成的web框架，一个express应用就是在调用各种中间件封装了一些或许复杂但肯定是通用的功能。
+
+非内置的中间件通过安装后，require到文件就可以运行
+
+require模块加载机制：
+
+1.先计算模块路径
+2.如果模块在缓存里，取出缓存
+3.加载模块
+4.输出模块的exports属性即可
+
+
+---
+
+## session 和 cookie 的作用
+
+session是区别于数据库存在的一种服务器临时存储技术，它主要存储一些无需持久化的数据，比如临时的登陆状态信息等
+
+cookie是存在于浏览器上的一种浏览器本地存储的方式，同域名下的cookie不同标签页可以共享，默认过期时间是浏览器关闭时，而且在进行HTTP请求时，会自动带上浏览器全部的cookie发给后台，后台也可以获取cookie，设置在相应时，像浏览器中设置cookie
+
+
+
+## 同步与异步
+
+同步：方法调用一旦开始，调用者必须等到发放调用返回后，才能继续后续的行为
+
+异步：方法调用一旦开始，方法调用就会立即返回，调用者就可以继续后续的操作。而异步方法通常会在另一个线程中，整个过程，不会阻碍调用者的工作
+
+避免回调地狱：
+
+1、Promise
+
+2、async/await
+
+3、generator
+
+4、事件发布/监听模式
+
+node异步问题解决方案
+
+模块化：将回调函数转换为独立的函数
+
+使用流程控制库如async.js
+
+使用Promise
+
+使用async/await
+
+## npm 
+
+npm的作用
+
+允许用户从NPM服务器下载别人编写的第三方包到本地使用
+
+允许用户将自己编写的包或命令行程序上传到NPM服务器供别人使用
+
+通过NPM可以安装和管理项目的依赖，并且能指明依赖项的具体版本号
+
+package.json 文件来管理项目信息，配置脚本
+
+npm i 和 npm install的细微差别：
+
+1. 使用npm i 安装的模块无法使用npm uninstall卸载 需要npm uninstall i命令
+
+2. npm i 会帮助监测与当前node 版本最匹配的npm包 版本号，并匹配出来相互依赖的npm包应该提升的版本号
+
+3. 部分npm包在当前node版本下无法使用，必须使用建议版本
+
+4. 安装报错时 install肯定会出现npm-debug.log文件 npm i不一定
+
+devDependenvies 用于开发环境（本地） -save-dev
+开发时使用的依赖项 如webpack、gulp等打包工具
+
+dependenvies 用于生产环境（发布） -save
+打包之后用到的库、模块等如vue插件 vue-awesonme-swiper vue-router等依赖项
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+H2YDL2YS0C6L 

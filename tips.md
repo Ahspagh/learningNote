@@ -1199,3 +1199,76 @@ module.exports = {
 };
 
 ```
+---
+## Object、Set、Array、Map相互转换
+
+- 原理
+
+    Object.entries获取对象的键值对
+
+    Object.FromEntries把键值对列表转成对象
+
+    Object.entries和Object.fromEntries之间是可逆的。
+
+```
+1，Object转Map
+
+let arr={foo:'hello',bar:100};
+
+let map=new Map(Object.entries(arr));
+
+console.log(map)
+
+2,Map转Object
+
+let map=new Map([['foo','hello'],['bar',100]]);
+
+let obj=Object.fromEntries(map);
+
+console.log(obj);
+
+3,Object转Array
+
+let obj={'foo':'hello','bar':100};
+
+let arr=Object.entries(obj);
+
+console.log(arr);
+
+4,Array转成Object
+
+let arr=[['foo','hello'],['bar',100]];
+
+let obj=Object.fromEntries(arr);
+
+console.log(obj);
+
+5,Object转Set
+
+let obj={'foo':'hello','bar':100};
+
+let set=new Set(obj);
+
+6,Set转Object
+
+let obj={'foo':'hello','bar':100};
+
+let set=new Set(obj);
+
+let newObj=Object.formEntries(set);
+
+console.log(newObj);
+
+7,Array转Set
+
+let arr=[['foo','hello'],['bar',100]];
+
+let set=new Set(arr);
+
+console.log(set)
+```
+---
+
+## 时间订阅和发布的设计模式
+
+收集事件名，对应的方法体；当触发对应事件名时，把事件名对应的全部方法体执行一遍。
