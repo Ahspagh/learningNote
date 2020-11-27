@@ -2153,6 +2153,53 @@ Vue.js 实现了一套声明式渲染引擎，并在runtime或者预编译时将
 
 ps. 声明式如map函数 不考虑中间过程直接通过实现条件返回结果 命令式如for循环处理，关心流程的每一步，用命令去实现。
 
+组件中name的作用：
+
+  项目使用keep-alive时，可搭配组件name进行缓存过滤
+
+  DOM做递归组件时需要调用自身name
+
+  vue-devtools调试工具显示的组件名称是有vue中组件name决定的
+
+data为什么必须是函数：
+
+  1. 每个组件都是Vue的实例
+
+  2. 组件共享data属性，当data的值是同一个引用类型的值时，改变其中一个会影响其他
+
+  3. 组件中的data写成一个函数，数据以函数返回值形式定义，这样每复用一次组件，就会返回一份新的data，类似于给每个组件实例创建一个私有数据空间，让组件维护各自的数据。如果写成对象形式，就使得所有组件实例共用一份data。
+
+
+Vue定时器的使用与销毁：
+
+```
+多个定时器：
+
+在data选项中创建一个对象timer，给每个定时器取个名
+字一一映射在对象timer中， 
+在beforeDestroy构造函数中
+for(let k in this.timer)
+{clearInterval(k)}；
+
+
+method中创建的定时器代码和销毁定时器
+
+const timer=setInterval(()=>{},500)
+this.$once("hook:beforeDestory",()=>{
+  clearInterval(timer)
+})
+
+```
+Vue-cli用自定义的组件
+
+1. 在components目录创建组件文件 indexPage.vue,script中export default{}
+
+2. 在需要用的页面中导入：import indexPage from '@/components/indexPage.vue'
+
+3. 注册到vue的子组件的components属性上面，components:{indexPage}
+
+4. template视图中使用indexPage   <index-page>
+
 ---
 ##  Vue 插槽
 
@@ -2248,6 +2295,10 @@ Vue.js采用数据劫持结合发布者-订阅者模式的方式，通过Object�
 
 
 MVVM作为数据绑定的入口，整合Observer，Compile和watcher三者，通过Observer来监听自己的model的数据变化，通过Compile来解析编译模板指令，最终利用watch搭起Observer和Compile之间的通信桥梁，达到 数据变化 ->视图更新 ; 视图交互变化 ->数据model 变更的双向绑定效果。
+
+---
+
+
 **_？？？_**.Vue.nextTick()
 
 $refs相对document.getElementById的方法，会减少获取dom节点的消耗。
@@ -2262,6 +2313,89 @@ $refs相对document.getElementById的方法，会减少获取dom节点的消耗�
 
   
 ---
+
+## Vue生命周期
+
+Vue实例从创建到销毁的过程就是生命周期； 开始创建、初始化数据、编译模板、挂载Dom->渲染、更新->渲染、卸载的等一系列过程
+
+1. beforeCreate
+
+    在实例初始化之后数据观测（data observer）和event/watcher事件配置之前被调用
+
+2. created
+
+    在市里创建完成后被立刻调用。在这一步，实例已完成：数据观测（data observer）属性的方法和运算，watch/event 事件回调。然而，挂在阶段后还开始，$el属性目前不可见
+
+3. beforeMount
+
+    在挂载开始之前被调用;相关的render函数首次被调用
+
+4. mounted
+
+    el被创建的vm.$el 替换，并挂载到实例上去之后调用该钩子，如果root实例挂载了一个文档内元素，当mounted被调用时vm.$el也在文档内
+
+5. beforeUpdate
+
+    数据更新时调用，发生在虚拟DOM打补丁之前，这里适合在更新之前访问现有的DOM，比如手动移除已添加的事件监听器，该钩子在服务端渲染期间不被调用，因为只有初次渲染会在服务端进行
+  
+6. updated 
+
+    由于数据更改导致的虚拟DOM 重新渲染和打补丁，在这之后会调用该钩子
+
+7. acticated
+
+    keep-alive组件激活时调用。该钩子在服务器端渲染期间不被调用
+
+    第一次进入缓存路由/组件，在mounted后面，beforeRouteEnter守卫传给 next 的回调函数之前调用，并且给因为组件被缓存了，再次进入缓存路由、组件时，会触发这些钩子函数，beforeCreate created beforeMount mounted 都不会触发
+
+8. deactivated
+
+    keep-alive组件停用时调用。该钩子在服务器端渲染期间不被调用
+
+    这个钩子可以看作beforeDestroy的替代，如果你缓存了组件，要在组件销毁的的时候做一些事情，可以放在这个钩子里，组件内的 离开当前路由钩子  beforeRouteLeave => 路由前置守卫 beforeEach =>全局后置钩子afterEach => deactivated离开缓存组件 => activated 进入缓存组件(如果你进入的也是缓存路由)
+
+9. beforeDestory
+
+    实例销毁之前调用，调用后，Vue实例知识的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁。该钩子在服务器段渲染期间不被调用
+
+
+Vue中的指令
+
+v-show本质就是通过设置css中的display设置为none，控制隐藏，v-show都会编译，初始值为false，只是将display设为none，但它也编译了；
+v-if是动态的向DOM树内添加或者删除DOM元素，v-if初始值为false，就不会编译了
+
+
+避免 v-if 和 v-for 用在一起
+
+当 Vue 处理指令时，v-for 比 v-if 具有更高的优先级，通过v-if 移动到容器元素，不会
+再重复遍历列表中的每个值。取而代之的是，我们只检查它一次，且不会在 v-if 为否的时候运
+算 v-for
+---
+
+## Vue组件传值
+
+1. 父组件向子组件传递数据
+
+  父组件内设置的要传数据，在父组件中引用的子组件上班顶一个自定义属性并数据绑定在自定义属性上，在子组件添加参数prop接收即可
+
+2. 子组件向父组件传值
+
+  子组件通过Vue实例方法$emit进行处罚并可以携带参数，父组件监听使用@（v-on）进行监听，然后进行方法处理
+
+3. 非父子组件之间传递数据
+
+  1）引入第三方new vue 定义为eventBus
+
+  2）在组件中created中订阅方法eventBus.$on("自定义事件名",methods中方法名)
+
+  3）在另一个组件中methods写函数，在函数中发布eventBus订阅的方法eventBus.$emit("自定义事件名")
+
+  4）在组件中的template中绑定事件
+
+4. 使用vuex的store
+
+
+
 
 ## git的一些说明
 
