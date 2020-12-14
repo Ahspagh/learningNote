@@ -891,6 +891,7 @@ https://www.runoob.com/regexp/regexp-syntax.html
 
   .slice( ) 同 Array.slice 抽取一个子串 如果是负数，则该参数规定的是从字符串的尾部开始算起的位置。
 
+slice、substring,substr区别：当接收的参数是负数时，slice会将它字符串的长度与对应的负数相加
   新增，可方便的用于查找 startsWith(), endsWith(),等方法，补全 padStart(),padEnd(),repeat()字符串。
 
 ---
@@ -2167,7 +2168,7 @@ data为什么必须是函数：
 
   2. 组件共享data属性，当data的值是同一个引用类型的值时，改变其中一个会影响其他
 
-  3. 组件中的data写成一个函数，数据以函数返回值形式定义，这样每复用一次组件，就会返回一份新的data，类似于给每个组件实例创建一个私有数据空间，让组件维护各自的数据。如果写成对象形式，就使得所有组件实例共用一份data。
+  3. 组件中的data写成一个函数，数据以函数返回值形式定义，*这样每复用一次组件，就会返回一份新的data，类似于给每个组件实例创建一个私有数据空间*，让组件维护各自的数据。如果写成对象形式，就使得所有组件实例共用一份data。
 
 
 Vue定时器的使用与销毁：
@@ -2196,10 +2197,26 @@ Vue-cli用自定义的组件
 
 2. 在需要用的页面中导入：import indexPage from '@/components/indexPage.vue'
 
-3. 注册到vue的子组件的components属性上面，components:{indexPage}
+3. 注册到vue的子组件的components属性上面，components:{indexPage}   （大驼峰命名）
 
-4. template视图中使用indexPage   <index-page>
+4. template视图中使用indexPage   <index-page>   （链式命名）
 
+
+有两种方法可以监听路由参数的变化，但是只能用在包含<router-view />的组件内。
+
+第一种
+
+watch: {
+  '$route'(to, from) {
+  // 在此处监听
+  },
+},
+
+第二种
+
+beforeRouteUpdate (to, from, next) {
+ //这里监听
+}
 ---
 ##  Vue 插槽
 
@@ -2279,7 +2296,7 @@ slot 实现原理：当子组件vm实例化时，获取到父组件传入的 slo
 
 ## VUE的双向绑定原理
 
-Vue.js采用数据劫持结合发布者-订阅者模式的方式，通过Object。defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
+Vue.js采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
 
 1. 需要observe的数据对象进行递归遍历，包括子属性对象的属性，都加上setter，getter，这样的话对这个对象某个值赋值，就会触发setter，那么就能监听到数据变化
 
@@ -2368,6 +2385,27 @@ v-if是动态的向DOM树内添加或者删除DOM元素，v-if初始值为false�
 避免 v-if 和 v-for 用在一起
 
 当 Vue 处理指令时，v-for 比 v-if 具有更高的优先级，通过v-if 移动容器元素，不会再重复遍历列表中的每个值。取而代之的是，我们只检查它一次，且不会在 v-if 为否的时候运算 v-for
+
+## watch
+
+原则监听谁,写谁的名字,然后是对应的执行函数, 第一个参数为最新的改变值,第二
+个值为上一次改变的值, 注意: 除了监听 data,也可以监听计算属性 或者一个 函数的计算结果
+
+watch监听开始之后立即被调用：
+
+选项参数中指定immediate: true将立即以表达式的当前值触发回调
+
+深度监听对象变化
+
+watch:{
+a:{
+handler:function(val,oldval){
+
+},
+deep:true
+}
+}
+
 ---
 
 ## Vue组件传值
@@ -2392,7 +2430,43 @@ v-if是动态的向DOM树内添加或者删除DOM元素，v-if初始值为false�
 
 4. 使用vuex的store
 
+vuex可以理解为一种开发模式或框架。比如PHP有thinkphp，java有spring等，通过状
+态(数据源)集中管理驱动组件的变化(好比spring的IOC容器对bean进行集中管理)
 
+
+Vuex的5个核心属性
+
+分别是 State、 Getter、Mutation 、Action、 Module
+
+state： 单一状态树，在state中需要定义我们需要管理的数据，对象，字符串等。
+
+getter： 类似vue中的computed属性，当我们需要从store中的state中派生出一些状态，那么我们就需要使用getter，getter会接受state作为第一个参数，返回值会根据依赖被缓存，只有getter中的依赖值（state中的某个需要派生状态的值）发生改变时才会被重新计算
+
+mutation：store.commit  改变store中state状态的唯一方法就是提交mutation，类似事件函数一个字符串类型的事件类型和一个回调函数，state的值在回调函数中改变。
+
+action：store.dispatch  用来提交mutation，在action中可以执行store.commit,而且action中可以有任何异步操作。
+
+module 可以将store分割成模块，每个模块都有自己的state、 Getter、Mutation 、Action
+
+1、应用级的状态集中放在store中
+
+2、改变状态的方式是提交mutations，这是个同步的事物
+
+3、异步逻辑应该封装在action中
+
+主要解决的问题：来自不同组件的行为需要变更同一状态。以往采用父子组件直接引用或者通过事件来变更和同步状态的多份拷贝
+
+action和mutation区别
+流程顺序： 相应视图-->修改state 拆分成
+视图触发Action ，Action再出发Mutation
+
+mutation专注修改state，理论上是修改state的唯一途径
+
+action 业务代码，异步请求
+
+限制方面：
+
+mutation必须同步执行，action可以异步，但不能直接操作state
 
 
 ## git的一些说明
@@ -2739,11 +2813,3 @@ dependenvies 用于生产环境（发布） -save
 
 
 
-
-
-
-
-
-
-
-H2YDL2YS0C6L 
