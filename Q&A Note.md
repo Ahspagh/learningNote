@@ -2469,6 +2469,30 @@ action 业务代码，异步请求
 mutation必须同步执行，action可以异步，但不能直接操作state
 
 
+---
+
+## vue-router
+
+路由守卫有 全局守卫beforeEach 有参数
+1）to:router即将进入的路由对象
+
+2）from:当前导航即将离开的路由
+
+3）next:function,进行管道中的一个钩子，如果执行完了,则导航的状态就是confirmed （确认的）否则为false,终止
+
+导航后置守卫afterEach 
+
+全局解析守卫beforeResolve 
+
+路由独享守卫beforeEnter
+
+
+## $route和$router的区别是什么
+  $route是路由信息对象，包括path,params,hash,query,fullPath,matched,name等路由信息参数
+
+  $router为VueRouter的实例，相当于一个全局的路由器对象，里面含有好多属性和子对象，如history对象
+
+
 ## git的一些说明
 
 配置指令：
