@@ -1292,3 +1292,29 @@ for (let i = 2; i <= n; i++) {
     }
     时间复杂度：O(n)
     空间复杂度：O(1)
+
+
+
+## Vue首屏加载优化
+
+1. 把不常改变的库放到index.html中，通过cdn引入
+
+2. vue路由懒加载
+
+   2.1  component:resolve=>require(["@components/路
+由的路径"]，resolve)。
+   
+   2.2  const 组件名=() => import('组件路径');
+   
+vue-router配置路由，使用webpack的require.ensure技术，也可以实现按需加载。 
+这种情况下，多个路由指定相同的chunkName，会合并打包成一个js文件。
+const Home = () => import(/* webpackChunkName: 'ImportFuncDemo' */ '@/components/home')
+3. 不生成map文件
+
+4. 使用更轻量级的工具库
+
+5. 组件尽量不全局引入
+
+6. 开启gzip压缩
+
+7. 首页单独做服务端渲染

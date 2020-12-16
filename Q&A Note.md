@@ -2290,7 +2290,17 @@ slot 实现原理：当子组件vm实例化时，获取到父组件传入的 slo
 
  Vue 使用 JS 对象将浏览器的 DOM 进行的抽象，这个抽象被称为 Virtual DOM。Virtual DOM 的每个节点被定义为VNode，当每次执行render function时，Vue 对更新前后的VNode进行Diff对比，找出尽可能少的我们需要更新的真实 DOM 节点，然后只更新需要更新的节点，从而解决频繁更新 DOM 产生的性能问题。
 
+ 作用与优点：
+
+ 通过render将template模板描述成Vnode，然后经过一系列操作后形成真实的DOM进行挂载；兼容性强（为JS对象），获得了服务端渲染，原生渲染，手写渲染函数等能力；减少操作DOM，任何页面变化都只是用Vnode进行操作对比，在最后一步挂载更新，不需要频繁操作DOM从而提高页面性能。
+
  ps. Vue.js 内部的 diff 被称为patch，其算法的是通过同层的树节点进行比较，而非对树进行逐层搜索遍历的方式，所以时间复杂度只有O(n)，是一种相当高效的算法。
+
+
+ 实现思路：
+
+ 首先构建一个Vnode类，DOM元素上的所有属性在Vnode类实例化出来的对象上都存在对应的属性。例如tag表示一个元素节点的名称，text表示一个文本节点的文本，children表示子节点。将Vnode实例化出来的对象进行分类，最后整合就可以得到一个虚拟DOM 最后通过path将vnode和oldVnode进行比较后，生成真实DOM
+
 
 ---
 
@@ -2491,6 +2501,37 @@ mutation必须同步执行，action可以异步，但不能直接操作state
   $route是路由信息对象，包括path,params,hash,query,fullPath,matched,name等路由信息参数
 
   $router为VueRouter的实例，相当于一个全局的路由器对象，里面含有好多属性和子对象，如history对象
+
+## Vue的单项数据流
+
+数据只能从父组件传递给子组件，只能单向绑定。所有的 prop 都使得其父子 prop 之间形成了一个单向下行绑定：
+
+子组件修改要prop时，只能通过$emit派发一个自定义事件，父组件接收到后，有父组件修改
+
+
+## data中的数组方法哪些触发视图更新
+
+可以触发的： push、shift、pop、unshift、splice、sort、reverse 这些可以改变被操作数组的方法
+
+不可以： 被操作数组方法会返回新数组的 filter、concat、slice
+
+解决方案：
+
+1. 利用索引值设置数组项，this.array[index]=newValue,直接修改数组长度 this.array.length=newLength不可以触发视图更新时，可以使用
+this.$set(this.array,index=newValue),
+this.array.splice(index,1,newValue),
+this.array.splice(newLength)
+
+## Vue中重置data
+
+vm.$data可以获取当前状态下的data
+
+vm.$options.data(this)可以获取到组件初始化状态下的data，
+
+Object.assign(target, ...sources)，第一个参数是目标对象，第二个参数是源对象，就是将源对象属性复制到目标对象，返回目标对象
+
+Object.assign(this.$data, this.$options.data(this)) 重置初始化
+
 
 
 ## git的一些说明
