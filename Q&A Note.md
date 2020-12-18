@@ -1800,6 +1800,8 @@ let [a,b,c] = [1,2,3]
 
 不可以使用yield命令，因此箭头函数不能用作 Generator 函数
 
+
+箭头函数自己没有定义 this 上下文，而是绑定到其父函数的上下文中，当你在 Vue 程序中使用箭头函数（=>）时，this 关键字病不会绑定到 Vue 实例，因此会引发错误，所以强烈建议改用标准函数声明
 ---
 
 ## 47. ES6对Object类型的升级
@@ -2301,7 +2303,7 @@ slot 实现原理：当子组件vm实例化时，获取到父组件传入的 slo
 
  首先构建一个Vnode类，DOM元素上的所有属性在Vnode类实例化出来的对象上都存在对应的属性。例如tag表示一个元素节点的名称，text表示一个文本节点的文本，children表示子节点。将Vnode实例化出来的对象进行分类，最后整合就可以得到一个虚拟DOM 最后通过path将vnode和oldVnode进行比较后，生成真实DOM
 
-
+ps. <template conmments> 可以在保留渲染模板后的HTML注释
 ---
 
 ## VUE的双向绑定原理
@@ -2326,7 +2328,7 @@ MVVM作为数据绑定的入口，整合Observer，Compile和watcher三者，通
 ---
 
 
-**_？？？_**.Vue.nextTick()
+## .Vue.nextTick()
 
 $refs相对document.getElementById的方法，会减少获取dom节点的消耗。
 
@@ -2496,6 +2498,17 @@ mutation必须同步执行，action可以异步，但不能直接操作state
 
 路由独享守卫beforeEnter
 
+去除URL中的#
+
+vue-router默认使用hash模式，所以路由架子啊时，项目的URL会自带#，使用history模式则可不显示：  
+
+ new Router({mode:'history',routes:[]})
+
+ 需要注意的是，服务端需要增加一个覆盖所有情况的候选资源如404页，如果匹配不到任何静态资源，则应该返回该页面。
+
+
+
+---
 
 ## $route和$router的区别是什么
   $route是路由信息对象，包括path,params,hash,query,fullPath,matched,name等路由信息参数
@@ -2532,7 +2545,31 @@ Object.assign(target, ...sources)，第一个参数是目标对象，第二个�
 
 Object.assign(this.$data, this.$options.data(this)) 重置初始化
 
+## Vue动画
 
+1. 哪个需要动画就给哪个元素加transition标签
+
+2. 进入时class的类型 <name>-enter、<name>-enter-active 、<name>-enter-to
+
+3. 离开时类型  <name>-leave 、<name>-leave-active 、<name>-leave-to
+
+
+ps. 一组元素使用动画标签 transition-group
+
+## scoped 
+
+如果一个项目中的所有style标签全部加上了scoped，相当于实现了样式的模块化。
+
+引用了第三方组件，需要在组件中局部修改第三方组件的样式，而又不想去除scoped属性造成组件之间的样式污染。此时只能通过特殊的方式，穿透scoped
+
+```
+<style scoped>
+    外层 >>> 第三方组件 {
+        样式
+    }
+</style>
+```
+通过 >>> 可以使得在使用scoped属性的情况下，穿透scoped，修改其他组件的值
 
 ## git的一些说明
 
@@ -2865,6 +2902,39 @@ devDependenvies 用于开发环境（本地） -save-dev
 
 dependenvies 用于生产环境（发布） -save
 打包之后用到的库、模块等如vue插件 vue-awesonme-swiper vue-router等依赖项
+
+
+## webpack
+
+webpack是一个打包模块化的JavaScript工具，在webpack中一切文件皆模块，通过loader转换文件，通过plugin注入钩子，最后输出由多个模块组成的文件。它做的事情是：分析项目结构，找到JS模块以及其他的一些不能浏览器直接运行的拓展语言（Scss、TS等），并将其打包为合适的格式以供浏览器使用
+
+常见loader：
+
+1、file-loader：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件
+2、url-loader：和 file-loader 类似，但是能在文件很小的情况下以 base64 的方式把文件内容注入到代码中去
+3、source-map-loader：加载额外的 Source Map 文件，以方便断点调试
+4、image-loader：加载并且压缩图片文件
+5、babel-loader：把 ES6 转换成 ES5
+6、css-loader：加载 CSS，支持模块化、压缩、文件导入等特性
+7、style-loader：把 CSS 代码注入到 JavaScript 中，通过 DOM 操作去加载 CSS
+8、eslint-loader：通过 ESLint 检查 JavaScript 代码
+
+loader和Plugin的不同
+
+1.作用的不同：
+
+loader的作用是让webpack拥有了加载和解析非JavaScript文件的能力
+
+Plugin可以拓展webpack的功能，让webpack具有更多的灵活性，在webpack运行的生命周期中会广播出许多事件，plugin可以监听这些事件，再合适的时机通过webpack提供的API改变输出结果。
+
+2.用法的不同
+
+loader在module.rules中配置，也就是说他作为模块的解析规则而存在。类型为数组，每一项都是一个Object，里面描述了对于什么类型的文件（test），使用什么加载（loader）和使用的参数（options）
+
+Plugin在Plugins中单独配置类型为数组，每一项是一个plugin的实例，参数都通过构造函数传入
+
+
+
 
 
 

@@ -1318,3 +1318,33 @@ const Home = () => import(/* webpackChunkName: 'ImportFuncDemo' */ '@/components
 6. 开启gzip压缩
 
 7. 首页单独做服务端渲染
+
+## Vue踩坑案例
+
+1. 直接给data里面的对象添加属性然后赋值，新添加的属性不是响应式的。 解决办法： 通过Vue.set(对象，属性，值)这种方式添加对象属性为响应式的
+
+2. 在created操作DOM时，会报错，获取不到DOM，实则为Vue实例没有挂载 解决办法：通过Vue.nextTick(回调函数获取)
+
+
+## is 特性
+
+动态组件：
+```
+<component :is="componentName"></component>
+
+```
+ componentName可以是在本页面已经注册的局部组件名和全局组件名,也可以是一个组件的选项对象。 当控制componentName改变时就可以动态切换选择组件
+ps.
+```
+<ul>
+<card-list></card-list>
+</ul>
+限定HTML的ul元素内只能出现li元素时 所以上面<card-list></card-list>会被作为无效的内容提升到外部，并导致最终渲染结果出错
+这时使用 is 特性
+
+<ul>
+<li is="cardList"></li>
+</ul>
+
+
+```
