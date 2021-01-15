@@ -655,6 +655,11 @@ length 属性 返回数组长度
 
 join(",")连接符链接并返回字符串
 
+```
+实现重复字符串
+return new Array(n + 1).join(str);
+```
+
 reverse()反转
 
 delete 运算符，数组长度不变删除值
@@ -717,12 +722,19 @@ function myFunction(item) {
 Array.from(input,map,context)
 
 将伪数组对象或可遍历对象转换为真数组
+
 ```
   input: 你想要转换的类似数组对象和可遍历对象,
 
   map: 类似于数组的map方法，用来对每个元素进行处理，将处理后的值放入返回的数组,
       Array.from({ length: 2 }, () => 'jack')// ['jack', 'jack']
   context: 绑定map中用到的this
+```
+用于映射转换
+```
+function arga(...args) {  
+     return Array.from(args, value => value + 1);
+}
 ```
 Array.of( ) 
 
@@ -2332,6 +2344,30 @@ MVVM作为数据绑定的入口，整合Observer，Compile和watcher三者，通
 
 ---
 
+## Vue首屏加载优化
+
+1. 把不常改变的库放到index.html中，通过cdn引入
+
+2. vue路由懒加载
+
+   2.1  component:resolve=>require(["@components/路
+由的路径"]，resolve)。
+   
+   2.2  const 组件名=() => import('组件路径');
+   
+vue-router配置路由，使用webpack的require.ensure技术，也可以实现按需加载。 
+这种情况下，多个路由指定相同的chunkName，会合并打包成一个js文件。
+const Home = () => import(/* webpackChunkName: 'ImportFuncDemo' */ '@/components/home')
+3. 不生成map文件 //vue-cli项目在config文件夹下找到index.js文件 productionSourceMap:false
+
+4. 使用更轻量级的工具库
+
+5. 组件尽量不全局引入
+
+6. 开启gzip压缩
+
+7. 首页单独做服务端渲染
+
 
 ## .Vue.nextTick()
 
@@ -2548,7 +2584,7 @@ vm.$options.data(this)可以获取到组件初始化状态下的data，
 
 Object.assign(target, ...sources)，第一个参数是目标对象，第二个参数是源对象，就是将源对象属性复制到目标对象，返回目标对象
 
-Object.assign(this.$data, this.$options.data(this)) 重置初始化
+Object.assign(this.$data, this.$options.data(this)) 
 
 ## Vue动画
 
