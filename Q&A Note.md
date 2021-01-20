@@ -32,6 +32,9 @@ https://segmentfault.com/a/1190000015123189
 
 https://mp.weixin.qq.com/s/OvyYCQ5lK0QS_AVBWEqeRw
 
+- 2.6 TS知识点
+https://mp.weixin.qq.com/s/R_2IXHu_vFoThLhp_vqiYQ
+
 - 2.6 ES2020新功能
 求幂运算符** == Math.pow()
 BigInt 》》 pow(2, 53) - 1     // ******n
