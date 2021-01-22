@@ -710,7 +710,13 @@ map(x => {
 
 filter(checkFunction) 过滤返回符合条件的元素的**新数组**
 
-reduce(fun(ret,cur,curIndex,arr),init) 接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
+reduce(fun(total,cur,curIndex,arr),init) 接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
+
+total	必需。初始值, 或者计算结束后的返回值。
+currentValue	必需。当前元素
+currentIndex	可选。当前元素的索引
+arr	可选。当前元素所属的数组对象。
+init 可选 传递给函数的初始值
 ```
 var numbers = [15.5, 2.3, 1.1, 4.7];
  四舍五入后计算数组元素的总和：
