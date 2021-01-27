@@ -1646,3 +1646,26 @@ Fibonacci2(1000) // 7.0330367711422765e+208
 Fibonacci2(10000) // Infinity
 
 ````
+
+
+## params 对象中的 value 为 null，''，undefined 的 key 
+
+```
+function filterParams(obj) {
+  const keys = Object.keys(obj)
+  keys.forEach(key => {
+    const value = obj[key]
+    if (isObject(value)) filterParams(value)
+    if (isEmpty(value)) delete obj[key]
+  })
+  return obj
+}
+
+function isEmpty(input) {
+  return ['', undefined, null].includes(input)
+}
+
+function isObject(input) {
+  return input !== null && (!Array.isArray(input)) && typeof input === 'object'
+}
+```

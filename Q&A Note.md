@@ -45,6 +45,11 @@ Promise.allSettled 接收一组 Promise，并且会返回所有的结果
 str.matchAll(regexp)  返回一个迭代器，依次的返回所有匹配
 https://mp.weixin.qq.com/s/8_cEFs0Nsb5q_DXDBE89lA
 
+
+- 2.7 前端性能分析
+
+https://juejin.cn/post/6911472693405548557
+
 ## 3. flex 可以做的事
 
 - 3.1 双飞翼布局 左右固定中间自适应
