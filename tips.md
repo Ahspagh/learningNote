@@ -57,7 +57,14 @@ const flatten = (arr, list=[])=>{
 }
 ```
 
+<<<<<<< HEAD
+
 - 递归法 （一次性扁平所有）
+
+=======
+
+- 递归法 （一次性扁平所有）
+  > > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 const flat = (arr,list=[])=>{
@@ -81,7 +88,13 @@ function flattenDeep(arr1) {
 
 ---
 
+<<<<<<< HEAD
 实现 flat 功能（指定层数）
+
+=======
+实现 flat 功能（指定层数）
+
+> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 function flat(arr, depth = 1) {
@@ -94,6 +107,7 @@ function flat(arr, depth = 1) {
     } , [])
       : arr
 }
+<<<<<<< HEAD
 function flat(arr, depth = 1) {
     return depth > 0
         ? arr.reduce((acc, cur) => {
@@ -101,6 +115,8 @@ function flat(arr, depth = 1) {
     } , [])
       : arr
 }
+=======
+>>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 ```
 
 ## 数组元素随机排序
@@ -1403,6 +1419,7 @@ dp[i] = dp[i-1] + dp[i-2];
 dp[i] = dp[i-1] + dp[i-2]; ==>
 
 因为 dp[i]只与 dp[i-1] 和 dp[i-2] 有关，没有必要存储所有出现过的 dp 项，只用两个临时变量去存储这两个状态即可。
+<<<<<<< HEAD
 [a1, a2] = [a2, a1 + a2];
 
 const climbStairs = function(n) {
@@ -1415,6 +1432,18 @@ return a2;
 }
 时间复杂度：O(n)
 空间复杂度：O(1)
+=======
+[a1, a2] = [a2, a1 + a2];
+
+for (let i = 2; i <= n; i++) {
+[a1, a2] = [a2, a1 + a2];
+}
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+## Vue 踩坑案例
+
+> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ## Vue 踩坑案例
 
@@ -1470,7 +1499,11 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili"])
 
 ```
 
+<<<<<<< HEAD
+
+- # 如果数组元素是 object 类型且里面键的顺序不同则会认为是两个不同放入数组元素
 - 如果数组元素是 object 类型且里面键的顺序不同则会认为是两个不同放入数组元素
+  > > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 比较：
 
@@ -1483,6 +1516,11 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili"])
 采用 reduce 去重，初始 accumulator 为 []
 采用 findIndex 找到 accumulator 是否包含相同元素，如果不包含则加入，否则不加入
 返回最终的 accumulator ，则为去重后的数组
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 // 获取类型
@@ -1512,11 +1550,19 @@ const isEqual = (o1, o2) => {
 
     // 比较类型是否一致
     if (t1 !== t2) return false
+<<<<<<< HEAD
 
     // 类型一致
     if (t1 === 'array') {
         // 首先判断数组包含元素个数是否相等
         if (o1.length !== o2.length) return false
+=======
+
+    // 类型一致
+    if (t1 === 'array') {
+        // 首先判断数组包含元素个数是否相等
+        if (o1.length !== o2.length) return false
+>>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
         // 比较两个数组中的每个元素
         return o1.every((item, i) => {
             // return item === target
@@ -1554,7 +1600,15 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili", {a:1
 // [123, {a: 1}, a: {b: 1}, {a: "1"}, "meili", {a: 1, b: 2}]
 ```
 
+<<<<<<< HEAD
+
 ## 手写 Array.splice
+
+=======
+
+## 手写 Array.splice
+
+> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 Array.prototype._splice = function(start, deleteCount) {
@@ -1572,10 +1626,17 @@ Array.prototype._splice = function(start, deleteCount) {
     let delCount = computeSpliceDeleteCount(startIndex, deleteCount, len)
     // 记录删除的数组元素
     let deletedElements = new Array(delCount)
+<<<<<<< HEAD
 
     // 将待删除元素记录到 deletedArray
     recordDeleteElements(startIndex, delCount, array, deletedElements)
 
+=======
+
+    // 将待删除元素记录到 deletedArray
+    recordDeleteElements(startIndex, delCount, array, deletedElements)
+
+>>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
     // 密封对象
     if(delCount !== addCount && Object.isSealed(array)) {
         throw new TypeError('the array is sealed')
@@ -1584,6 +1645,7 @@ Array.prototype._splice = function(start, deleteCount) {
     if(delCount > 0 && addCount > 0 && Object.isFrozen(array)) {
         throw new TypeError('the array is frozen')
     }
+<<<<<<< HEAD
 
     // 移动数组元素
     moveElements(startIndex, delCount, array, addCount)
@@ -1591,11 +1653,24 @@ Array.prototype._splice = function(start, deleteCount) {
     let i = startIndex
     let argumentsIndex = 2
 
+=======
+
+    // 移动数组元素
+    moveElements(startIndex, delCount, array, addCount)
+
+    let i = startIndex
+    let argumentsIndex = 2
+
+>>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
     // 插入新元素
     while (argumentsIndex < argumentsLen) {
         array[i++] = arguments[argumentsIndex++]
     }
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
     array.length = len - delCount + addCount
 
     // 返回删除元素数组
@@ -1611,7 +1686,11 @@ function computeSpliceStartIndex(start, len) {
     }
     // 处理超出边界问题
     return start > len - 1 ? len - 1: start
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 // 计算真实的 deleteCount
 function computeSpliceDeleteCount(startIndex, deleteCount, len) {

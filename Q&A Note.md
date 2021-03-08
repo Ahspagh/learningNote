@@ -49,6 +49,10 @@ https://mp.weixin.qq.com/s/OvyYCQ5lK0QS_AVBWEqeRw
 
 https://juejin.cn/post/6911472693405548557
 
+- 2.7 前端性能分析
+
+https://juejin.cn/post/6911472693405548557
+
 ## 3. flex 可以做的事
 
 - 3.1 双飞翼布局 左右固定中间自适应
@@ -833,6 +837,20 @@ Array.from(input,map,context)
       Array.from({ length: 2 }, () => 'jack')// ['jack', 'jack']
   context: 绑定map中用到的this
 ```
+
+# <<<<<<< HEAD
+
+用于映射转换
+
+```
+function arga(...args) {
+     return Array.from(args, value => value + 1);
+}
+```
+
+Array.of( )
+
+> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 用于映射转换
 
