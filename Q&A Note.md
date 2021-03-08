@@ -1,13 +1,13 @@
 ## 1.typeof 和 instanceof 的区别：
 
-typeof 可以判断所有变量的类型，判断对象时只能返回 Object。instanceof 可以对不同的对象实例进行判断。，instanceof可以精准判断引用数据类型（Array，Function，Object），而基本数据类型不能被instanceof精准判断。
+typeof 可以判断所有变量的类型，判断对象时只能返回 Object。instanceof 可以对不同的对象实例进行判断。，instanceof 可以精准判断引用数据类型（Array，Function，Object），而基本数据类型不能被 instanceof 精准判断。
 
 typeof 判断所有变量的类型，返回值有 number，boolean，string，function，object，undefined
 
 ```
 console.log(2 instanceof Number);                    // false
-console.log(true instanceof Boolean);                // false 
-console.log('str' instanceof String);                // false  
+console.log(true instanceof Boolean);                // false
+console.log('str' instanceof String);                // false
 
 instanceof判断一个对象是否是数据类型的实例。在这里字面量值，2， true ，'str'不是实例，所以判断值为false。
 ```
@@ -24,23 +24,30 @@ instanceof判断一个对象是否是数据类型的实例。在这里字面量�
 
 https://mp.weixin.qq.com/s/J7qX9j-II19Am4RwUTUiBQ
 
-- 2.4 Sticky footer 布局 
+- 2.4 Sticky footer 布局
 
 https://segmentfault.com/a/1190000015123189
 
-- 2.5 《CSS揭秘》实用技巧总结
+- 2.5 《CSS 揭秘》实用技巧总结
 
 https://mp.weixin.qq.com/s/OvyYCQ5lK0QS_AVBWEqeRw
 
-- 2.6 ES2020新功能
-求幂运算符** == Math.pow()
-BigInt 》》 pow(2, 53) - 1     // ******n
-空值合并操作符：??  检测出undefined 或者 null
-动态引入const module= await import()
-可选链 x.prop?.mightExistProp?.mightExistFunc?.()
-Promise.allSettled 接收一组 Promise，并且会返回所有的结果
-str.matchAll(regexp)  返回一个迭代器，依次的返回所有匹配
-https://mp.weixin.qq.com/s/8_cEFs0Nsb5q_DXDBE89lA
+- 2.6 TS 知识点
+  https://mp.weixin.qq.com/s/R_2IXHu_vFoThLhp_vqiYQ
+
+- 2.6 ES2020 新功能
+  求幂运算符** == Math.pow()
+  BigInt 》》 pow(2, 53) - 1 // \*\*\*\***n
+  空值合并操作符：?? 检测出 undefined 或者 null
+  动态引入 const module= await import()
+  可选链 x.prop?.mightExistProp?.mightExistFunc?.()
+  Promise.allSettled 接收一组 Promise，并且会返回所有的结果
+  str.matchAll(regexp) 返回一个迭代器，依次的返回所有匹配
+  https://mp.weixin.qq.com/s/8_cEFs0Nsb5q_DXDBE89lA
+
+- 2.7 前端性能分析
+
+https://juejin.cn/post/6911472693405548557
 
 ## 3. flex 可以做的事
 
@@ -71,16 +78,15 @@ https://mp.weixin.qq.com/s/8_cEFs0Nsb5q_DXDBE89lA
 
 ### 闭包就是能够读取其他函数内部变量的函数
 
+js 并不是为了创造闭包而创造，完全只是因为 js 允许函数嵌套，还能 return 返回子函数，以及 js 特有的事件循环机制，导致这些子函数不是立即调用，让父函数不敢注销自己作用域中的数据，才会产生所谓闭包。
 
-js并不是为了创造闭包而创造，完全只是因为js允许函数嵌套，还能return返回子函数，以及js特有的事件循环机制，导致这些子函数不是立即调用，让父函数不敢注销自己作用域中的数据，才会产生所谓闭包。
-
-也正因为这个闭包这个特性，闭包函数可以让父函数的数据一直驻留在内存中保存，从而这也是后来js模块化的基础。
+也正因为这个闭包这个特性，闭包函数可以让父函数的数据一直驻留在内存中保存，从而这也是后来 js 模块化的基础。
 
 ```
 function CoolModule() {
       var something = "cool";
       var another = [1, 2, 3];
-  
+
       function doSomething() {
           alert( something );
       }
@@ -107,9 +113,10 @@ CoolModule() 只是一个函数，必须要通过调用它来创建一个模块�
 function func(){
   var a =1 ,b = 2;
   funciton closure(){ return a+b; } return
-  closure; 
+  closure;
 }
 ```
+
 闭包的第一个用途是使我们在函数外部能够访问到函数内部的变量。通过使用闭包，我们可以通过在外部调用闭包函数，从而在外部访问到函数内部的变量，可以使用这种方法来创建私有变量。
 
 函数的另一个用途是使已经运行结束的函数上下文中的变量对象继续留在内存中，因为闭包函数保留了这个变量对象的引用，所以这个变量对象不会被回收
@@ -425,6 +432,92 @@ function debounce(fn, delay) {
 
 ## 18. IE8 兼容操作
 
+第一类：块状元素 float 后，有添加了横向的 margin，在 IE6 下比设置的值要大（属于双倍浮动的 bug）
+
+解决方案：给 float 标签添加 display：inline，将其转换为行内元素
+
+第二类：表单元素行高不一致
+
+解决方案：给表单元素添加 float：left（左浮动）；或者是 vertical-align：middle；（垂直对齐方式：居中）
+
+第三类：设置较小高度的容器（小于 10px），在 IE6 下不识别小于 10px 的高度；
+
+解决方案：给容器添加 overflow：hidden；
+
+第四类：当在 a 标签中嵌套 img 标签时，在某些浏览器中 img 会有蓝色边框；
+
+解决方案：给 img 添加 border：0；或者是 border：none；
+
+第五类：min-height 在 IE6 下不兼容
+
+解决方案：
+
+1）min-height：value；
+
+? ? ? \_height：value；
+
+2）min-height：value；
+
+? ? ?height：auto！important；
+
+? ? ?height：value；
+
+第六类：图片默认有间隙
+
+解决方案：
+
+1）给 img 标签添加左浮动 float：left；
+
+2）给 img 标签添加 display：block；
+
+第七类：按钮默认大小不一
+
+解决方案：
+
+1）用 a 标签来模拟按钮，添加样式；
+
+2）如果按钮是一张背景图片，那么直接给按钮添加背景图；
+
+第八类：百分比的 bug
+
+解决方案：父元素宽度为 100%，子元素宽度各为 50%，在 IE6 下各个元素宽度之和超过 100%
+
+解决方案：给右边浮动的子元素添加 clear：right；
+
+第九类：鼠标指针 bug
+
+描述：cursor：hand；只有 ie 浏览器识别，其他浏览器不识别
+
+解决方案：cursor：pointer；IE6 以上浏览器及其他内核浏览器都识别；
+
+第十类：透明度属性
+
+解决方案：针对 IE 浏览器：filter：alpha（opacity=value）；（取值范围 1--100）
+
+兼容其他浏览器：opacity：value；（取值范围 0--1）
+
+第十一类：上下 margin 的重叠问题
+
+描述：给上边元素设置了 margin-bottom，给下边元素设置了 margin-top，浏览器只会识别较大值；
+
+解决方案：margin-top 和 margin-bottom 中选择一个，只设置其中一个值；
+
+关于 hack
+
+我很少使用 hacker 的，可能是个人习惯吧，我不喜欢写的代码 IE 不兼容，然后用 hack 来解决。不过 hacker 还是非常好用的。使用 hacker 我可以把浏览器分为 3 类：IE6 ；IE7 和遨游；其他（IE8 chrome ff safari opera 等）
+
+◆IE6 认识的 hacker 是下划线\_ 和星号 \*
+
+◆IE7 遨游认识的 hacker 是星号 \*
+
+比如这样一个 CSS 设置：
+
+height:300px;\*height:200px;\_height:100px;?
+
+IE6 浏览器在读到 height:300px 的时候会认为高时 300px；继续往下读，他也认识*heihgt， 所以当 IE6 读到*height:200px 的时候会覆盖掉前一条的相冲突设置，认为高度是 200px。继续往下读，IE6 还认识\_height,所以他又会覆盖掉 200px 高的设置，把高度设置为 100px；
+
+IE7 和遨游也是一样的从高度 300px 的设置往下读。当它们读到\*height200px 的时候就停下了，因为它们不认识\_height。所以它们会把高度解析为 200px，剩下的浏览器只认识第一个 height:300px;所以他们会把高度解析为 300px。因为优先级相同且想冲突的属性设置后一个会覆盖掉前一个，所以书写的次序是很重要的。
+
 18.1 IE8 既不支持 html5 也不支持 css3 @media
 
 ```
@@ -458,10 +551,9 @@ function、object、Array
 
 undefined:表示变量声明单位初始化的值
 
+null:表是用来保存对象，还没有真正使用保存对象的值，从逻辑角度来看，null 表示一个空对象指针
 
-null:表是用来保存对象，还没有真正使用保存对象的值，从逻辑角度来看，null 表示一个空对象指针 
-
-*其实 null 不是对象，虽然 typeof null 会输出 object，但是这只是 JS 存在的一个悠久 Bug。在 JS 的最初版本中使用的是 32 位系统，为了性能考虑使用低位存储变量的类型信息，000 开头代表是对象，然而 null 表示为全零，所以将它错误的判断为 object 。虽然现在的内部类型判断代码已经改变了，但是对于这个 Bug 却是一直流传下来。*
+_其实 null 不是对象，虽然 typeof null 会输出 object，但是这只是 JS 存在的一个悠久 Bug。在 JS 的最初版本中使用的是 32 位系统，为了性能考虑使用低位存储变量的类型信息，000 开头代表是对象，然而 null 表示为全零，所以将它错误的判断为 object 。虽然现在的内部类型判断代码已经改变了，但是对于这个 Bug 却是一直流传下来。_
 
 ECMA 标准中 object 属于复杂类型。null 值用 typeof 检测出来的结果是 object，而未初始化的定义值 typeof 检测为 undefined。事实上 undefined 值是派生于 null 值，ECMA 规定对两者进行相等性判断要返回 true。
 
@@ -540,7 +632,8 @@ Array.isArray(value)可以用来判断value是否是数组
     var sum2 = function(num1,num2){
       return num1+num2;
     } //函数表达式
-    var sum3 = new Function("num1","num2","return num1+num2"); //函数对象式
+    var sum3 = new Function("num1","num2","return num1+num2");
+    //函数对象式
 ```
 
 ---
@@ -644,16 +737,21 @@ ECMA-262 只定义了两个内置对象，即 Global 和 Math。 根据定义，
 
 - 21.1 Arguments
 
-Arguments[ ] 函数参数的类数组，Arguments 一个函数的参数和其他属性，Arguments.callee 当前正在运行的函数，Arguments.length 传递给函数的参数的个数 
+Arguments[ ] 函数参数的类数组，Arguments 一个函数的参数和其他属性，Arguments.callee 当前正在运行的函数，Arguments.length 传递给函数的参数的个数
 
 [].slice.call() 常用来将类数组转化为真正的数组
-[].push.apply(a, b) 将b追加到a里面，如果a为数组，也可以写成a.push(b)
+[].push.apply(a, b) 将 b 追加到 a 里面，如果 a 为数组，也可以写成 a.push(b)
 
 - 21.2 Array
 
 length 属性 返回数组长度
 
 join(",")连接符链接并返回字符串
+
+```
+实现重复字符串
+return new Array(n + 1).join(str);
+```
 
 reverse()反转
 
@@ -667,7 +765,7 @@ concat() 连接数组
 
 slice(start,end) 返回数组选定的一部分。
 
-splice(index,delNum,item1,.....,itemX) 向数组中删除元素（可以实现增删改操作），然后返回 *被删除的项目* ，**改变原数组**
+splice(index,delNum,item1,.....,itemX) 向数组中删除元素（可以实现增删改操作），然后返回 _被删除的项目_ ，**改变原数组**
 
 forEach((item,index)=>{}) 遍历所有元素
 
@@ -681,7 +779,7 @@ some(checkFunction) 判断所有元素是否**有**满足条件,且剩余的元�
 
 ```
 sort() 数组中的ASCII排序
-     sort((a,b)={
+     sort((a,b)=>{
   // 从小到大
       return a-b;
   // 从大到小
@@ -689,6 +787,7 @@ sort() 数组中的ASCII排序
 ```
 
 map((item,index,arr)=>{return //新数组的每一项}) 对元素重新组装，
+
 ```
 map条件处理并返回未处理数组元素
 map(x => {
@@ -698,11 +797,19 @@ map(x => {
     return x;
 })
 ```
+
 **返回新数组**
 
 filter(checkFunction) 过滤返回符合条件的元素的**新数组**
 
-reduce(fun(ret,cur,curIndex,arr),init) 接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
+reduce(fun(total,cur,curIndex,arr),init) 接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
+
+total 必需。初始值, 或者计算结束后的返回值。
+currentValue 必需。当前元素
+currentIndex 可选。当前元素的索引
+arr 可选。当前元素所属的数组对象。
+init 可选 传递给函数的初始值
+
 ```
 var numbers = [15.5, 2.3, 1.1, 4.7];
  四舍五入后计算数组元素的总和：
@@ -714,9 +821,11 @@ function myFunction(item) {
     return numbers.reduce(getSum, 0);
 }
 ```
+
 Array.from(input,map,context)
 
 将伪数组对象或可遍历对象转换为真数组
+
 ```
   input: 你想要转换的类似数组对象和可遍历对象,
 
@@ -724,14 +833,23 @@ Array.from(input,map,context)
       Array.from({ length: 2 }, () => 'jack')// ['jack', 'jack']
   context: 绑定map中用到的this
 ```
-Array.of( ) 
 
-新建数组--用来替代Array()或解决new Array(v1,v2,v3...)参数混乱的情况
+用于映射转换
+
+```
+function arga(...args) {
+     return Array.from(args, value => value + 1);
+}
+```
+
+Array.of( )
+
+新建数组--用来替代 Array()或解决 new Array(v1,v2,v3...)参数混乱的情况
 
 只接受参数作为数组元素，单参数不会导致特殊数组
 
-ES6修复了indexof无法找到NaN的bug([NaN].indexOf(NaN) === -1)
-新增了copyWithin(), includes(), fill(),flat()等方法，可方便的用于字符串的查找，补全,转换等。
+ES6 修复了 indexof 无法找到 NaN 的 bug([NaN].indexOf(NaN) === -1)
+新增了 copyWithin(), includes(), fill(),flat()等方法，可方便的用于字符串的查找，补全,转换等。
 
 - 21.3 Function 函数构造器
 
@@ -756,6 +874,7 @@ apply(this, [arg1, arg2]) 将函数作为一个对象的方法调用
 6.删除刚才新增的属性
 
 返回结果
+
 ```
 1、thisobj是调用function的对象，函数体内thisobj为this，如果参数为null则使用全局对象
 2、参数可封装为数组形式传入返回调用函数function的返回值
@@ -783,6 +902,7 @@ call(this, arg1, arg2) 将函数作为对象的方法调用
 1、thisobj是调用function的对象，函数体内thisobj为this，如果参数为null则使用全局对象
 2、返回调用函数function的返回值
 ```
+
 实现原理：
 
 bind(thisArg[, arg1[, arg2[, ...]]]) 将函数绑定到一个对象，返回一个新函数，通过可选的指定参数，作为指定对象的方法调用该方法
@@ -807,11 +927,11 @@ caller ==>() 调用当前函数
 
 prototype 对象类的原型
 
-ES6新增了双冒号运算符，用来取代以往的bind（），call（）,和apply（）
+ES6 新增了双冒号运算符，用来取代以往的 bind（），call（）,和 apply（）
 
-foo::bar;等同于bar.bind(foo);
+foo::bar;等同于 bar.bind(foo);
 
-foo::bar(...arguments)等同于bar.apply(foo, arguments);
+foo::bar(...arguments)等同于 bar.apply(foo, arguments);
 
 - 21.4 Math 数学对象
 
@@ -857,13 +977,13 @@ max，min([...]) 取数组最值
 
 https://www.runoob.com/regexp/regexp-syntax.html
 
-  .exec() 通用匹配模式
+.exec() 通用匹配模式
 
-  .global 正则全局匹配 .ignoreCase 忽略大小写 .lastIndex 下次匹配起始位置
+.global 正则全局匹配 .ignoreCase 忽略大小写 .lastIndex 下次匹配起始位置
 
-  .source 正则表达式文本
+.source 正则表达式文本
 
-  .test() 检验字符串是否匹配正则模式
+.test() 检验字符串是否匹配正则模式
 
 - 21.7 String 字符串对象
 
@@ -881,7 +1001,7 @@ https://www.runoob.com/regexp/regexp-syntax.html
 
   .concat( ) 连接字符串
 
-  .indexOf( ) 返回一个子字符串在原始字符串中的索引值(查找顺序从左往右查找)。如果没有找到，则返回-1 ES6中使用includes()替代 没查到返回false
+  .indexOf( ) 返回一个子字符串在原始字符串中的索引值(查找顺序从左往右查找)。如果没有找到，则返回-1 ES6 中使用 includes()替代 没查到返回 false
 
   .match( ) 找到一个或多个正则表达式的匹配
 
@@ -891,8 +1011,8 @@ https://www.runoob.com/regexp/regexp-syntax.html
 
   .slice( ) 同 Array.slice 抽取一个子串 如果是负数，则该参数规定的是从字符串的尾部开始算起的位置。
 
-slice、substring,substr区别：当接收的参数是负数时，slice会将它字符串的长度与对应的负数相加
-  新增，可方便的用于查找 startsWith(), endsWith(),等方法，补全 padStart(),padEnd(),repeat()字符串。
+slice、substring,substr 区别：当接收的参数是负数时，slice 会将它字符串的长度与对应的负数相加
+新增，可方便的用于查找 startsWith(), endsWith(),等方法，补全 padStart(),padEnd(),repeat()字符串。
 
 ---
 
@@ -941,22 +1061,29 @@ undefined :是一个表示"无"的原始值或者说表示"缺少值"，就是�
 
 ## 23. 区分对象和数组的方法
 
-1. 通过ES6中的Array.isArray来识别
+1. 通过 ES6 中的 Array.isArray 来识别
+
 ```
 Array.isArray([]) //true
 Array.isArray({}) //false
 ```
-2. 通过instanceof来识别
+
+2. 通过 instanceof 来识别
+
 ```
 [] instanceof Array //true
 {} instanceof Array //false
 ```
-3. 通过调用constructor来识别
+
+3. 通过调用 constructor 来识别
+
 ```
 {}.constructor //返回object
 [].constructor //返回Array
 ```
-4. 通过Object.prototype.toString.call方法来识别
+
+4. 通过 Object.prototype.toString.call 方法来识别
+
 ```
 Object.prototype.toString.call([]) //["object Array"]
 Object.prototype.toString.call({}) //["object Object"]
@@ -966,17 +1093,17 @@ Object.prototype.toString.call({}) //["object Object"]
 
 ## 23. 判断两对象相等的思路和方法
 
-ps. ES6中 Object\. is(a,b)仅是判断了两对象引用地址是否一致，而无法比较内容是否相同
+ps. ES6 中 Object\. is(a,b)仅是判断了两对象引用地址是否一致，而无法比较内容是否相同
 
 想要比较两个对象内容是否一致，思路是要遍历对象的所有键名和键值是否都一致：
 
-  - 1、判断两个对象是否指向同一内存
+- 1、判断两个对象是否指向同一内存
 
-  - 2、使用Object.getOwnPropertyNames获取对象所有键名数组
+- 2、使用 Object.getOwnPropertyNames 获取对象所有键名数组
 
-  - 3、判断两个对象的键名数组是否相等
+- 3、判断两个对象的键名数组是否相等
 
-  - 4、遍历键名，判断键值是否都相等
+- 4、遍历键名，判断键值是否都相等
 
 ```
 function isObjectValueEqual(a, b) {
@@ -1006,42 +1133,44 @@ return true
 
 ```
 
-- ES2017 引入了跟Object.keys配套的Object.values和Object.entries，作为遍历一个对象的补充手段，供for...of循环使用。 
-方法返回一个数组,成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
+- ES2017 引入了跟 Object.keys 配套的 Object.values 和 Object.entries，作为遍历一个对象的补充手段，供 for...of 循环使用。
+  方法返回一个数组,成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
 
   ```
   const obj = { 100: 'a', 2: 'b', 7: 'c' };
   Object.values(obj)
   // ["b", "c", "a"]
   ```
-ps. 属性名为数值的属性，是按照数值大小，从小到大遍历的
+
+  ps. 属性名为数值的属性，是按照数值大小，从小到大遍历的
 
 ## 24. 类数组（伪数组）
 
-1、具有length属性
+1、具有 length 属性
 
 2、按索引方式储存数据
 
-3、不具备push pop等数组方法，但仍可遍历内容典型的是函数document.childnodes之类的，它们返回的nodeList对象都属于伪数组
+3、不具备 push pop 等数组方法，但仍可遍历内容典型的是函数 document.childnodes 之类的，它们返回的 nodeList 对象都属于伪数组
 
 - 转为数组的方法
-1. Array.from()
-2. [].slice.call(eleArr)或Array.prototype.slice.call(eleArr)
 
+1. Array.from()
+2. [].slice.call(eleArr)或 Array.prototype.slice.call(eleArr)
 
 ## 25. 遍历对象上属性的方法
 
 1. Object.keys()
 
-遍历自身可枚举，非继承属性,返回可枚举的属性的数组，顺序同for...in遍历时返回（但不包括原型链上的属性）
+遍历自身可枚举，非继承属性,返回可枚举的属性的数组，顺序同 for...in 遍历时返回（但不包括原型链上的属性）
 
 2. Object.getOwnPropertyNames()
 
-遍历自身的所有属性(可枚举，不可枚举，非继承属性,但不包括Symbol值作为名称的属性)
+遍历自身的所有属性(可枚举，不可枚举，非继承属性,但不包括 Symbol 值作为名称的属性)
 
-3. for...in 
+3. for...in
 
 遍历可枚举的自身属性和继承属性
+
 ```
 for(var k in fatherArr){
      //对象属性继承
@@ -1052,6 +1181,7 @@ for(var k in fatherArr){
 hasOwnProperty()方法判断对象是有某个属性(本身的属性，不是继承的属性)
 
 4. 遍历所有的自身属性和继承属性
+
 ```
 (function () {
 var getAllPropertyNames = function (obj) {
@@ -1066,17 +1196,18 @@ alert(propertys.length); //276
 alert(propertys.join("\n")); //toString等
 })()
 ```
-5. Reflect.ownKeys()返回所有属性key
----
-## 25. src与href的区别
 
-- src（source）指向外部资源的位置，当解析到该元素时，会暂停其他资源的下载和处理，直到该资源加载、编译、执行完毕，请求src资源时会把其指向的资源下载并应用到文档当前标签所在位置。
+5. Reflect.ownKeys()返回所有属性 key
+
+---
+
+## 25. src 与 href 的区别
+
+- src（source）指向外部资源的位置，当解析到该元素时，会暂停其他资源的下载和处理，直到该资源加载、编译、执行完毕，请求 src 资源时会把其指向的资源下载并应用到文档当前标签所在位置。
 
 - href （hypertext reference/超文本引用） 能建立当前元素（锚点）或当前文档（链接）之间的链接，可以并行下载资源并不会停止对当前文档的处理。
 
-
 ---
-
 
 ## 26. 为某一元素绑定多个事件
 
@@ -1087,9 +1218,10 @@ addEventListener("click",hello1,2？);
 ---
 
 ## 27. 实现比较两个对象的方法
+
 因为等号比较的是他们的引用（内存地址），而不是基本类型 。
 
-像数字和字符串这样的基本类型只需对比他们的值 
+像数字和字符串这样的基本类型只需对比他们的值
 
 当一个对象赋值给另一个新对象时，使用等号进行对比，他们就会相等。因为他们的引用
 （内存地址）是同一个。
@@ -1097,7 +1229,7 @@ addEventListener("click",hello1,2？);
 - 只对普通对象、数组、函数、日期和基本类型的数据结构进行对比
 
 ```
-function isDeepEqual(obj1, obj2, testPrototypes = false) 
+function isDeepEqual(obj1, obj2, testPrototypes = false)
 //使用参数来控制是否对原型链进行比较
 {
   if (obj1 === obj2) {
@@ -1116,7 +1248,7 @@ function isDeepEqual(obj1, obj2, testPrototypes = false)
   ) {
   return false
   }
-const prototypesAreEqual = testPrototypes ? 
+const prototypesAreEqual = testPrototypes ?
 isDeepEqual(
 Object.getPrototypeOf(obj1),
 Object.getPrototypeOf(obj2),
@@ -1131,7 +1263,8 @@ const obj2Props = Object.getOwnPropertyNames(obj2)
   )
 }
 ```
-## 28. JavaScript作用域、预解析、变量声明提升
+
+## 28. JavaScript 作用域、预解析、变量声明提升
 
 - 1、 块级作用域 包含 函数作用域
 
@@ -1139,28 +1272,27 @@ const obj2Props = Object.getOwnPropertyNames(obj2)
 
   词法作用域描述的是，变量的查找规则，块级作用域和函数作用域描述的是，什么东西可以划分变量的作用域
 
-- ES6 之前 JavaScript 采用的是函数作用域+词法作用域，ES6采用的是块级作用域+词法作用域
+- ES6 之前 JavaScript 采用的是函数作用域+词法作用域，ES6 采用的是块级作用域+词法作用域
 
   **局部作用域：在函数的外面无法访问函数内的变量**
 
-
 - 预解析：代码执行前的预编译期间会将变量声明与函数声明提升至其*对应作用域*的最顶端
 
-    **当函数内部定义的一个变量与外部相同时，那么函数体内的这个变量就会被上升到最顶端**
+  **当函数内部定义的一个变量与外部相同时，那么函数体内的这个变量就会被上升到最顶端**
 
 1. 把变量的声明提升到当前作用域的最前面，只会提升声明，不会提升赋值
 
 2. 把函数的声明提升到当前作用域的最前面，只会提升声明，不会提升调用
 
-3. 先提升var，再提升function
+3. 先提升 var，再提升 function
 
-    使用 var 关键字定义的变量，被称为变量声明
+   使用 var 关键字定义的变量，被称为变量声明
 
-    函数声明Function foo() {}
+   函数声明 Function foo() {}
 
-    函数表达式var foo = function() {} 不存在函数提升
+   函数表达式 var foo = function() {} 不存在函数提升
 
-  **函数声明提升的特点是，在函数声明的前面，可以调用这个函数，函数提升的优先级大于变量提升的优先级，即函数提升在变量提升之上**
+   **函数声明提升的特点是，在函数声明的前面，可以调用这个函数，函数提升的优先级大于变量提升的优先级，即函数提升在变量提升之上**
 
 ## 29. 作用域链
 
@@ -1170,13 +1302,13 @@ const obj2Props = Object.getOwnPropertyNames(obj2)
 
 延长作用域链：在作用域链的前端临时增加一个变量对象，该变量对象会在代码执行后被移除.执行这两个语句时，作用域链都会得到加强
 
- 1. try - catch 语句的catch块；会创建一个新的变量对象，包含的是被抛出的错误对象的声明
+1.  try - catch 语句的 catch 块；会创建一个新的变量对象，包含的是被抛出的错误对象的声明
 
- 2. with 语句。with 语句会将指定的对象添加到作用域链中
+2.  with 语句。with 语句会将指定的对象添加到作用域链中
 
 ---
 
-## 29. JavaScript中变量储存方式及类型
+## 29. JavaScript 中变量储存方式及类型
 
 1. 值类型和引用类型
 
@@ -1184,12 +1316,14 @@ const obj2Props = Object.getOwnPropertyNames(obj2)
 
 3. 引用类型存储的是地址 ，赋值之后是把原变量的引用地址赋值给新变量 ，新变量改变 原来的会跟着改变
 
-----
-## 30. WebAPI DOM相关
-BOM是Browser Object Model的缩写，即浏览器对象模型。
-没有相关标准。最根本对象是window
+---
 
-DOM 是 Document Object Model（文档对象模型）的缩写，一种树形结构的数据结构,DOM最根本对象是document（实际上是window.document）
+## 30. WebAPI DOM 相关
+
+BOM 是 Browser Object Model 的缩写，即浏览器对象模型。
+没有相关标准。最根本对象是 window
+
+DOM 是 Document Object Model（文档对象模型）的缩写，一种树形结构的数据结构,DOM 最根本对象是 document（实际上是 window.document）
 
 W3C DOM 标准被分为 3 个不同的部分
 
@@ -1197,33 +1331,33 @@ W3C DOM 标准被分为 3 个不同的部分
 2. XML DOM - 针对 XML 文档的标准模型
 3. HTML DOM - 针对 HTML 文档的标准模型
 
-dom 操作的常用api 有
+dom 操作的常用 api 有
 
-1. 获取dom节点
-getElementById、getElementsByTagName、getElementsByClassName、
+1. 获取 dom 节点
+   getElementById、getElementsByTagName、getElementsByClassName、
 
 querySelector、querySelectorAll
 
-2. property（js对象的property）
+2. property（js 对象的 property）
 
-nodeName是p的property，即nodeName是p的属性
+nodeName 是 p 的 property，即 nodeName 是 p 的属性
 
 3. attribute
 
 .getAttribute('data-name')、.setAttribute('data-name', 'imooc');
 
-非自定义的属性(id/src/href/name/value等)，通过setAttribute修改其特性值可以
-同步作用到property 上，而通过.property修改属性值有的(value)时候不会同步到attribute上，即不会反应到html
+非自定义的属性(id/src/href/name/value 等)，通过 setAttribute 修改其特性值可以
+同步作用到 property 上，而通过.property 修改属性值有的(value)时候不会同步到 attribute 上，即不会反应到 html
 
-4. dom事件 DOM一级中没有事件
+4. dom 事件 DOM 一级中没有事件
 
 1、dom0 element.οnclick=function(){}
 
-2、dom2 element.addEventListener(‘click’, function(){}, false) // 默认是false。false：冒泡阶段执行，true：捕获阶段产生。
+2、dom2 element.addEventListener(‘click’, function(){}, false) // 默认是 false。false：冒泡阶段执行，true：捕获阶段产生。
 
 3、dom3 element.addEventListener(‘keyup’, function(){}, false) // 事件类型增加了很多，鼠标事件、键盘事件
 
-DOM事件模型分为两种：事件捕获和事件冒泡
+DOM 事件模型分为两种：事件捕获和事件冒泡
 
 事件捕获从外到内依次触发：根—目标的祖先素—目标的父元素—目标元素
 
@@ -1231,45 +1365,47 @@ DOM事件模型分为两种：事件捕获和事件冒泡
 
 阻止事件冒泡的几种方法
 
-一：event.stopPropagation();  //阻止冒泡
+一：event.stopPropagation(); //阻止冒泡
 
 二：return false;
 
-三：event.preventDefault();  //阻止默认行为
-
-
+三：event.preventDefault(); //阻止默认行为
 
 ---
 
-## 31. JavaScript动画和CSS3动画
+## 31. JavaScript 动画和 CSS3 动画
 
 CSS3 动画优势：
 
 1. 浏览器可以对动画进行优化。
+
 ```
 浏览器使用与 requestAnimationFrame 类似的机制，requestAnimationFrame比起setTimeout，setInterval设置动画的优势主要是:1)requestAnimationFrame 会把每一帧中的所有DOM操作集中起来，在一次重绘或回流中就完成,并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率,一般来说,这个频率为每秒60帧。2)在隐藏或不可见的元素中requestAnimationFrame不会进行重绘或回流，这当然就意味着更少的的cpu，gpu和内存使用量。
 1.1.2)强制使用硬件加速 （通过 GPU 来提高动画性能）
 
 ```
+
 2. 代码相对简单,性能调优方向固定
 
-3. 对于帧速表现不好的低版本浏览器，CSS3可以做到自然降级，而JS则需要撰写
-额外代码
+3. 对于帧速表现不好的低版本浏览器，CSS3 可以做到自然降级，而 JS 则需要撰写
+   额外代码
 
-- 缺点：运行过程控制较弱,无法附加事件绑定回调函数。CSS动画只能暂停,不能在动画
-中寻找一个特定的时间点，不能在半路反转动画，不能变换时间尺度，不能在特定的位置
-添加回调函数或是绑定回放事件,无进度报告。
+- 缺点：运行过程控制较弱,无法附加事件绑定回调函数。CSS 动画只能暂停,不能在动画
+  中寻找一个特定的时间点，不能在半路反转动画，不能变换时间尺度，不能在特定的位置
+  添加回调函数或是绑定回放事件,无进度报告。
 
-JS动画 ：
-1. JavaScript动画控制能力很强, 可以在动画播放过程中对动画进行控制：开始、暂停、
-回放、终止、取消都是可以做到的。
-2. 动画效果比css3动画丰富,有些动画效果，比如曲线运动,冲击闪烁,视差滚动效果，只
-有JavaScript动画才能完成。
-3. CSS3有兼容性问题，而JS大多时候没有兼容性问题。
-- 缺点 ： JavaScript在浏览器的主线程中运行，而主线程中还有其它需要运行的JavaScript
-脚本、样式计算、布局、绘制任务等,对其干扰导致线程可能出现阻塞，从而造成丢帧的情
-况。
-- 代码的复杂度高于CSS动画
+JS 动画 ：
+
+1. JavaScript 动画控制能力很强, 可以在动画播放过程中对动画进行控制：开始、暂停、
+   回放、终止、取消都是可以做到的。
+2. 动画效果比 css3 动画丰富,有些动画效果，比如曲线运动,冲击闪烁,视差滚动效果，只
+   有 JavaScript 动画才能完成。
+3. CSS3 有兼容性问题，而 JS 大多时候没有兼容性问题。
+
+- 缺点 ： JavaScript 在浏览器的主线程中运行，而主线程中还有其它需要运行的 JavaScript
+  脚本、样式计算、布局、绘制任务等,对其干扰导致线程可能出现阻塞，从而造成丢帧的情
+  况。
+- 代码的复杂度高于 CSS 动画
 
 ```
 总结：
@@ -1280,10 +1416,13 @@ JS动画 ：
   所以，在实现一些小的交互动效的时候，就多考虑考虑CSS动画。对于一些复杂控制的动画，使用javascript比较可靠。
 
 ```
+
 ---
+
 ## 32. 事件
 
 给一个按钮自己增加一个事件，在其他地方触发，而不是用回调的方式触发
+
 ```
 var ev = document.getElementById('ev');
 var eve = new Event('custome'); // eve：事件对象
@@ -1292,6 +1431,7 @@ ev.addEventListener('custome', function(){
 });
 ev.dispatchEvent(eve);
 ```
+
 - 通用的事件监听函数
 
 ```
@@ -1313,14 +1453,18 @@ elem.addEventListner(type, function(e) {
 })
 }
 ```
-// 使用代理  代码简洁,减少浏览器内存占用;事件冒泡
+
+// 使用代理 代码简洁,减少浏览器内存占用;事件冒泡
+
 ```
 var div1 = document.getElementById('div1');
 bindEvent(div1, 'click', 'a', function(e) {
 console.log(this.innerHTML);
 });
 ```
+
 // 不使用代理
+
 ```
 var a = document.getElementById('a1');
 bindEvent(div1, 'click', function(e) {
@@ -1328,33 +1472,39 @@ console.log(a.innerHTML);
 })
 ---
 ```
+
 - 事件委托
 
   当我们需要对很多元素添加事件的时候，可以通过将事件添加到它们的上级元素而将事件委托给上级元素来触发处理函数。
 
-  事件代理用到了两个在JavaSciprt事件中常被忽略的特性：事件冒泡以及目标元素。
+  事件代理用到了两个在 JavaSciprt 事件中常被忽略的特性：事件冒泡以及目标元素。
 
+  ***
 
-  ---
-## 33.JS拖动原理
+## 33.JS 拖动原理
+
 1. mousedown 鼠标按下事件
 2. mousemove 鼠标移动事件
 3. mouseup 鼠标抬起事件
 
-- 点击dom的时候，记录当前鼠标的坐标值，也就是x、y值，以及被拖拽的dom的top、left值，
+- 点击 dom 的时候，记录当前鼠标的坐标值，也就是 x、y 值，以及被拖拽的 dom 的 top、left 值，
 
 - 在鼠标按下的回调函数里添加鼠标移动的事件：
+
 ```
   document.addEventListener("mousemove", moving, false)和添加鼠标抬起的事件
   document.addEventListener("mouseup",function()
   { document.removeEventListener("mousemove", moving, false);}, false);
 ```
-  这个抬起的事件是为了解除鼠标移动的监听，因为只有在鼠标按下才可以拖拽，抬起就停止不会移动了。
-- 那么这个被拖拽的dom的top和left值就是：
 
-    top=鼠标按下时记录的dom的top值+（移动中的y值 - 鼠标按下时的y值）
+这个抬起的事件是为了解除鼠标移动的监听，因为只有在鼠标按下才可以拖拽，抬起就停止不会移动了。
 
-    left=鼠标按下时记录的dom的left值+（移动中的x值 - 鼠标按下时的x值）;
+- 那么这个被拖拽的 dom 的 top 和 left 值就是：
+
+  top=鼠标按下时记录的 dom 的 top 值+（移动中的 y 值 - 鼠标按下时的 y 值）
+
+  left=鼠标按下时记录的 dom 的 left 值+（移动中的 x 值 - 鼠标按下时的 x 值）;
+
 ```
     window.onload = function() {
     var dom = document.getElementById("draggle");
@@ -1364,7 +1514,7 @@ console.log(a.innerHTML);
         var x = event.clientx;
         var y = event.clientY;
         var marginLeft = parseInt(dom . offsetLeft);
-        var marginTop = parseInt (dom. offsetTop); 
+        var marginTop = parseInt (dom. offsetTop);
     function moving(e) {
         var movedx = e.clientx-x;
         var movedY = e.clientY-y;
@@ -1380,37 +1530,38 @@ console.log(a.innerHTML);
     )
   };
 ```
+
 ---
 
 ## 34.浏览器渲染
 
 0. 加载过程
 
-    1、浏览器查找域名对应的IP地址(DNS 查询：浏览器缓存->系统缓存->路由器缓存->ISP DNS 缓存->根域名服务器)
+   1、浏览器查找域名对应的 IP 地址(DNS 查询：浏览器缓存->系统缓存->路由器缓存->ISP DNS 缓存->根域名服务器)
 
-    2、浏览器向 Web 服务器发送一个 HTTP 请求（TCP三次握手）
+   2、浏览器向 Web 服务器发送一个 HTTP 请求（TCP 三次握手）
 
-    3、服务器 301 重定向（从 HTTP://example.com 重定向到 HTTP://www.example.com）
+   3、服务器 301 重定向（从 HTTP://example.com 重定向到 HTTP://www.example.com）
 
-    4、浏览器跟踪重定向地址，请求另一个带 www 的网址
+   4、浏览器跟踪重定向地址，请求另一个带 www 的网址
 
-    5、服务器处理请求（通过路由读取资源）
+   5、服务器处理请求（通过路由读取资源）
 
-    6、服务器返回一个 HTTP 响应（报头中把 Content-type 设置为 'text/html'）
+   6、服务器返回一个 HTTP 响应（报头中把 Content-type 设置为 'text/html'）
 
-    7、浏览器进 DOM 树构建
+   7、浏览器进 DOM 树构建
 
-    8、浏览器发送请求获取嵌在 HTML 中的资源（如图片、音频、视频、CSS、JS等）
+   8、浏览器发送请求获取嵌在 HTML 中的资源（如图片、音频、视频、CSS、JS 等）
 
-    9、浏览器显示完成页面
-    
-    10、浏览器发送异步请求
+   9、浏览器显示完成页面
+
+   10、浏览器发送异步请求
 
 1. 浏览器的渲染过程：
 
-解析HTML构建 DOM(DOM树)，并行请求 css/image/js
+解析 HTML 构建 DOM(DOM 树)，并行请求 css/image/js
 
-CSS 文件下载完成，开始构建 CSSOM(CSS树)
+CSS 文件下载完成，开始构建 CSSOM(CSS 树)
 
 CSSOM 构建结束后，和 DOM 一起生成 Render Tree(渲染树)
 
@@ -1418,14 +1569,13 @@ CSSOM 构建结束后，和 DOM 一起生成 Render Tree(渲染树)
 
 显示(Painting)：通过显卡把页面画到屏幕上
 
-2. DOM树 和 (render)渲染树 的区别
+2. DOM 树 和 (render)渲染树 的区别
 
-DOM树与CSS树的合并生成render树
+DOM 树与 CSS 树的合并生成 render 树
 
-DOM树与HTML标签一一对应，包括head和隐藏元素
+DOM 树与 HTML 标签一一对应，包括 head 和隐藏元素
 
-渲染树不包括head和隐藏元素，大段文本的每一个行都是独立节点，每一个节点都有对应的css属性
-
+渲染树不包括 head 和隐藏元素，大段文本的每一个行都是独立节点，每一个节点都有对应的 css 属性
 
 ---
 
@@ -1436,22 +1586,21 @@ DOM树与HTML标签一一对应，包括head和隐藏元素
 回流是当**render tree 的一部分或全部的元素**因改变了自身的宽高，布局，显示或隐藏，或者元素内部的文字结构发生变化 导致需要重新构建页面的时候。
 
 当**一个元素**自身的宽高，布局，及显示或隐藏没有改变，而只是改变了元素
-的外观风格的时候，就会产生重绘。例如你改变了元素的background-color
+的外观风格的时候，就会产生重绘。例如你改变了元素的 background-color
 
-- 最小化重绘repaint与回流reflow
+- 最小化重绘 repaint 与回流 reflow
 
 需要要对元素进行复杂的操作时，可以先隐藏(display:"none")，操作完成后再显示
 
-需要创建多个DOM节点时，使用DocumentFragment创建完后一次性的加入document
+需要创建多个 DOM 节点时，使用 DocumentFragment 创建完后一次性的加入 document
 
-缓存Layout属性值，如：var left = elem.offsetLeft; 这样，多次使用 left 只产生一次回流
+缓存 Layout 属性值，如：var left = elem.offsetLeft; 这样，多次使用 left 只产生一次回流
 
-尽量避免用table布局（table元素一旦触发回流就会导致table里所有的其它元素回流）
+尽量避免用 table 布局（table 元素一旦触发回流就会导致 table 里所有的其它元素回流）
 
-避免使用css表达式(expression)，因为每次调用都会重新计算值（包括加载页面）
+避免使用 css 表达式(expression)，因为每次调用都会重新计算值（包括加载页面）
 
-
-尽量使用 css 属性简写，如：用 border 代替 border-width, border-style, bordercolor批量修改元素样式：elem.className 和 elem.style.cssText 代替 elem.style.xxx
+尽量使用 css 属性简写，如：用 border 代替 border-width, border-style, bordercolor 批量修改元素样式：elem.className 和 elem.style.cssText 代替 elem.style.xxx
 
 ---
 
@@ -1465,70 +1614,107 @@ DOM树与HTML标签一一对应，包括head和隐藏元素
   3. 闭包、控制台日志、循环（在两个对象彼此引用且彼此保留时，就会产生一个循环）
 
 ---
+
 ## 37. 原型 prototype
 
-JavaScript的对象中都包含了一个” prototype”内部属性，这个属性所对应的就是该对象的原型，原型也是一个对象，通过原型可以实现对象的属性继承，
+JavaScript 的对象中都包含了一个” prototype”内部属性，这个属性所对应的就是该对象的原型，原型也是一个对象，通过原型可以实现对象的属性继承，
 
 - 获得原型的方法
 
-*p.proto*
+_p.proto_
 
-*p.constructor.prototype*
+_p.constructor.prototype_
 
-ECMA新标准中引入了标准对象原型访问器”Object.getPrototypeOf(object)”  
-
-
+ECMA 新标准中引入了标准对象原型访问器”Object.getPrototypeOf(object)”
 
 原型的主要作用就是为了实现继承与扩展对象
 
-- 原型链： JavaScript对象属性的一种查找机制用来实现继承
+- 原型链： JavaScript 对象属性的一种查找机制用来实现继承
 
 **通过引用来传递的，我们创建的每个新对象实体中并没有一份属于自己的原型副本。当我们修改原型时，与之相关的对象也会继承这一改变**
 
+```
+1.构造函数 .prototype指向原型对象，原型对象.constructor即为构造函数
+function Person(name){
+    this.name = name;
+}
+2.通过原型链在原型对象上添加sayName
+Person.prototype.sayName = function(welcome) {
+	console.log(welcome, this.name);
+}
+3.实例通过__proto__指向原型对象（将构造函数的作用域赋给实例对象，this就指向了这个实例对象）
+var person1 = new Person('Smiley');
+person1.sayName('Hello');
+
+```
+
+** Person === Person.prototype.constructor **
+
+person1.**proto** === Person.prototype
+
+person1.constructor ===Person
+
+<!-- person1上没有constructor这个属性，那么就顺着person1的__proto__向上找，找到Person.prototype。Person.prototype上有constructor这个属性指向person，所以答案是person-->
+
+所有的引用类型（数组、对象、函数）， _proto_ 属性值(隐式原型属性）指向它的构造函数的“prototype”属性值
+obj._proto_=Object.prototype
+当试图得到一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的*proto*(即它的构造函数的 prototype（显式原型）)中寻找
+Object.prototype 的 隐式原型是 null （JS 避免死循环）
+![avatar](https://images2018.cnblogs.com/blog/1146559/201805/1146559-20180503211106384-1574487392.png)
+f instanceof FOO 的判断逻辑：f 是 Foo new 出来的一个类型（正确）
+
+判断方式：f 的隐式原型（proto）一层一层往上，能否对应到 Foo.prototype(显式原型）
+
+试判断：f instance of Object (正确）见上图
+
 ---
 
-## 38. this的情况
+## 38. this 的情况
 
-1. 以函数形式调用时，this永远都是window
-2. 以方法的形式调用时，this是调用方法的对象
-3. 以构造函数的形式调用时，this是新创建的那个对象
-4. 使用call和apply调用时，this是指定的那个对象
-5. 箭头函数：箭头函数的this看外层是否有函数 如果有，外层函数的this就是内部箭头函数的this如果没有，就是window
-6. 特殊情况：通常意义上this指针指向为最后调用它的对象。这里需要注意的一点就是如果返回值是一个对象，那么this指向的就是那个返回的对象，如果返回值不是一个对象那么this还是指向函数的实例
-
+1. 以函数形式调用时，this 永远都是 window
+2. 以方法的形式调用时，this 是调用方法的对象
+3. 以构造函数的形式调用时，this 是新创建的那个对象
+4. 使用 call 和 apply 调用时，this 是指定的那个对象
+5. 箭头函数：箭头函数的 this 看外层是否有函数 如果有，外层函数的 this 就是内部箭头函数的 this 如果没有，就是 window
+6. 特殊情况：通常意义上 this 指针指向为最后调用它的对象。这里需要注意的一点就是如果返回值是一个对象，那么 this 指向的就是那个返回的对象，如果返回值不是一个对象那么 this 还是指向函数的实例
 
 ---
 
-## 39. for...in 和for... of
+## 39. for...in 和 for... of
 
-1. 推荐在循环对象属性的时候使用for...in，在遍历数组、map、set、Arguments数据结构的时候的时候使用for...of
+1. 推荐在循环对象属性的时候使用 for...in，在遍历数组、map、set、Arguments 数据结构的时候的时候使用 for...of
 
-2. for...in循环出的是key，for...of循环出的是value， map结构可循环[key, value]支持break、continue、return 和 throw
+2. for...in 循环出的是 key，for...of 循环出的是 value， map 结构可循环[key, value]支持 break、continue、return 和 throw
+
 ```
 for (const [key, value] of iterableMap)
 ```
 
-3. for...of是ES6新引入的特性。修复了ES5引入的for...in的不足
+3. for...of 是 ES6 新引入的特性。修复了 ES5 引入的 for...in 的不足
 
-4. for...of不能循环普通的对象，需要通过和Object.keys()搭配使用或添加length属性使用Array.from()类数组转化为数组实例
+4. for...of 不能循环普通的对象，需要通过和 Object.keys()搭配使用或添加 length 属性使用 Array.from()类数组转化为数组实例
+
 ```
     （由object.keys(obj)先将要循环的普通对象key返回为一个数组）
     for(var key of Object.keys(obj))
     (搭配实例方法entries()，同时输出数组内容和索引)
     for (let [index, val] of arr.entries())
 ```
+
 ---
-## 40. New操作符
+
+## 40. New 操作符
 
 new 运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例
 
-1、创建一个空对象: 并且this变量引入该对象,同时还继承了函数的原型
+1、创建一个空对象: 并且 this 变量引入该对象,同时还继承了函数的原型
 
 2、设置原型链 空对象指向构造函数的原型对象
 
-3、执行函数体 修改构造函数this指针指向空对象,并执行函数体
+3、执行函数体 修改构造函数 this 指针指向空对象,并执行函数体
 
 4、判断返回值 返回对象就用该对象,没有的话就创建一个对象
+
 ```
 模拟过程
 function objectFactory(){
@@ -1544,12 +1730,17 @@ function objectFactory(){
 }
 ```
 
+一个普通函数 new 出来打印结果还是原本的输出 new Foo.getName()===Foo.getName() new new Foo().getName()===new Foo().getName()===Foo().getName（Foo 为实例函数，向上查询构造函数 Foo.prototype.getname）
+
 ---
-## 41. Javascript垃圾回收机制
-- JS事件循环：
+
+## 41. Javascript 垃圾回收机制
+
+- JS 事件循环：
 
 主线程从"任务队列"中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称
 为 Event Loop（事件循环）
+
 ```
 1.所有同步任务都在主线程上执行，形成一个执行栈
 2.当主线程中的执行栈为空时，检查事件队列是否为空，如果为空则继续检查，如不为空执行下一步
@@ -1557,12 +1748,12 @@ function objectFactory(){
 4.执行任务，接着检查执行栈；如果执行栈为空，则跳回第二步；如不为空，则继续检查
 ```
 
-JS的垃圾回收机制是为了以防内存泄漏
+JS 的垃圾回收机制是为了以防内存泄漏
 
-- 在IE中虽然JavaScript对象通过标记清除的方式进行垃圾回收，但BOM与DOM对象却是通过**引用计数**回收垃圾的，也就是说只要涉及BOM及DOM就会出现循环引用问题
+- 在 IE 中虽然 JavaScript 对象通过标记清除的方式进行垃圾回收，但 BOM 与 DOM 对象却是通过**引用计数**回收垃圾的，也就是说只要涉及 BOM 及 DOM 就会出现循环引用问题
 - 标记清除（mark and sweep）
 
-  这是JavaScript最常见的垃圾回收方式，当变量进入执行环境的时候，比如函数中声明一个变量，垃圾回收器将其标记为“进入环境”，
+  这是 JavaScript 最常见的垃圾回收方式，当变量进入执行环境的时候，比如函数中声明一个变量，垃圾回收器将其标记为“进入环境”，
 
   当变量离开环境的时候（函数执行结束）将其标记为“离开环境”垃圾回收器会在运行的时候给存储在内存中的所有变量加上标记，
 
@@ -1570,65 +1761,67 @@ JS的垃圾回收机制是为了以防内存泄漏
 
 - 引用计数(reference counting)
 
-  在低版本IE中经常会出现内存泄露，很多时候就是因为其采用引用计数方式进行垃圾回收。引用计数的策略是跟踪记录每个值被使用的次数，
+  在低版本 IE 中经常会出现内存泄露，很多时候就是因为其采用引用计数方式进行垃圾回收。引用计数的策略是跟踪记录每个值被使用的次数，
 
-  当声明了一个 变量并将一个引用类型赋值给该变量的时候这个值的引用次数就加1，如果该变量的值变成了另外一个，则这个值得引用次数减1，当这个值的引用次数变为0的时候，说明没有变量在使用，这个值没法被访问了，因此可以将其占用的空间回收。
-
+  当声明了一个 变量并将一个引用类型赋值给该变量的时候这个值的引用次数就加 1，如果该变量的值变成了另外一个，则这个值得引用次数减 1，当这个值的引用次数变为 0 的时候，说明没有变量在使用，这个值没法被访问了，因此可以将其占用的空间回收。
 
 ---
 
-## 42. class是构造函数的语法糖
+## 42. class 是构造函数的语法糖
 
 ```
 typeof MathHandle //'function'  //class类型判断为function
-MathHandle.prototype.constructor === MathHandle //constructor 方法是类的构造函数 
+MathHandle.prototype.constructor === MathHandle //constructor 方法是类的构造函数
 m.__proto__ === MathHandle.prototype
 
 ```
+
 - class B extends A
 
-0. extends是ES6引入的关键字，其本质仍然是构造函数+原型链的组合式继承。Class类可以通过extends实现继承。
+0. extends 是 ES6 引入的关键字，其本质仍然是构造函数+原型链的组合式继承。Class 类可以通过 extends 实现继承。
 
-1. super作为函数使用 ES6 要求，子类的构造函数（constructor）必须先执行一次 super 函数 ，代表了父类的构造函数，super() 内部的 this 指向的是子类
+1. super 作为函数使用 ES6 要求，子类的构造函数（constructor）必须先执行一次 super 函数 ，代表了父类的构造函数，super() 内部的 this 指向的是子类
 
-2.  super作为对象使用 指向父类原型对象 ，通过 super 调用父类的方法时，super 会绑定子类的 this。
+2. super 作为对象使用 指向父类原型对象 ，通过 super 调用父类的方法时，super 会绑定子类的 this。
 
-
-- Class和ES5构造函数的不同点
+- Class 和 ES5 构造函数的不同点
 
 1. 类的内部定义的所有方法，都是不可枚举的。
-2. ES6的class类必须用new命令操作，而ES5的构造函数不用new也可以执行。
-3. ES6的class类不存在变量提升，必须先定义class之后才能实例化，不像ES5中可以将构造函数写在实例化之后。
-4. ES5 的继承，实质是先创造子类的实例对象this，然后再将父类的方法添加到this上面。 ES6 的继承机制完全不同，实质是先将父类实例对象的属性和方法，加到this上面（所以必须先调用super方法），然后再用子类的构造函数修改this。
+2. ES6 的 class 类必须用 new 命令操作，而 ES5 的构造函数不用 new 也可以执行。
+3. ES6 的 class 类不存在变量提升，必须先定义 class 之后才能实例化，不像 ES5 中可以将构造函数写在实例化之后。
+4. ES5 的继承，实质是先创造子类的实例对象 this，然后再将父类的方法添加到 this 上面。 ES6 的继承机制完全不同，实质是先将父类实例对象的属性和方法，加到 this 上面（所以必须先调用 super 方法），然后再用子类的构造函数修改 this。
+
 ---
 
-## 43.  eval
+## 43. eval
 
-- 把字符串参数解析成JS代码并运行，并返回执行的结果; 应该避免使用eval，不安全，非常耗性能
+- 把字符串参数解析成 JS 代码并运行，并返回执行的结果; 应该避免使用 eval，不安全，非常耗性能
 
-- eval的作用域在它所有的范围内容有效
+- eval 的作用域在它所有的范围内容有效
 
-- 由JSON字符串转换为JSON对象的时候可以用eval 
+- 由 JSON 字符串转换为 JSON 对象的时候可以用 eval
 
   var json="{name:'Mr.CAO',age:30}";
-  
+
   var jsonObj=eval("("+json+")");
 
 ---
 
 ## 44. 进程 线程 任务队列
 
--  进程：
+- 进程：
+
 1. 程序执行时的一个实例
 2. 每个进程都有独立的内存地址空间
 3. 系统进行资源分配和调度的基本单位
 4. 进程里的堆，是一个进程中最大的一块内存，被进程中的所有线程共享的，进
-程 创建时分配，主要存放 new 创建的对象实例
+   程 创建时分配，主要存放 new 创建的对象实例
 5. 进程里的方法区，是用来存放进程中的代码片段的，是线程共享的
 6. 在多线程 OS 中，进程不是一个可执行的实体，即一个进程至少创建一个线程
-去执行代码
+   去执行代码
 
 - 线程
+
 1. 进程中的一个实体
 2. 进程的一个执行路径
 3. CPU 调度和分派的基本单位
@@ -1637,41 +1830,42 @@ m.__proto__ === MathHandle.prototype
 6. 系统不会为线程分配内存，线程组之间只能共享所属进程的资源
 7. 线程只拥有在运行中必不可少的资源(如程序计数器、栈)
 8. 线程里的程序计数器就是为了记录该线程让出 CPU 时候的执行地址，待再次
-分配 到时间片时候就可以从自己私有的计数器指定地址继续执行
+   分配 到时间片时候就可以从自己私有的计数器指定地址继续执行
 9. 每个线程有自己的栈资源，用于存储该线程的局部变量和调用栈帧，其它线程
-无权访问
-- 一个程序至少一个进程，一个进程至少一个线程，进程中的多个线程是共享进
-程的堆和方法区资源但是每个线程有自己的程序计数器，栈区域
+   无权访问
 
+- 一个程序至少一个进程，一个进程至少一个线程，进程中的多个线程是共享进
+  程的堆和方法区资源但是每个线程有自己的程序计数器，栈区域
 
 ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的数据，最后出栈；使用队列存储数据，讲究 "先进先出"，即最先进队列的数据，也最先出队列。
 
 - 任务队列（task queue）
 
-除了同步任务和异步任务，任务还可以更加细分为macrotask(宏任务)和microtask(微任务)，*js引擎会优先执行微任务*
+除了同步任务和异步任务，任务还可以更加细分为 macrotask(宏任务)和 microtask(微任务)，_js 引擎会优先执行微任务_
 
-1. 宏任务（macrotask）：在新标准中叫task
+1. 宏任务（macrotask）：在新标准中叫 task
 
-    1.1主要包括：script(整体代码)，setTimeout，setInterval，setImmediate，I/O,uirendering
+   1.1 主要包括：script(整体代码)，setTimeout，setInterval，setImmediate，I/O,uirendering
 
-2. 微任务（microtask）：在新标准中叫jobs
+2. 微任务（microtask）：在新标准中叫 jobs
 
-    2.1 主要包括：process.nextTick， Promise，MutationObserver（html5新特性）**process.nextTick指定的异步任务总是发生在所有异步任务之前，因此先执行**
+   2.1 主要包括：process.nextTick， Promise，MutationObserver（html5 新特性）**process.nextTick 指定的异步任务总是发生在所有异步任务之前，因此先执行**
 
 3. 扩展：
 
-    3.1 同步任务：在主线程上，排队执行的任务，只有前一个任务执行完毕，才能执行后一个任务
+   3.1 同步任务：在主线程上，排队执行的任务，只有前一个任务执行完毕，才能执行后一个任务
 
-    3.2 异步任务：不进入主线程，而进入“任务队列”的任务，只有“任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行
+   3.2 异步任务：不进入主线程，而进入“任务队列”的任务，只有“任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行
+
 4. setTimeout、Promise、Async/Await 的区别
 
-    1. setTimeout的回调函数放到宏任务队列里，等到执行栈清空以后执行
+   1. setTimeout 的回调函数放到宏任务队列里，等到执行栈清空以后执行
 
-    2. Promise.then里的回调函数会放到相应宏任务的微任务队列里，等宏任务里面的同步代码执行完再执行
+   2. Promise.then 里的回调函数会放到相应宏任务的微任务队列里，等宏任务里面的同步代码执行完再执行
 
-    3. async函数表示函数里面可能会有异步方法，await后面跟一个表达式
+   3. async 函数表示函数里面可能会有异步方法，await 后面跟一个表达式
 
-    4. async方法执行时，遇到await会立即执行表达式，然后把表达式后面的代码放到微任务队列里，让出执行栈让同步代码先执行
+   4. async 方法执行时，遇到 await 会立即执行表达式，然后把表达式后面的代码放到微任务队列里，让出执行栈让同步代码先执行
 
 ```
 const Promise = new Promise((resolve, reject) => {
@@ -1702,18 +1896,20 @@ console.log(5);
 
 //2,3,5,4,1
 ```
+
 ---
-## 45. ES6的module、export、import
 
-module、export、import是ES6用来统一前端模块化方案的设计思路和实现方案。整合规范了浏览器/服务端的模块化方法。
+## 45. ES6 的 module、export、import
 
-import引入的模块是静态加载（编译阶段加载）而不是动态加载（运行时加载）。
+module、export、import 是 ES6 用来统一前端模块化方案的设计思路和实现方案。整合规范了浏览器/服务端的模块化方法。
 
-import引入export导出的接口值是动态绑定关系，即通过该接口，可以取到模块内部实时的值。
+import 引入的模块是静态加载（编译阶段加载）而不是动态加载（运行时加载）。
+
+import 引入 export 导出的接口值是动态绑定关系，即通过该接口，可以取到模块内部实时的值。
 
 导入模块
 
-通过import关键字
+通过 import 关键字
 
 // 只导入一个
 import {sum} from "./example.js"
@@ -1722,24 +1918,24 @@ import {sum} from "./example.js"
 import {sum,multiply,time} from "./exportExample.js"
 
 // 导入一整个模块
-import * as example from "./exportExample.js"
+import \* as example from "./exportExample.js"
 
 导出模块
 
-导出通过export关键字
+导出通过 export 关键字
 
-//可以将export放在任何变量,函数或类声明的前面
+//可以将 export 放在任何变量,函数或类声明的前面
 
 export var firstName = 'Chen';
 
 //也可以使用大括号指定所要输出的一组变量
 
-//使用export default时，对应的import语句不需要使用大括号
+//使用 export default 时，对应的 import 语句不需要使用大括号
 
 export default bosh;
 import crc from 'crc';
 
-//不使用export default时，对应的import语句需要使用大括号
+//不使用 export default 时，对应的 import 语句需要使用大括号
 
 export bosh;
 import {crc} from 'crc';
@@ -1748,7 +1944,7 @@ import {crc} from 'crc';
 
 1. CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用
 
-CommonJS一旦输出一个值，模块内部的变化就影响不到这个值
+CommonJS 一旦输出一个值，模块内部的变化就影响不到这个值
 
 ES6 模块的运行机制与 CommonJS 不一样。JS 引擎对脚本静态分析的时候，遇到模块加载命令 import，就会生成一个只读引用。等到脚本真正执行时，再根据这个只读引用，到被加载的那个模块里面去取值
 
@@ -1760,23 +1956,24 @@ AMD 是 RequireJS 在推广过程中对模块定义的规范化产出。
 
 CMD 是 SeaJS 在推广过程中对模块定义的规范化产出。
 
-大致：AMD用户体验好，因为没有延迟，依赖模块提前执行；CMD性能好，因为用户需要时才执行
+大致：AMD 用户体验好，因为没有延迟，依赖模块提前执行；CMD 性能好，因为用户需要时才执行
 
-1. 模块定义时对依赖的处理不同。AMD推崇依赖前置，在定义模块的时候就要声明其依赖 CMD可以就近声明
+1. 模块定义时对依赖的处理不同。AMD 推崇依赖前置，在定义模块的时候就要声明其依赖 CMD 可以就近声明
 
 2. 依赖模块的执行时机处理不同。首先 AMD 和 CMD 对于模块的加载方式都是异步加载 AMD 是提前执行，CMD 是延迟执行（不过 RequireJS 从 2.0 开始，也改成可以延迟执行）根据写法不同）
 
- require.js 的核心原理是通过动态创建 script 脚本来异步引入模块，然后对每个脚本的 load 事件进行监听，如果每个脚本都加载完成了，再调用回调函数
-
+require.js 的核心原理是通过动态创建 script 脚本来异步引入模块，然后对每个脚本的 load 事件进行监听，如果每个脚本都加载完成了，再调用回调函数
 
 ---
+
 ## 46. 数组和对象的解构赋值和拓展运算符号
+
 ```
 对象：
 let {apple, orange} = {apple: 'red appe', orange: 'yellow orange'};
 =>
 let [apple, orange] = ['red appe', 'yellow orange'];
-let myFruits = {apple, orange}; 
+let myFruits = {apple, orange};
 // let myFruits = {apple: 'red appe', orange: 'yellow orange'};
 
 let {apple, orange, ...otherFruits} = {apple: 'red apple', orange: 'yellow orange', grape:
@@ -1788,23 +1985,22 @@ let [a,b,c] = [1,2,3]
 [arr[i],arr[j]]=[arr[i],arr[j]]
 
 ```
+
 ---
 
 ## 48. 箭头函数和普通函数的区别
 
-用了箭头函数，this就不是指向window，而是父级（指向是可变的）
+用了箭头函数，this 就不是指向 window，而是父级（指向是可变的）
 
-不能够使用arguments对象
+不能够使用 arguments 对象
 
-不能用作构造函数，这就是说不能够使用new命令，否则会抛出一个错误
+不能用作构造函数，这就是说不能够使用 new 命令，否则会抛出一个错误
 
-不可以使用yield命令，因此箭头函数不能用作 Generator 函数
+不可以使用 yield 命令，因此箭头函数不能用作 Generator 函数
 
+## 箭头函数自己没有定义 this 上下文，而是绑定到其父函数的上下文中，当你在 Vue 程序中使用箭头函数（=>）时，this 关键字病不会绑定到 Vue 实例，因此会引发错误，所以强烈建议改用标准函数声明
 
-箭头函数自己没有定义 this 上下文，而是绑定到其父函数的上下文中，当你在 Vue 程序中使用箭头函数（=>）时，this 关键字病不会绑定到 Vue 实例，因此会引发错误，所以强烈建议改用标准函数声明
----
-
-## 47. ES6对Object类型的升级
+## 47. ES6 对 Object 类型的升级
 
 1. 对象属性变量式声明
 
@@ -1814,44 +2010,44 @@ let [a,b,c] = [1,2,3]
 
 4. super 关键字
 
-Class类里新增super关键字总是指向当前函数所在对象的原型对象。
+Class 类里新增 super 关键字总是指向当前函数所在对象的原型对象。
 
-5. Object.is(a,b)用来修复全等符“===” Nah返回false的bug
+5. Object.is(a,b)用来修复全等符“===” Nah 返回 false 的 bug
 
 6. Object.assign(target, source1, source2);
 
-合并的对象target只能合并source1、source2中的自身属性，并不会并 source1、 source2中的继承属性，也不会合并不可枚举的属性，且无法正确复制get和set 属性（会直接执行get/set函数，取return的值）。常用于浅拷贝
+合并的对象 target 只能合并 source1、source2 中的自身属性，并不会并 source1、 source2 中的继承属性，也不会合并不可枚举的属性，且无法正确复制 get 和 set 属性（会直接执行 get/set 函数，取 return 的值）。常用于浅拷贝
 
-7. getOwnPropertyDescriptor()方法，可以获取指定对象所有自身属性的描述对象。结合defineProperties()方法，可以完美复制对象，包括复制**get和set属性。**
- 
-8. ES6在Object原型上新增了getPrototypeOf()和setPrototypeOf()方法，用来获取或设置当前对象的prototype对象。而不是使用浏览器厂商私加的__proto__属性来实现
+7. getOwnPropertyDescriptor()方法，可以获取指定对象所有自身属性的描述对象。结合 defineProperties()方法，可以完美复制对象，包括复制**get 和 set 属性。**
 
-9. ES6在Object原型上还新增了Object.keys()，Object.values()，Object.entries()方法，用来获取对象的所有键、所有值和所有键值对数组。
+8. ES6 在 Object 原型上新增了 getPrototypeOf()和 setPrototypeOf()方法，用来获取或设置当前对象的 prototype 对象。而不是使用浏览器厂商私加的**proto**属性来实现
+
+9. ES6 在 Object 原型上还新增了 Object.keys()，Object.values()，Object.entries()方法，用来获取对象的所有键、所有值和所有键值对数组。
 
 ---
 
-## 48. Promise 
+## 48. Promise
 
- - Promise 中 reject 和 catch 处理上有什么区别:
+- Promise 中 reject 和 catch 处理上有什么区别:
 
 reject 是用来抛出异常，catch 是用来处理异常
 
 reject 是 Promise 的方法，而 catch 是 Promise 实例的方法
 
-reject后的东西，一定会进入then中的第二个回调，如果then中没有写第二个回调，则进入 catch
+reject 后的东西，一定会进入 then 中的第二个回调，如果 then 中没有写第二个回调，则进入 catch
 
-网络异常（比如断网），会直接进入catch而不会进入then的第二个回调
+网络异常（比如断网），会直接进入 catch 而不会进入 then 的第二个回调
 
 构造函数中的 resolve 或 reject 只有第一次执行有效,Promise 状态一旦改变则不能再变。
 
-- 理解async await
-async await 是用来解决异步的，async函数的实现，就是将Generator函数和自动执行器，包装在一个函数里,是Generator函数的语法糖
+- 理解 async await
+  async await 是用来解决异步的，async 函数的实现，就是将 Generator 函数和自动执行器，包装在一个函数里,是 Generator 函数的语法糖
 
-使用关键字async来表示，在函数内部使用 await 来表示异步
+使用关键字 async 来表示，在函数内部使用 await 来表示异步
 
-async函数返回一个 Promise 对象，可以使用then方法添加回调函数
+async 函数返回一个 Promise 对象，可以使用 then 方法添加回调函数
 
-当函数执行的时候，一旦遇到await就会先返回，等到异步操作完成，再接着执行函数体内后面的语句
+当函数执行的时候，一旦遇到 await 就会先返回，等到异步操作完成，再接着执行函数体内后面的语句
 
 ```
 对比使用then和async
@@ -1884,28 +2080,29 @@ async function doIt() {
 }
 doIt();
 ```
-async较Generator的优势
+
+async 较 Generator 的优势
 1、内置执行器
 2、更好的语义
 3、更广的适用性
 4、返回值是 Promise
 
-
 ---
 
-## 49. Ajax的实现流程
+## 49. Ajax 的实现流程
 
-1、创建XMLHTTPRequest对象,也就是创建一个异步调用对象.
+1、创建 XMLHTTPRequest 对象,也就是创建一个异步调用对象.
 
-2、创建一个新的HTTP请求,并指定该HTTP请求的方法、URL及验证信息.
+2、创建一个新的 HTTP 请求,并指定该 HTTP 请求的方法、URL 及验证信息.
 
-3、设置响应HTTP请求状态变化的函数.
+3、设置响应 HTTP 请求状态变化的函数.
 
-4、发送HTTP请求.
+4、发送 HTTP 请求.
 
 5、获取异步调用返回的数据.
 
-6、使用JavaScript和DOM实现局部刷新.
+6、使用 JavaScript 和 DOM 实现局部刷新.
+
 ```
 var HTTPRequest;
 function checkUsername() {
@@ -1996,39 +2193,39 @@ function getJSON(url) {
 
 ```
 
-AJAX浏览器缓存解决方案：
+AJAX 浏览器缓存解决方案：
 
-1、在Ajax发送请求前加上 anyAjaxObj.setRequestHeader("If-Modified-Since","0")。
+1、在 Ajax 发送请求前加上 anyAjaxObj.setRequestHeader("If-Modified-Since","0")。
 
-2、在Ajax发送请求前加上 anyAjaxObj.setRequestHeader("Cache-Control","no-cache")。
+2、在 Ajax 发送请求前加上 anyAjaxObj.setRequestHeader("Cache-Control","no-cache")。
 
-3、在URL后面加上一个随机数： "fresh=" + Math.random();。
+3、在 URL 后面加上一个随机数： "fresh=" + Math.random();。
 
-4、在URL后面加上时间戳："nowtime=" + new Date().getTime();。
+4、在 URL 后面加上时间戳："nowtime=" + new Date().getTime();。
 
-5、如果是使用jQuery，直接这样就可以了 $.AjaxSetup({cache:false})。这样页面的所有Ajax 都会执行这条语句就是不需要保存缓存记录
+5、如果是使用 jQuery，直接这样就可以了 $.AjaxSetup({cache:false})。这样页面的所有 Ajax 都会执行这条语句就是不需要保存缓存记录
 
 ## 50. 跨域及解决方式
 
 指的是浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的,是浏览器对
-javascript施加的安全限制，防止他人恶意攻击网站
+javascript 施加的安全限制，防止他人恶意攻击网站
 
 解决方式：
 
 1. jsonP
 
-  利用script标签的src属性中的链接可以访问跨域的js脚本这个特性，通过动态创建script标签的src属性获取js文件中的js脚本，该脚本的内容是一个函数调用，参数就是服务器返回的数据
+利用 script 标签的 src 属性中的链接可以访问跨域的 js 脚本这个特性，通过动态创建 script 标签的 src 属性获取 js 文件中的 js 脚本，该脚本的内容是一个函数调用，参数就是服务器返回的数据
 
-为了处理这些返回的数据，需要事先在页面定义好回调函数，本质上使用的并不是Ajax技术，服务端不返回json格式的数据，而是返回调用某个函数的js代码，在src中进行了调用，这样就实现了跨域
+为了处理这些返回的数据，需要事先在页面定义好回调函数，本质上使用的并不是 Ajax 技术，服务端不返回 json 格式的数据，而是返回调用某个函数的 js 代码，在 src 中进行了调用，这样就实现了跨域
 
 2. CORS：跨域资源共享
 
-原理：服务器设置Access-Control-Allow-OriginHTTP响应头之后，浏览器将会允许跨域请求
+原理：服务器设置 Access-Control-Allow-OriginHTTP 响应头之后，浏览器将会允许跨域请求
 
-限制：浏览器需要支持HTML5，可以支持POST，PUT等方法兼容ie9以上
+限制：浏览器需要支持 HTML5，可以支持 POST，PUT 等方法兼容 ie9 以上
 需要后台设置
 
-Access-Control-Allow-Origin: * //允许所有域名访问，或者
+Access-Control-Allow-Origin: \* //允许所有域名访问，或者
 
 Access-Control-Allow-Origin: HTTP://a.com //只允许所有域名访问
 
@@ -2037,6 +2234,7 @@ Access-Control-Allow-Origin: HTTP://a.com //只允许所有域名访问
 4. window+iframe
 
 ---
+
 ## 51. 深浅拷贝
 
 浅拷贝： 创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本类型，拷贝的就是基本类型的值，如果属性是引用类型，拷贝的就是内存地址 ，所以如果其中一个对象改变了这个地址，就会影响到另一个对象。
@@ -2047,20 +2245,21 @@ Access-Control-Allow-Origin: HTTP://a.com //只允许所有域名访问
 
 Object.assign() 方法： 用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。它将返回目标对象。
 
-Array.prototype.slice()：slice() 方法返回一个新的数组对象，这一对象是一个由 begin和end（不包括end）决定的原数组的浅拷贝。原始数组不会被改变。
+Array.prototype.slice()：slice() 方法返回一个新的数组对象，这一对象是一个由 begin 和 end（不包括 end）决定的原数组的浅拷贝。原始数组不会被改变。
 
 拓展运算符...：
 
-深拷贝的实现方式： 
+深拷贝的实现方式：
 
-JSON.parse(JSON.stringify(object))，缺点诸多（会忽略undefined、symbol、函数；不能解决循环引用；不能处理正则、new Date()）
+JSON.parse(JSON.stringify(object))，缺点诸多（会忽略 undefined、symbol、函数；不能解决循环引用；不能处理正则、new Date()）
 
 浅拷贝+递归：
+
 ```
 function cloneDeep(target,map = new WeakMap()) {
   if(typeOf taret ==='object'){
      let cloneTarget = Array.isArray(target) ? [] : {};
-      
+
      if(map.get(target)) {
         return target;
     }
@@ -2072,14 +2271,15 @@ function cloneDeep(target,map = new WeakMap()) {
   }else{
        return target
   }
- 
+
 }
 ```
+
 ## 52. 函数的柯里化
 
 // 函数柯里化指的是一种将使用多个参数的一个函数转换成一系列使用一个参数的函数的技术,Function.prototype.bind 方法也是柯里化应用
 
-//详解https://www.cnblogs.com/planetwithpig/p/11734821.html 
+//详解https://www.cnblogs.com/planetwithpig/p/11734821.html
 
 直译：可以传任意多个参数，当不传参数时输出结果；柯里化了的函数，它返回一个新的函数，新的函数接收可分批次接受新的参数，延迟到最后一次计算
 
@@ -2116,10 +2316,10 @@ function curry(fn, ...args) {
 }
 ```
 
-## websocket 
+## websocket
 
-- websocket是一种网络通信协议，是HTML5开始提供的一种在单个TCP连接上进行全双工通信的协议，这个对比着HTTP协议来说，HTTP协议是一种无状态的、无连接的、单向的应用层协议，通信请求只能由客户端发起，服务端对请求做出应答处理。HTTP协议无法实现服务器主动向客户端发起消息，websocket 连接允许客户端和服务器之间进行全双工通信，以便任一方都可以通过建立的连接将数据推送到另一端。websocket只需要建立一次连
-接，就可以一直保持连接状态
+- websocket 是一种网络通信协议，是 HTML5 开始提供的一种在单个 TCP 连接上进行全双工通信的协议，这个对比着 HTTP 协议来说，HTTP 协议是一种无状态的、无连接的、单向的应用层协议，通信请求只能由客户端发起，服务端对请求做出应答处理。HTTP 协议无法实现服务器主动向客户端发起消息，websocket 连接允许客户端和服务器之间进行全双工通信，以便任一方都可以通过建立的连接将数据推送到另一端。websocket 只需要建立一次连
+  接，就可以一直保持连接状态
 - 兼容低浏览器
 
 Adobe Flash Socket 、
@@ -2127,62 +2327,60 @@ ActiveX HTMLFile (IE) 、
 基于 multipart 编码发送 XHR 、
 基于长轮询的 XHR
 
-## MVVM和MVC区别
+## MVVM 和 MVC 区别
 
-视图模型(ViewModel)是MVVM模式的核心，是连接view视图和 model模型的桥梁，有两个方向：
+视图模型(ViewModel)是 MVVM 模式的核心，是连接 view 视图和 model 模型的桥梁，有两个方向：
 
-一是将模型Model 转化为视图View，即将后端传递的数据转化成所看到页面，实现的方式是：数据绑定
+一是将模型 Model 转化为视图 View，即将后端传递的数据转化成所看到页面，实现的方式是：数据绑定
 
-二是将视图（view）转化成模型（Model），即将所看到的页面转化成后端的数据，实现的方式是：DOM事件监听；这两方面都实现的称之为数据的双向绑定
+二是将视图（view）转化成模型（Model），即将所看到的页面转化成后端的数据，实现的方式是：DOM 事件监听；这两方面都实现的称之为数据的双向绑定
 
-MVC中的MV与MVVM中的MV相同，C指的是页面业务逻辑Controller，使用MVC的目的是M和V的代码分离。MVC是单向通信。也就是View跟Model，必须通过Controller来承上启下
+MVC 中的 MV 与 MVVM 中的 MV 相同，C 指的是页面业务逻辑 Controller，使用 MVC 的目的是 M 和 V 的代码分离。MVC 是单向通信。也就是 View 跟 Model，必须通过 Controller 来承上启下
 
-MVVM主要解决的是MVC中大量的DOM操作使页面渲染性能降低，加载速度变慢。 Vue数据驱动，通过数据来显示数图层而不是节点操作。场景: 数据操作比较多的场景，比如大量操作DOM元素时，才用MVVM的开发方式，让开发者关注在数据的变化上而非繁琐的操作DOM元素
+MVVM 主要解决的是 MVC 中大量的 DOM 操作使页面渲染性能降低，加载速度变慢。 Vue 数据驱动，通过数据来显示数图层而不是节点操作。场景: 数据操作比较多的场景，比如大量操作 DOM 元素时，才用 MVVM 的开发方式，让开发者关注在数据的变化上而非繁琐的操作 DOM 元素
 
-MVC和MVVM的区别并不是VM完全取代了C,只是在MVC的基础上增加了一层VM，弱化了C的概念，ViewModel存在的目的在于抽离Controller中展示的业务逻辑，而不是替代，也就是说实现的是业务逻辑组件的重用，是开发更高效结构更清晰。
-
+MVC 和 MVVM 的区别并不是 VM 完全取代了 C,只是在 MVC 的基础上增加了一层 VM，弱化了 C 的概念，ViewModel 存在的目的在于抽离 Controller 中展示的业务逻辑，而不是替代，也就是说实现的是业务逻辑组件的重用，是开发更高效结构更清晰。
 
 ---
 
-## VUE技术概述 
+## VUE 技术概述
 
-Vue 组件通过 prop 进行数据传递，并实现了数据总线系统EventBus，组件集成了EventBus进行事件注册监听、事件触发，使用slot进行内容分发。
+Vue 组件通过 prop 进行数据传递，并实现了数据总线系统 EventBus，组件集成了 EventBus 进行事件注册监听、事件触发，使用 slot 进行内容分发。
 
-除此以外，实现了一套声明式模板系统，在runtime或者预编译是对模板进行编译，生成渲染函数，供组件渲染视图使用。
+除此以外，实现了一套声明式模板系统，在 runtime 或者预编译是对模板进行编译，生成渲染函数，供组件渲染视图使用。
 
-Vue.js 是一款 MVVM 的JS框架，当对数据模型data进行修改时，视图会自动得到更新，即框架帮我们完成了更新DOM的操作，而不需要我们手动的操作DOM。
+Vue.js 是一款 MVVM 的 JS 框架，当对数据模型 data 进行修改时，视图会自动得到更新，即框架帮我们完成了更新 DOM 的操作，而不需要我们手动的操作 DOM。
 
-Vue.js 实现了一套声明式渲染引擎，并在runtime或者预编译时将声明式的模板编译成渲染函数，挂载在观察者 Watcher 中，在渲染函数中（touch），响应式系统使用响应式数据的getter方法对观察者进行依赖收集（Collect as Dependency），使用响应式数据的setter方法通知（notify）所有观察者进行更新，此时观察者 Watcher 会触发组件的渲染函数（Trigger re-render），组件执行的 render 函数，生成一个新的 Virtual DOM Tree，此时 Vue 会对新老 Virtual DOM Tree 进行 Diff，查找出需要操作的真实 DOM 并对其进行更新。
+Vue.js 实现了一套声明式渲染引擎，并在 runtime 或者预编译时将声明式的模板编译成渲染函数，挂载在观察者 Watcher 中，在渲染函数中（touch），响应式系统使用响应式数据的 getter 方法对观察者进行依赖收集（Collect as Dependency），使用响应式数据的 setter 方法通知（notify）所有观察者进行更新，此时观察者 Watcher 会触发组件的渲染函数（Trigger re-render），组件执行的 render 函数，生成一个新的 Virtual DOM Tree，此时 Vue 会对新老 Virtual DOM Tree 进行 Diff，查找出需要操作的真实 DOM 并对其进行更新。
 
-ps. 声明式如map函数 不考虑中间过程直接通过实现条件返回结果 命令式如for循环处理，关心流程的每一步，用命令去实现。
+ps. 声明式如 map 函数 不考虑中间过程直接通过实现条件返回结果 命令式如 for 循环处理，关心流程的每一步，用命令去实现。
 
-不支持ie8及以下，部分兼容ie9 ，完全兼容10以上，因为vue的响应式原理是基于es5
-的Object.defineProperty(),而这个方法不支持ie8及以下
+不支持 ie8 及以下，部分兼容 ie9 ，完全兼容 10 以上，因为 vue 的响应式原理是基于 es5
+的 Object.defineProperty(),而这个方法不支持 ie8 及以下
 
-组件中name的作用：
+组件中 name 的作用：
 
-  项目使用keep-alive时，可搭配组件name进行缓存过滤
+项目使用 keep-alive 时，可搭配组件 name 进行缓存过滤
 
-  DOM做递归组件时需要调用自身name
+DOM 做递归组件时需要调用自身 name
 
-  vue-devtools调试工具显示的组件名称是有vue中组件name决定的
+vue-devtools 调试工具显示的组件名称是有 vue 中组件 name 决定的
 
-data为什么必须是函数：
+data 为什么必须是函数：
 
-  1. 每个组件都是Vue的实例
+1. 每个组件都是 Vue 的实例
 
-  2. 组件共享data属性，当data的值是同一个引用类型的值时，改变其中一个会影响其他
+2. 组件共享 data 属性，当 data 的值是同一个引用类型的值时，改变其中一个会影响其他
 
-  3. 组件中的data写成一个函数，数据以函数返回值形式定义，*这样每复用一次组件，就会返回一份新的data，类似于给每个组件实例创建一个私有数据空间*，让组件维护各自的数据。如果写成对象形式，就使得所有组件实例共用一份data。
+3. 组件中的 data 写成一个函数，数据以函数返回值形式定义，_这样每复用一次组件，就会返回一份新的 data，类似于给每个组件实例创建一个私有数据空间_，让组件维护各自的数据。如果写成对象形式，就使得所有组件实例共用一份 data。
 
-
-Vue定时器的使用与销毁：
+Vue 定时器的使用与销毁：
 
 ```
 多个定时器：
 
 在data选项中创建一个对象timer，给每个定时器取个名
-字一一映射在对象timer中， 
+字一一映射在对象timer中，
 在beforeDestroy构造函数中
 for(let k in this.timer)
 {clearInterval(k)}；
@@ -2196,40 +2394,43 @@ this.$once("hook:beforeDestory",()=>{
 })
 
 ```
-Vue-cli用自定义的组件
 
-1. 在components目录创建组件文件 indexPage.vue,script中export default{}
+Vue-cli 用自定义的组件
+
+1. 在 components 目录创建组件文件 indexPage.vue,script 中 export default{}
 
 2. 在需要用的页面中导入：import indexPage from '@/components/indexPage.vue'
 
-3. 注册到vue的子组件的components属性上面，components:{indexPage}   （大驼峰命名）
+3. 注册到 vue 的子组件的 components 属性上面，components:{indexPage} （大驼峰命名）
 
-4. template视图中使用indexPage   <index-page>   （链式命名）
-
+4. template 视图中使用 indexPage <index-page> （链式命名）
 
 有两种方法可以监听路由参数的变化，但是只能用在包含<router-view />的组件内。
 
 第一种
 
 watch: {
-  '$route'(to, from) {
-  // 在此处监听
-  },
+'$route'(to, from) {
+// 在此处监听
+},
 },
 
 第二种
 
 beforeRouteUpdate (to, from, next) {
- //这里监听
+//这里监听
 }
+
 ---
-##  Vue 插槽
 
-Vue实现了一套遵循 Web Components 规范草案 的内容分发系统，即将<slot>元素作为承载分发内容的出口。
+## Vue 插槽
 
-插槽slot，也是组件的一块HTML模板，这一块模板显示不显示、以及怎样显示由父组件来决定。
+Vue 实现了一套遵循 Web Components 规范草案 的内容分发系统，即将<slot>元素作为承载分发内容的出口。
 
-插槽分默认插槽、一个组件只能有一个该类插槽。具名插槽,具名插槽可以在一个组件中出现N次，出现在不同的位置，只需要使用不同的name属性区分即可
+插槽 slot，也是组件的一块 HTML 模板，这一块模板显示不显示、以及怎样显示由父组件来决定。
+
+插槽分默认插槽、一个组件只能有一个该类插槽。具名插槽,具名插槽可以在一个组件中出现 N 次，出现在不同的位置，只需要使用不同的 name 属性区分即可
+
 ```
 <template>
 <!-- 父组件 parent.vue -->
@@ -2262,7 +2463,7 @@ Vue实现了一套遵循 Web Components 规范草案 的内容分发系统，即
 </template>
 ```
 
-- 作用域插槽:作用域插槽可以为 slot 标签绑定数据，让其父组件可以获取到子组件的数据。父组件可以通过slot-scope属性获取到数据
+- 作用域插槽:作用域插槽可以为 slot 标签绑定数据，让其父组件可以获取到子组件的数据。父组件可以通过 slot-scope 属性获取到数据
 
 ```
 <template>
@@ -2286,56 +2487,74 @@ Vue实现了一套遵循 Web Components 规范草案 的内容分发系统，即
 </template>
 ```
 
-slot 实现原理：当子组件vm实例化时，获取到父组件传入的 slot 标签的内容，存放在vm.$slot中，默认插槽为vm.$slot.default，具名插槽为vm.$slot.xxx，xxx 为插槽名，当组件执行渲染函数时候，遇到<slot>标签，使用$slot中的内容进行替换，此时可以为插槽传递数据，若存在数据，则可称该插槽为作用域插槽。
-
-
+slot 实现原理：当子组件 vm 实例化时，获取到父组件传入的 slot 标签的内容，存放在 vm.$slot中，默认插槽为vm.$slot.default，具名插槽为 vm.$slot.xxx，xxx 为插槽名，当组件执行渲染函数时候，遇到<slot>标签，使用$slot 中的内容进行替换，此时可以为插槽传递数据，若存在数据，则可称该插槽为作用域插槽。
 
 ---
-## VNode 
 
- 在VUE中，template被编译成浏览器可执行的render function，然后配合响应式系统，将render function挂载在render-watcher中，当有数据更改的时候，调度中心Dep通知该render-watcher执行render function，完成视图的渲染与更新。
+## VNode
 
- Vue 使用 JS 对象将浏览器的 DOM 进行的抽象，这个抽象被称为 Virtual DOM。Virtual DOM 的每个节点被定义为VNode，当每次执行render function时，Vue 对更新前后的VNode进行Diff对比，找出尽可能少的我们需要更新的真实 DOM 节点，然后只更新需要更新的节点，从而解决频繁更新 DOM 产生的性能问题。
+在 VUE 中，template 被编译成浏览器可执行的 render function，然后配合响应式系统，将 render function 挂载在 render-watcher 中，当有数据更改的时候，调度中心 Dep 通知该 render-watcher 执行 render function，完成视图的渲染与更新。
 
- 作用与优点：
+Vue 使用 JS 对象将浏览器的 DOM 进行的抽象，这个抽象被称为 Virtual DOM。Virtual DOM 的每个节点被定义为 VNode，当每次执行 render function 时，Vue 对更新前后的 VNode 进行 Diff 对比，找出尽可能少的我们需要更新的真实 DOM 节点，然后只更新需要更新的节点，从而解决频繁更新 DOM 产生的性能问题。
 
- 通过render将template模板描述成Vnode，然后经过一系列操作后形成真实的DOM进行挂载；兼容性强（为JS对象），获得了服务端渲染，原生渲染，手写渲染函数等能力；减少操作DOM，任何页面变化都只是用Vnode进行操作对比，在最后一步挂载更新，不需要频繁操作DOM从而提高页面性能。
+作用与优点：
 
- ps. Vue.js 内部的 diff 被称为patch，其算法的是通过同层的树节点进行比较，而非对树进行逐层搜索遍历的方式，所以时间复杂度只有O(n)，是一种相当高效的算法。
+通过 render 将 template 模板描述成 Vnode，然后经过一系列操作后形成真实的 DOM 进行挂载；兼容性强（为 JS 对象），获得了服务端渲染，原生渲染，手写渲染函数等能力；减少操作 DOM，任何页面变化都只是用 Vnode 进行操作对比，在最后一步挂载更新，不需要频繁操作 DOM 从而提高页面性能。
 
+ps. Vue.js 内部的 diff 被称为 patch，其算法的是通过同层的树节点进行比较，而非对树进行逐层搜索遍历的方式，所以时间复杂度只有 O(n)，是一种相当高效的算法。
 
- 实现思路：
+实现思路：
 
- 首先构建一个Vnode类，DOM元素上的所有属性在Vnode类实例化出来的对象上都存在对应的属性。例如tag表示一个元素节点的名称，text表示一个文本节点的文本，children表示子节点。将Vnode实例化出来的对象进行分类，最后整合就可以得到一个虚拟DOM 最后通过path将vnode和oldVnode进行比较后，生成真实DOM
+首先构建一个 Vnode 类，DOM 元素上的所有属性在 Vnode 类实例化出来的对象上都存在对应的属性。例如 tag 表示一个元素节点的名称，text 表示一个文本节点的文本，children 表示子节点。将 Vnode 实例化出来的对象进行分类，最后整合就可以得到一个虚拟 DOM 最后通过 path 将 vnode 和 oldVnode 进行比较后，生成真实 DOM
 
-ps. <template conmments> 可以在保留渲染模板后的HTML注释
----
+## ps. <template conmments> 可以在保留渲染模板后的 HTML 注释
 
-## VUE的双向绑定原理
+## VUE 的双向绑定原理
 
-Vue.js采用数据劫持结合发布者-订阅者模式的方式，通过Object.defineProperty()来劫持各个属性的setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
+Vue.js 采用数据劫持结合发布者-订阅者模式的方式，通过 Object.defineProperty()来劫持各个属性的 setter，getter，在数据变动时发布消息给订阅者，触发相应的监听回调。
 
-1. 需要observe的数据对象进行递归遍历，包括子属性对象的属性，都加上setter，getter，这样的话对这个对象某个值赋值，就会触发setter，那么就能监听到数据变化
+1. 需要 observe 的数据对象进行递归遍历，包括子属性对象的属性，都加上 setter，getter，这样的话对这个对象某个值赋值，就会触发 setter，那么就能监听到数据变化
 
-2. compile解析模板指令，将模板中的变量替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知更新视图。
+2. compile 解析模板指令，将模板中的变量替换成数据，然后初始化渲染页面视图，并将每个指令对应的节点绑定更新函数，添加监听数据的订阅者，一旦数据有变动，收到通知更新视图。
 
-3. Watch订阅者主要做的是：
+3. Watch 订阅者主要做的是：
 
 在自身实例化时往属性订阅器（dep）里面添加自己
 
-自身必须有个update()方法
+自身必须有个 update()方法
 
-待属性变动dep。notice()通知时，能调用自身的update(),并触发conpile中的回调
+待属性变动 dep。notice()通知时，能调用自身的 update(),并触发 conpile 中的回调
 
-
-MVVM作为数据绑定的入口，整合Observer，Compile和watcher三者，通过Observer来监听自己的model的数据变化，通过Compile来解析编译模板指令，最终利用watch搭起Observer和Compile之间的通信桥梁，达到 数据变化 ->视图更新 ; 视图交互变化 ->数据model 变更的双向绑定效果。
+MVVM 作为数据绑定的入口，整合 Observer，Compile 和 watcher 三者，通过 Observer 来监听自己的 model 的数据变化，通过 Compile 来解析编译模板指令，最终利用 watch 搭起 Observer 和 Compile 之间的通信桥梁，达到 数据变化 ->视图更新 ; 视图交互变化 ->数据 model 变更的双向绑定效果。
 
 ---
 
+## Vue 首屏加载优化
+
+1. 把不常改变的库放到 index.html 中，通过 cdn 引入
+
+2. vue 路由懒加载
+
+   2.1 component:resolve=>require(["@components/路
+   由的路径"]，resolve)。
+
+   2.2 const 组件名=() => import('组件路径');
+
+vue-router 配置路由，使用 webpack 的 require.ensure 技术，也可以实现按需加载。
+这种情况下，多个路由指定相同的 chunkName，会合并打包成一个 js 文件。
+const Home = () => import(/_ webpackChunkName: 'ImportFuncDemo' _/ '@/components/home') 3. 不生成 map 文件 //vue-cli 项目在 config 文件夹下找到 index.js 文件 productionSourceMap:false
+
+4. 使用更轻量级的工具库
+
+5. 组件尽量不全局引入
+
+6. 开启 gzip 压缩
+
+7. 首页单独做服务端渲染
 
 ## .Vue.nextTick()
 
-$refs相对document.getElementById的方法，会减少获取dom节点的消耗。
+$refs 相对 document.getElementById 的方法，会减少获取 dom 节点的消耗。
 
 以下两个情况下需要用到 Vue.nextTick()
 
@@ -2345,72 +2564,69 @@ $refs相对document.getElementById的方法，会减少获取dom节点的消耗�
 
 *数据改变*之后的操作跟改变之后的*DOM*有关，那么就应该使用 Vue.nextTick()
 
-  
 ---
 
-## Vue生命周期
+## Vue 生命周期
 
-Vue实例从创建到销毁的过程就是生命周期； 开始创建、初始化数据、编译模板、挂载Dom->渲染、更新->渲染、卸载的等一系列过程
+Vue 实例从创建到销毁的过程就是生命周期； 开始创建、初始化数据、编译模板、挂载 Dom->渲染、更新->渲染、卸载的等一系列过程
 
 1. beforeCreate
 
-    在实例初始化之后数据观测（data observer）和event/watcher事件配置之前被调用
+   在实例初始化之后数据观测（data observer）和 event/watcher 事件配置之前被调用
 
 2. created
 
-    在市里创建完成后被立刻调用。在这一步，实例已完成：数据观测（data observer）属性的方法和运算，watch/event 事件回调。然而，挂在阶段后还开始，$el属性目前不可见
+   在市里创建完成后被立刻调用。在这一步，实例已完成：数据观测（data observer）属性的方法和运算，watch/event 事件回调。然而，挂在阶段后还开始，$el 属性目前不可见
 
 3. beforeMount
 
-    在挂载开始之前被调用;相关的render函数首次被调用
+   在挂载开始之前被调用;相关的 render 函数首次被调用
 
 4. mounted
 
-    el被创建的vm.$el 替换，并挂载到实例上去之后调用该钩子，如果root实例挂载了一个文档内元素，当mounted被调用时vm.$el也在文档内
+   el 被创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子，如果root实例挂载了一个文档内元素，当mounted被调用时vm.$el 也在文档内
 
 5. beforeUpdate
 
-    数据更新时调用，发生在虚拟DOM打补丁之前，这里适合在更新之前访问现有的DOM，比如手动移除已添加的事件监听器，该钩子在服务端渲染期间不被调用，因为只有初次渲染会在服务端进行
-  
-6. updated 
+   数据更新时调用，发生在虚拟 DOM 打补丁之前，这里适合在更新之前访问现有的 DOM，比如手动移除已添加的事件监听器，该钩子在服务端渲染期间不被调用，因为只有初次渲染会在服务端进行
 
-    由于数据更改导致的虚拟DOM 重新渲染和打补丁，在这之后会调用该钩子
+6. updated
+
+   由于数据更改导致的虚拟 DOM 重新渲染和打补丁，在这之后会调用该钩子
 
 7. acticated
 
-    keep-alive组件激活时调用。该钩子在服务器端渲染期间不被调用
+   keep-alive 组件激活时调用。该钩子在服务器端渲染期间不被调用
 
-    第一次进入缓存路由/组件，在mounted后面，beforeRouteEnter守卫传给 next 的回调函数之前调用，并且给因为组件被缓存了，再次进入缓存路由、组件时，会触发这些钩子函数，beforeCreate created beforeMount mounted 都不会触发
+   第一次进入缓存路由/组件，在 mounted 后面，beforeRouteEnter 守卫传给 next 的回调函数之前调用，并且给因为组件被缓存了，再次进入缓存路由、组件时，会触发这些钩子函数，beforeCreate created beforeMount mounted 都不会触发
 
 8. deactivated
 
-    keep-alive组件停用时调用。该钩子在服务器端渲染期间不被调用
+   keep-alive 组件停用时调用。该钩子在服务器端渲染期间不被调用
 
-    这个钩子可以看作beforeDestroy的替代，如果你缓存了组件，要在组件销毁的的时候做一些事情，可以放在这个钩子里，组件内的 离开当前路由钩子  beforeRouteLeave => 路由前置守卫 beforeEach =>全局后置钩子afterEach => deactivated离开缓存组件 => activated 进入缓存组件(如果你进入的也是缓存路由)
+   这个钩子可以看作 beforeDestroy 的替代，如果你缓存了组件，要在组件销毁的的时候做一些事情，可以放在这个钩子里，组件内的 离开当前路由钩子 beforeRouteLeave => 路由前置守卫 beforeEach =>全局后置钩子 afterEach => deactivated 离开缓存组件 => activated 进入缓存组件(如果你进入的也是缓存路由)
 
 9. beforeDestory
 
-    实例销毁之前调用，调用后，Vue实例知识的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁。该钩子在服务器段渲染期间不被调用
+   实例销毁之前调用，调用后，Vue 实例知识的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁。该钩子在服务器段渲染期间不被调用
 
+Vue 中的指令
 
-Vue中的指令
-
-v-show本质就是通过设置css中的display设置为none，控制隐藏，v-show都会编译，初始值为false，只是将display设为none，但它也编译了；
-v-if是动态的向DOM树内添加或者删除DOM元素，v-if初始值为false，就不会编译了
-
+v-show 本质就是通过设置 css 中的 display 设置为 none，控制隐藏，v-show 都会编译，初始值为 false，只是将 display 设为 none，但它也编译了；
+v-if 是动态的向 DOM 树内添加或者删除 DOM 元素，v-if 初始值为 false，就不会编译了
 
 避免 v-if 和 v-for 用在一起
 
-当 Vue 处理指令时，v-for 比 v-if 具有更高的优先级，通过v-if 移动容器元素，不会再重复遍历列表中的每个值。取而代之的是，我们只检查它一次，且不会在 v-if 为否的时候运算 v-for
+当 Vue 处理指令时，v-for 比 v-if 具有更高的优先级，通过 v-if 移动容器元素，不会再重复遍历列表中的每个值。取而代之的是，我们只检查它一次，且不会在 v-if 为否的时候运算 v-for
 
 ## watch
 
 原则监听谁,写谁的名字,然后是对应的执行函数, 第一个参数为最新的改变值,第二
 个值为上一次改变的值, 注意: 除了监听 data,也可以监听计算属性 或者一个 函数的计算结果
 
-watch监听开始之后立即被调用：
+watch 监听开始之后立即被调用：
 
-选项参数中指定immediate: true将立即以表达式的当前值触发回调
+选项参数中指定 immediate: true 将立即以表达式的当前值触发回调
 
 深度监听对象变化
 
@@ -2425,109 +2641,105 @@ deep:true
 
 ---
 
-## Vue组件传值
+## Vue 组件传值
 
 1. 父组件向子组件传递数据
 
-  父组件内设置的要传数据，在父组件中引用的子组件上班顶一个自定义属性并数据绑定在自定义属性上，在子组件添加参数prop接收即可
+父组件内设置的要传数据，在父组件中引用的子组件上班顶一个自定义属性并数据绑定在自定义属性上，在子组件添加参数 prop 接收即可
 
 2. 子组件向父组件传值
 
-  子组件通过Vue实例方法$emit进行处罚并可以携带参数，父组件监听使用@（v-on）进行监听，然后进行方法处理
+子组件通过 Vue 实例方法$emit 进行处罚并可以携带参数，父组件监听使用@（v-on）进行监听，然后进行方法处理
 
 3. 非父子组件之间传递数据
 
-  1）引入第三方new vue 定义为eventBus
+1）引入第三方 new vue 定义为 eventBus
 
-  2）在组件中created中订阅方法eventBus.$on("自定义事件名",methods中方法名)
+2）在组件中 created 中订阅方法 eventBus.$on("自定义事件名",methods 中方法名)
 
-  3）在另一个组件中methods写函数，在函数中发布eventBus订阅的方法eventBus.$emit("自定义事件名")
+3）在另一个组件中 methods 写函数，在函数中发布 eventBus 订阅的方法 eventBus.$emit("自定义事件名")
 
-  4）在组件中的template中绑定事件
+4）在组件中的 template 中绑定事件
 
-4. 使用vuex的store
+4. 使用 vuex 的 store
 
-vuex可以理解为一种开发模式或框架。比如PHP有thinkphp，java有spring等，通过状
-态(数据源)集中管理驱动组件的变化(好比spring的IOC容器对bean进行集中管理)
+vuex 可以理解为一种开发模式或框架。比如 PHP 有 thinkphp，java 有 spring 等，通过状
+态(数据源)集中管理驱动组件的变化(好比 spring 的 IOC 容器对 bean 进行集中管理)
 
-
-Vuex的5个核心属性
+Vuex 的 5 个核心属性
 
 分别是 State、 Getter、Mutation 、Action、 Module
 
-state： 单一状态树，在state中需要定义我们需要管理的数据，对象，字符串等。
+state： 单一状态树，在 state 中需要定义我们需要管理的数据，对象，字符串等。
 
-getter： 类似vue中的computed属性，当我们需要从store中的state中派生出一些状态，那么我们就需要使用getter，getter会接受state作为第一个参数，返回值会根据依赖被缓存，只有getter中的依赖值（state中的某个需要派生状态的值）发生改变时才会被重新计算
+getter： 类似 vue 中的 computed 属性，当我们需要从 store 中的 state 中派生出一些状态，那么我们就需要使用 getter，getter 会接受 state 作为第一个参数，返回值会根据依赖被缓存，只有 getter 中的依赖值（state 中的某个需要派生状态的值）发生改变时才会被重新计算
 
-mutation：store.commit  改变store中state状态的唯一方法就是提交mutation，类似事件函数一个字符串类型的事件类型和一个回调函数，state的值在回调函数中改变。
+mutation：store.commit 改变 store 中 state 状态的唯一方法就是提交 mutation，类似事件函数一个字符串类型的事件类型和一个回调函数，state 的值在回调函数中改变。
 
-action：store.dispatch  用来提交mutation，在action中可以执行store.commit,而且action中可以有任何异步操作。
+action：store.dispatch 用来提交 mutation，在 action 中可以执行 store.commit,而且 action 中可以有任何异步操作。
 
-module 可以将store分割成模块，每个模块都有自己的state、 Getter、Mutation 、Action
+module 可以将 store 分割成模块，每个模块都有自己的 state、 Getter、Mutation 、Action
 
-1、应用级的状态集中放在store中
+1、应用级的状态集中放在 store 中
 
-2、改变状态的方式是提交mutations，这是个同步的事物
+2、改变状态的方式是提交 mutations，这是个同步的事物
 
-3、异步逻辑应该封装在action中
+3、异步逻辑应该封装在 action 中
 
 主要解决的问题：来自不同组件的行为需要变更同一状态。以往采用父子组件直接引用或者通过事件来变更和同步状态的多份拷贝
 
-action和mutation区别
-流程顺序： 相应视图-->修改state 拆分成
-视图触发Action ，Action再出发Mutation
+action 和 mutation 区别
+流程顺序： 相应视图-->修改 state 拆分成
+视图触发 Action ，Action 再出发 Mutation
 
-mutation专注修改state，理论上是修改state的唯一途径
+mutation 专注修改 state，理论上是修改 state 的唯一途径
 
 action 业务代码，异步请求
 
 限制方面：
 
-mutation必须同步执行，action可以异步，但不能直接操作state
-
+mutation 必须同步执行，action 可以异步，但不能直接操作 state
 
 ---
 
 ## vue-router
 
-路由守卫有 全局守卫beforeEach 有参数
-1）to:router即将进入的路由对象
+路由守卫有 全局守卫 beforeEach 有参数
+1）to:router 即将进入的路由对象
 
 2）from:当前导航即将离开的路由
 
-3）next:function,进行管道中的一个钩子，如果执行完了,则导航的状态就是confirmed （确认的）否则为false,终止
+3）next:function,进行管道中的一个钩子，如果执行完了,则导航的状态就是 confirmed （确认的）否则为 false,终止
 
-导航后置守卫afterEach 
+导航后置守卫 afterEach
 
-全局解析守卫beforeResolve 
+全局解析守卫 beforeResolve
 
-路由独享守卫beforeEnter
+路由独享守卫 beforeEnter
 
-去除URL中的#
+去除 URL 中的#
 
-vue-router默认使用hash模式，所以路由架子啊时，项目的URL会自带#，使用history模式则可不显示：  
+vue-router 默认使用 hash 模式，所以路由架子啊时，项目的 URL 会自带#，使用 history 模式则可不显示：
 
- new Router({mode:'history',routes:[]})
+new Router({mode:'history',routes:[]})
 
- 需要注意的是，服务端需要增加一个覆盖所有情况的候选资源如404页，如果匹配不到任何静态资源，则应该返回该页面。
-
-
+需要注意的是，服务端需要增加一个覆盖所有情况的候选资源如 404 页，如果匹配不到任何静态资源，则应该返回该页面。
 
 ---
 
-## $route和$router的区别是什么
-  $route是路由信息对象，包括path,params,hash,query,fullPath,matched,name等路由信息参数
+## $route和$router 的区别是什么
 
-  $router为VueRouter的实例，相当于一个全局的路由器对象，里面含有好多属性和子对象，如history对象
+$route 是路由信息对象，包括 path,params,hash,query,fullPath,matched,name 等路由信息参数
 
-## Vue的单项数据流
+$router 为 VueRouter 的实例，相当于一个全局的路由器对象，里面含有好多属性和子对象，如 history 对象
+
+## Vue 的单项数据流
 
 数据只能从父组件传递给子组件，只能单向绑定。所有的 prop 都使得其父子 prop 之间形成了一个单向下行绑定：
 
-子组件修改要prop时，只能通过$emit派发一个自定义事件，父组件接收到后，有父组件修改
+子组件修改要 prop 时，只能通过$emit 派发一个自定义事件，父组件接收到后，有父组件修改
 
-
-## data中的数组方法哪些触发视图更新
+## data 中的数组方法哪些触发视图更新
 
 可以触发的： push、shift、pop、unshift、splice、sort、reverse 这些可以改变被操作数组的方法
 
@@ -2535,37 +2747,36 @@ vue-router默认使用hash模式，所以路由架子啊时，项目的URL会自
 
 解决方案：
 
-1. 利用索引值设置数组项，this.array[index]=newValue,直接修改数组长度 this.array.length=newLength不可以触发视图更新时，可以使用
-this.$set(this.array,index=newValue),
-this.array.splice(index,1,newValue),
-this.array.splice(newLength)
+1. 利用索引值设置数组项，this.array[index]=newValue,直接修改数组长度 this.array.length=newLength 不可以触发视图更新时，可以使用
+   this.$set(this.array,index=newValue),
+   this.array.splice(index,1,newValue),
+   this.array.splice(newLength)
 
-## Vue中重置data
+## Vue 中重置 data
 
-vm.$data可以获取当前状态下的data
+vm.$data 可以获取当前状态下的 data
 
-vm.$options.data(this)可以获取到组件初始化状态下的data，
+vm.$options.data(this)可以获取到组件初始化状态下的 data，
 
 Object.assign(target, ...sources)，第一个参数是目标对象，第二个参数是源对象，就是将源对象属性复制到目标对象，返回目标对象
 
-Object.assign(this.$data, this.$options.data(this)) 重置初始化
+Object.assign(this.$data, this.$options.data(this))
 
-## Vue动画
+## Vue 动画
 
-1. 哪个需要动画就给哪个元素加transition标签
+1. 哪个需要动画就给哪个元素加 transition 标签
 
-2. 进入时class的类型 <name>-enter、<name>-enter-active 、<name>-enter-to
+2. 进入时 class 的类型 <name>-enter、<name>-enter-active 、<name>-enter-to
 
-3. 离开时类型  <name>-leave 、<name>-leave-active 、<name>-leave-to
-
+3. 离开时类型 <name>-leave 、<name>-leave-active 、<name>-leave-to
 
 ps. 一组元素使用动画标签 transition-group
 
-## scoped 
+## scoped
 
-如果一个项目中的所有style标签全部加上了scoped，相当于实现了样式的模块化。
+如果一个项目中的所有 style 标签全部加上了 scoped，相当于实现了样式的模块化。
 
-引用了第三方组件，需要在组件中局部修改第三方组件的样式，而又不想去除scoped属性造成组件之间的样式污染。此时只能通过特殊的方式，穿透scoped
+引用了第三方组件，需要在组件中局部修改第三方组件的样式，而又不想去除 scoped 属性造成组件之间的样式污染。此时只能通过特殊的方式，穿透 scoped
 
 ```
 <style scoped>
@@ -2574,9 +2785,10 @@ ps. 一组元素使用动画标签 transition-group
     }
 </style>
 ```
-通过 >>> 可以使得在使用scoped属性的情况下，穿透scoped，修改其他组件的值
 
-## git的一些说明
+通过 >>> 可以使得在使用 scoped 属性的情况下，穿透 scoped，修改其他组件的值
+
+## git 的一些说明
 
 配置指令：
 
@@ -2589,23 +2801,23 @@ git config --global user.name "your name"
 工作流程：
 
 0. 在本地文件夹简历工作目录作为本地代码仓库 git init
-1. 在工作目录中修改某些文件  添加到本地仓库 git add helloworld.md/ -A
+1. 在工作目录中修改某些文件 添加到本地仓库 git add helloworld.md/ -A
 2. 对修改后的文件进行快照，然后保存进暂存区域 git commit -m "修改注释"
-3. 提交更新，将保存在暂存区域的文件快照永久转储到Git目录中 git push origin dev
+3. 提交更新，将保存在暂存区域的文件快照永久转储到 Git 目录中 git push origin dev
 
 项目执行流程
 
 git branch -a (查看所有分支)
 
-git clone 地址  克隆代码到本地
+git clone 地址 克隆代码到本地
 
-git pull origin master 拉取线上master最新代码
+git pull origin master 拉取线上 master 最新代码
 
 git checkout dev 切换到开发分支
 
-git merge master 合并master本地分支
+git merge master 合并 master 本地分支
 
- 修改文件开发结束
+修改文件开发结束
 
 git status 查看当前文件更改状态
 
@@ -2617,10 +2829,10 @@ git commit -m "本次更改注释"
 
 git push origin dev 代码推送到远程仓库
 
-git checkout master  git pull origin master  git merge dev
-达到上线标准则合并代码到master分支 先切换拉取master 然后合并dev分支到master  最后上传 git push origin master
+git checkout master git pull origin master git merge dev
+达到上线标准则合并代码到 master 分支 先切换拉取 master 然后合并 dev 分支到 master 最后上传 git push origin master
 
-git tag -a 命名规则  上线后 用tag标签标记发布节点命名规则（prod_版本_上线日期）
+git tag -a 命名规则 上线后 用 tag 标签标记发布节点命名规则（prod*版本*上线日期）
 
 把本地仓库的内容推向一个空的远程仓库
 
@@ -2628,18 +2840,18 @@ git tag -a 命名规则  上线后 用tag标签标记发布节点命名规则（
 
 git remote add origin 远程仓库地址
 
-第一次推送  -u是指定origin为默认主分支
+第一次推送 -u 是指定 origin 为默认主分支
 
 git push -u origin master
 
-之后的提交 
+之后的提交
 
 git push origin master
 
-缓存区的应用 
+缓存区的应用
 
 1. 合并别人的代码进来
-   git stash  把自己代码放入缓存
+   git stash 把自己代码放入缓存
 
    git stash pop#恢复最近一次的缓存
 
@@ -2660,7 +2872,7 @@ git push origin master
 
 git reflog 查看提交记录命令
 
-git show   查看某次提交内容 git show $id
+git show 查看某次提交内容 git show $id
 
 git rm <file> 从版本库删除文件
 
@@ -2668,15 +2880,15 @@ git reset HEAD^ 放弃上次提交后的所有修改
 
 git diff <file> 比较当前文件和暂存区文件差异
 
-git log -p <file> 查看每次详细修改内容的diff  -graph 分支合并图
+git log -p <file> 查看每次详细修改内容的 diff -graph 分支合并图
 
 git branch -r 查看远程分支
 
-git merge <branch>  将branch分支合并到当前分支
+git merge <branch> 将 branch 分支合并到当前分支
 
 git stash pop git pull 抓取远程仓库所有分支更新并合并到本地
 
-git oush origin master  将本地主分支推送远程主分支
+git oush origin master 将本地主分支推送远程主分支
 
 git branch 分支名 创建分支
 
@@ -2688,7 +2900,7 @@ git branch --merge/git branch --no-merge 查看已经合并/未合并的分支
 
 git branch -d git branch -D 删除的已合并的/未合并的分支
 
-ssh -T git@github.com 验证ssh的key是否正常工作
+ssh -T git@github.com 验证 ssh 的 key 是否正常工作
 
 发生冲突的命令解决：
 
@@ -2698,7 +2910,7 @@ git pull 拉取远程分支上的代码合并到本地分支，目的是消除�
 
 git stash pop 把保存在栈区的修改部分合并到最新的工作空间中
 
-分支提交冲突：当分支发生修改后，切换到主分支也该对该部分修改使用git merge 进行合并，需要将两个修改进行合并产生冲突。
+分支提交冲突：当分支发生修改后，切换到主分支也该对该部分修改使用 git merge 进行合并，需要将两个修改进行合并产生冲突。
 
 git reset HEAD file 撤销提交到索引区的文件
 
@@ -2710,7 +2922,7 @@ git reset -mixed HEAD^n 工作区不变更
 git reset -hard HEAD^n 恢复当前分支的版本库、索引区和工作空间之上一次提交的状态
 
 git rebase -i HEAD~3 修改提交的历史信息
-i键修复  pick为edit ；:wq退出 
+i 键修复 pick 为 edit ；:wq 退出
 
 git commit --amend --reset-author 重置用户信息
 
@@ -2718,36 +2930,39 @@ git rebase --continue 回到正常状态
 
 查看分支的提交历史记录
 
-git log -number 查看当前分支的前number个提交记录
+git log -number 查看当前分支的前 number 个提交记录
 
 git log -number -pretty =oneline 上一命令的显示简化
 
-git reflog -number 查看所有分支前number个的提交记录
+git reflog -number 查看所有分支前 number 个的提交记录
 
 git reflog -number -pretty=oneline
 
-以上命令加上文件名则查看某文件的提交历史记录 没有number则查全部
+以上命令加上文件名则查看某文件的提交历史记录 没有 number 则查全部
 
 ---
+
 ### git stash 命令
 
 命令 git stash 是把工作区修改的内容储存在栈区
 
 使用场景
 
-1. 解决冲突文件时 先执行git stash 然后解决冲突
+1. 解决冲突文件时 先执行 git stash 然后解决冲突
 
-2. 遇到紧急开发任务但目前不能提交时，先执行git stash 然后开发
-，最后用过git stash pop 取出栈区的内容继续开发
+2. 遇到紧急开发任务但目前不能提交时，先执行 git stash 然后开发
+   ，最后用过 git stash pop 取出栈区的内容继续开发
 
-3. 切换分支时，当前的工作内容不能提交时，先执行git stash 再进行分支切换
----
-
-## git与svn
-
-git是分步式版本控制，svn是集中式版本控制；git相对于svn的优势是不需要网络即可版本控制；git把内容按数据方式储存，而svn是按文件；git可以公用可以分享，svn基本是项目内网才能访问；git不依赖中央服务器，即使服务器有问题也不受影响，svn依赖服务器；git没有一个全局的版本号，svn有
+3. 切换分支时，当前的工作内容不能提交时，先执行 git stash 再进行分支切换
 
 ---
+
+## git 与 svn
+
+git 是分步式版本控制，svn 是集中式版本控制；git 相对于 svn 的优势是不需要网络即可版本控制；git 把内容按数据方式储存，而 svn 是按文件；git 可以公用可以分享，svn 基本是项目内网才能访问；git 不依赖中央服务器，即使服务器有问题也不受影响，svn 依赖服务器；git 没有一个全局的版本号，svn 有
+
+---
+
 ## git fetch 、git merge、git pull
 
 git pull 相当于 git fetch + git merge
@@ -2755,25 +2970,24 @@ git pull 相当于 git fetch + git merge
 
 命令从中央储存库中提取特定的分支的新更改或提交，并更新本地储存库中的目标分支
 
-git fetch 会从所需的分支中提取所有新提交，并将其存储在本地存储库中的新分支中，如果要在目标分支中反映这些更改，必须之后执行git merge 合并获取分支和目标分支后才会更新目标分支。
-
+git fetch 会从所需的分支中提取所有新提交，并将其存储在本地存储库中的新分支中，如果要在目标分支中反映这些更改，必须之后执行 git merge 合并获取分支和目标分支后才会更新目标分支。
 
 ---
 
 ## nodejs
 
-node是一个JavaScript运行环境，依赖于Chrome V8 引擎进行代码解释
-特征： 单线程（一个应用程序对应一个进程，一个进程线面会有多个线程，每个线程用于处理任务）、时间驱动、非阻塞I/O（适合做大量I/O的应用如聊天室、表单提交、消息系统（socketio）等大量计算的功能）、轻量、可伸缩、适用于实时数据交互应用；
+node 是一个 JavaScript 运行环境，依赖于 Chrome V8 引擎进行代码解释
+特征： 单线程（一个应用程序对应一个进程，一个进程线面会有多个线程，每个线程用于处理任务）、时间驱动、非阻塞 I/O（适合做大量 I/O 的应用如聊天室、表单提交、消息系统（socketio）等大量计算的功能）、轻量、可伸缩、适用于实时数据交互应用；
 
-node无法直接渲染静态页面、提供静态服务
+node 无法直接渲染静态页面、提供静态服务
 
-node没有根目录概念
+node 没有根目录概念
 
-node必须通过路由程序指定文件才能渲染文件
+node 必须通过路由程序指定文件才能渲染文件
 
-node比其他服务端性能更好，速度更快
+node 比其他服务端性能更好，速度更快
 
-node服务端设置跨域
+node 服务端设置跨域
 
 ```
 app.use(async(ctx,next)=>{
@@ -2794,36 +3008,35 @@ app.use(async(ctx,next)=>{
 })
 
 ```
+
 - 缺点及解决方案
 
-单进程单线程特点不适合CPU密集型应用；如果有长时间运行的运算，将会导致CPU时间片无法释放，后续I/O无法发起；应凤姐大型运算为多个小任务，使得运算能够适时释放，不阻塞I/O发起;只支持单核CPU，不能充分利用CPU，可靠性低，一旦某一环节出错，整个系统都出错。使用nginx反向代理，负载均衡，开多个进程，绑定多个端口；开多个进程监听同一个端口，使用cluster模块
+单进程单线程特点不适合 CPU 密集型应用；如果有长时间运行的运算，将会导致 CPU 时间片无法释放，后续 I/O 无法发起；应凤姐大型运算为多个小任务，使得运算能够适时释放，不阻塞 I/O 发起;只支持单核 CPU，不能充分利用 CPU，可靠性低，一旦某一环节出错，整个系统都出错。使用 nginx 反向代理，负载均衡，开多个进程，绑定多个端口；开多个进程监听同一个端口，使用 cluster 模块
 
+- web 框架 express 和 koa
 
-- web框架 express和koa
-
-koa是由express原班人马打造，致力于成为更小、更富有表现力、更健壮的web框架，通过组合不同的generator，可以免除繁琐的毁掉函数嵌套，极大地提升错误处理的效率；不在内核方法中绑定任何中间件，仅提供了一个轻量优雅的函数库，使用node新特性的中间件框架
+koa 是由 express 原班人马打造，致力于成为更小、更富有表现力、更健壮的 web 框架，通过组合不同的 generator，可以免除繁琐的毁掉函数嵌套，极大地提升错误处理的效率；不在内核方法中绑定任何中间件，仅提供了一个轻量优雅的函数库，使用 node 新特性的中间件框架
 
 - express：
 
-express.router解决了直接把app暴露给其他模块使得app有被滥用的风险，可以认为是一个微型的只用来处理中间件与控制器的app，与app类似的用法 如get post all use等。
+express.router 解决了直接把 app 暴露给其他模块使得 app 有被滥用的风险，可以认为是一个微型的只用来处理中间件与控制器的 app，与 app 类似的用法 如 get post all use 等。
 
 线性逻辑：路由和中间件完美融合，通过中间件形式把业务逻辑细分，简化，一个请求经过来一系列中间件处理；处理后再响应给用户，复杂业务线性化。
 
-express是基于callback来组合业务逻辑，不可组合，且异常不可捕获
+express 是基于 callback 来组合业务逻辑，不可组合，且异常不可捕获
 
+express 获取路由的参数 ：
 
-express获取路由的参数 ：
+get： req.params.key （支持通配符？ + \* and() ）
 
-  get： req.params.key    （支持通配符？ + * and() ）
+post: req.body.key (表单传入参数)
 
-  post: req.body.key       (表单传入参数)
-
-express 的response常用方法：
+express 的 response 常用方法：
 
 res.download()弹出文件下载（）
-res.end() 结束response
-res.json() 返回json在这里插入代码片
-res.jsonp() 返回jsonp
+res.end() 结束 response
+res.json() 返回 json 在这里插入代码片
+res.jsonp() 返回 jsonp
 res.redirect() 重定向请求
 res.render() 渲染模板
 res.send() 返回多种形式数据
@@ -2832,27 +3045,21 @@ res.sendStatus() 返回状态
 
 - 中间件：
 
-当调用next时，才会执行下一个中间件函数，express本身就是功能极简的完全由路由和中间件构成的web框架，一个express应用就是在调用各种中间件封装了一些或许复杂但肯定是通用的功能。
+当调用 next 时，才会执行下一个中间件函数，express 本身就是功能极简的完全由路由和中间件构成的 web 框架，一个 express 应用就是在调用各种中间件封装了一些或许复杂但肯定是通用的功能。
 
-非内置的中间件通过安装后，require到文件就可以运行
+非内置的中间件通过安装后，require 到文件就可以运行
 
-require模块加载机制：
+require 模块加载机制：
 
-1.先计算模块路径
-2.如果模块在缓存里，取出缓存
-3.加载模块
-4.输出模块的exports属性即可
-
+1.先计算模块路径 2.如果模块在缓存里，取出缓存 3.加载模块 4.输出模块的 exports 属性即可
 
 ---
 
 ## session 和 cookie 的作用
 
-session是区别于数据库存在的一种服务器临时存储技术，它主要存储一些无需持久化的数据，比如临时的登陆状态信息等
+session 是区别于数据库存在的一种服务器临时存储技术，它主要存储一些无需持久化的数据，比如临时的登陆状态信息等
 
-cookie是存在于浏览器上的一种浏览器本地存储的方式，同域名下的cookie不同标签页可以共享，默认过期时间是浏览器关闭时，而且在进行HTTP请求时，会自动带上浏览器全部的cookie发给后台，后台也可以获取cookie，设置在相应时，像浏览器中设置cookie
-
-
+cookie 是存在于浏览器上的一种浏览器本地存储的方式，同域名下的 cookie 不同标签页可以共享，默认过期时间是浏览器关闭时，而且在进行 HTTP 请求时，会自动带上浏览器全部的 cookie 发给后台，后台也可以获取 cookie，设置在相应时，像浏览器中设置 cookie
 
 ## 同步与异步
 
@@ -2870,50 +3077,49 @@ cookie是存在于浏览器上的一种浏览器本地存储的方式，同域�
 
 4、事件发布/监听模式
 
-node异步问题解决方案
+node 异步问题解决方案
 
 模块化：将回调函数转换为独立的函数
 
-使用流程控制库如async.js
+使用流程控制库如 async.js
 
-使用Promise
+使用 Promise
 
-使用async/await
+使用 async/await
 
-## npm 
+## npm
 
-npm的作用
+npm 的作用
 
-允许用户从NPM服务器下载别人编写的第三方包到本地使用
+允许用户从 NPM 服务器下载别人编写的第三方包到本地使用
 
-允许用户将自己编写的包或命令行程序上传到NPM服务器供别人使用
+允许用户将自己编写的包或命令行程序上传到 NPM 服务器供别人使用
 
-通过NPM可以安装和管理项目的依赖，并且能指明依赖项的具体版本号
+通过 NPM 可以安装和管理项目的依赖，并且能指明依赖项的具体版本号
 
 package.json 文件来管理项目信息，配置脚本
 
-npm i 和 npm install的细微差别：
+npm i 和 npm install 的细微差别：
 
-1. 使用npm i 安装的模块无法使用npm uninstall卸载 需要npm uninstall i命令
+1. 使用 npm i 安装的模块无法使用 npm uninstall 卸载 需要 npm uninstall i 命令
 
-2. npm i 会帮助监测与当前node 版本最匹配的npm包 版本号，并匹配出来相互依赖的npm包应该提升的版本号
+2. npm i 会帮助监测与当前 node 版本最匹配的 npm 包 版本号，并匹配出来相互依赖的 npm 包应该提升的版本号
 
-3. 部分npm包在当前node版本下无法使用，必须使用建议版本
+3. 部分 npm 包在当前 node 版本下无法使用，必须使用建议版本
 
-4. 安装报错时 install肯定会出现npm-debug.log文件 npm i不一定
+4. 安装报错时 install 肯定会出现 npm-debug.log 文件 npm i 不一定
 
 devDependenvies 用于开发环境（本地） -save-dev
-开发时使用的依赖项 如webpack、gulp等打包工具
+开发时使用的依赖项 如 webpack、gulp 等打包工具
 
 dependenvies 用于生产环境（发布） -save
-打包之后用到的库、模块等如vue插件 vue-awesonme-swiper vue-router等依赖项
-
+打包之后用到的库、模块等如 vue 插件 vue-awesonme-swiper vue-router 等依赖项
 
 ## webpack
 
-webpack是一个打包模块化的JavaScript工具，在webpack中一切文件皆模块，通过loader转换文件，通过plugin注入钩子，最后输出由多个模块组成的文件。它做的事情是：分析项目结构，找到JS模块以及其他的一些不能浏览器直接运行的拓展语言（Scss、TS等），并将其打包为合适的格式以供浏览器使用
+webpack 是一个打包模块化的 JavaScript 工具，在 webpack 中一切文件皆模块，通过 loader 转换文件，通过 plugin 注入钩子，最后输出由多个模块组成的文件。它做的事情是：分析项目结构，找到 JS 模块以及其他的一些不能浏览器直接运行的拓展语言（Scss、TS 等），并将其打包为合适的格式以供浏览器使用
 
-常见loader：
+常见 loader：
 
 1、file-loader：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件
 2、url-loader：和 file-loader 类似，但是能在文件很小的情况下以 base64 的方式把文件内容注入到代码中去
@@ -2924,32 +3130,16 @@ webpack是一个打包模块化的JavaScript工具，在webpack中一切文件�
 7、style-loader：把 CSS 代码注入到 JavaScript 中，通过 DOM 操作去加载 CSS
 8、eslint-loader：通过 ESLint 检查 JavaScript 代码
 
-loader和Plugin的不同
+loader 和 Plugin 的不同
 
 1.作用的不同：
 
-loader的作用是让webpack拥有了加载和解析非JavaScript文件的能力
+loader 的作用是让 webpack 拥有了加载和解析非 JavaScript 文件的能力
 
-Plugin可以拓展webpack的功能，让webpack具有更多的灵活性，在webpack运行的生命周期中会广播出许多事件，plugin可以监听这些事件，再合适的时机通过webpack提供的API改变输出结果。
+Plugin 可以拓展 webpack 的功能，让 webpack 具有更多的灵活性，在 webpack 运行的生命周期中会广播出许多事件，plugin 可以监听这些事件，再合适的时机通过 webpack 提供的 API 改变输出结果。
 
 2.用法的不同
 
-loader在module.rules中配置，也就是说他作为模块的解析规则而存在。类型为数组，每一项都是一个Object，里面描述了对于什么类型的文件（test），使用什么加载（loader）和使用的参数（options）
+loader 在 module.rules 中配置，也就是说他作为模块的解析规则而存在。类型为数组，每一项都是一个 Object，里面描述了对于什么类型的文件（test），使用什么加载（loader）和使用的参数（options）
 
-Plugin在Plugins中单独配置类型为数组，每一项是一个plugin的实例，参数都通过构造函数传入
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Plugin 在 Plugins 中单独配置类型为数组，每一项是一个 plugin 的实例，参数都通过构造函数传入
