@@ -983,7 +983,7 @@ max，min([...]) 取数组最值
 
   .constructor 对象的构造函数
 
-  .hasOwnProperty( ) 检查属性是否被继承
+  .hasOwnProperty( ) 检查属性是否被继承 ps.所有对象键（不包括 symbol）均被储存为字符串，但 set 数据结构区分数字类型和字符类型
 
   .isPrototypeOf() 一个对象是否是另一个对象的原型
 
@@ -1055,7 +1055,7 @@ undefined :是一个表示"无"的原始值或者说表示"缺少值"，就是�
 
 5、没有定义 return 的函数隐式返回
 
-6、函数 return 没有显式的返回任何内容
+6、_函数 return 没有显式的返回任何内容_ 如 map 等条件下无返回
 
 典型用法是：
 
@@ -1716,7 +1716,7 @@ for (const [key, value] of iterableMap)
     （由object.keys(obj)先将要循环的普通对象key返回为一个数组）
     for(var key of Object.keys(obj))
     (搭配实例方法entries()，同时输出数组内容和索引)
-    for (let [index, val] of arr.entries())
+    for (let [index, val] of key.entries())
 ```
 
 ---
@@ -1749,6 +1749,8 @@ function objectFactory(){
 ```
 
 一个普通函数 new 出来打印结果还是原本的输出 new Foo.getName()===Foo.getName() new new Foo().getName()===new Foo().getName()===Foo().getName（Foo 为实例函数，向上查询构造函数 Foo.prototype.getname）
+
+若不使用 new 关键字 实例函数的 this 为全局对象 没有时返回 undefined
 
 ---
 
@@ -1809,6 +1811,8 @@ m.__proto__ === MathHandle.prototype
 3. ES6 的 class 类不存在变量提升，必须先定义 class 之后才能实例化，不像 ES5 中可以将构造函数写在实例化之后。
 4. ES5 的继承，实质是先创造子类的实例对象 this，然后再将父类的方法添加到 this 上面。 ES6 的继承机制完全不同，实质是先将父类实例对象的属性和方法，加到 this 上面（所以必须先调用 super 方法），然后再用子类的构造函数修改 this。
 
+在 ES2020 中 通过#可以为 class 添加私有变量，在 class 外部无法获得该值，若尝试输出 class.#var 则会抛出语法错误
+
 ---
 
 ## 43. eval
@@ -1863,17 +1867,72 @@ ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的�
 
 1. 宏任务（macrotask）：在新标准中叫 task
 
-   1.1 主要包括：script(整体代码)，setTimeout，setInterval，setImmediate，I/O,uirendering
+   1.1 主要包括：script(整体代码)，setTimeout，setInterval，setImmediate(Node 先于 setTimeOut0)，equestAnimation(浏览器)、IO、UI rendering
 
 2. 微任务（microtask）：在新标准中叫 jobs
 
-   2.1 主要包括：process.nextTick， Promise，MutationObserver（html5 新特性）**process.nextTick 指定的异步任务总是发生在所有异步任务之前，因此先执行**
+   2.1 主要包括：process.nextTick(Node)， Promise，Object.observe，MutationObserver（html5 新特性）**process.nextTick 指定的异步任务总是发生在所有异步任务之前，因此先执行**
+   Nodev11 以后将 Node 环境的事件循环和浏览器的统一了，之前为每个宏任务阶段执行完毕后，开始执行微任务，再开始执行下一阶段宏任务，以此构成事件循环。
 
 3. 扩展：
 
    3.1 同步任务：在主线程上，排队执行的任务，只有前一个任务执行完毕，才能执行后一个任务
 
    3.2 异步任务：不进入主线程，而进入“任务队列”的任务，只有“任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行
+
+   3.3 Nodev11 以后将 Node 环境的事件循环和浏览器的统一了，之前为每个宏任务阶段执行完毕后，开始执行微任务，再开始执行下一阶段宏任务，以此构成事件循环。
+
+   ```
+   function fn(){
+
+    console.log('start');
+
+    setTimeout(() => {              // callback1
+        console.log(111);
+
+        setTimeout(() => {          // callback1-1
+            console.log(222);
+        }, 0);
+
+        setImmediate(() => {        // callback1-2
+            console.log(333);
+        });
+
+        process.nextTick(() => {    // callback1-3
+            console.log(444);
+        });
+
+    }, 0);
+
+    setImmediate(() => {            // callback2
+        console.log(555);
+
+        process.nextTick(() => {    // callback2-1
+           console.log(666);
+        });
+    });
+
+    setTimeout(() => {              // callback3
+        console.log(777);
+
+        process.nextTick(() => {    // callback3-1
+            console.log(888);
+        });
+    }, 0);
+
+    process.nextTick(() => {        // callback4
+        console.log(999);
+    });
+
+    console.log('end');
+   }
+   fn();
+   ```
+
+// before version 11.0.0 start end 999 111 777 444 888 555 333 666 222
+// after version 11.0.0 start end 999 111 444 777 888 555 666 333 222
+
+```
 
 4. setTimeout、Promise、Async/Await 的区别
 
@@ -1886,6 +1945,7 @@ ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的�
    4. async 方法执行时，遇到 await 会立即执行表达式，然后把表达式后面的代码放到微任务队列里，让出执行栈让同步代码先执行
 
 ```
+
 const Promise = new Promise((resolve, reject) => {
 console.log(2);
 resolve();
@@ -1913,7 +1973,48 @@ console.log(4);
 console.log(5);
 
 //2,3,5,4,1
+
 ```
+
+async function async1() {
+console.log('async1 start');
+await async2();
+console.log('async1 end');
+}
+其中 await 相当于 promise+generator 的语法糖等价于 await 后面的代码是 microtask(jobs)
+
+async function async1() {
+console.log('async1 start');
+Promise.resolve(async2()).then(() => {
+console.log('async1 end');
+})
+}
+
+async 函数中在 await 之前的代码是立即执行的，所以会立即输出 async1 start。
+遇到了 await 时，会将 await 后面的表达式执行一遍，所以就紧接着输出 async2，然后将 await 后面的代码也就是 console.log('async1 end')加入到 microtask 中的 Promise 队列中，接着跳出 async1 函数来执行后面的代码
+
+总结：
+JS 单线程，所以代码自上而下执行
+主进程优先级
+T0：process.nextTick
+T1:微任务 jobs（ Promise，await 后立即执行的 async，MutationObserver（html5 新特性），
+T2:宏任务 task （script(整体代码)，setTimeout，setInterval，setImmediate，I/O,uirendering，async,）
+TX.1:异步任务 微队列 然后 宏队列
+
+1.执行全局 Script 同步代码，这些同步代码有一些是同步语句，有一些是异步语句（比如 setTimeout 等）异步语句分别进入队列；
+
+2.全局 Script 代码执行完毕后，执行栈 Stack 会清空；
+
+3.从微队列中取出位于队首的回调任务，放入执行栈 Stack 中执行，执行完后微队列长度减 1；
+
+4.继续循环取出位于微队列的任务，放入执行栈 Stack 中执行，以此类推，直到直到把微任务执行完毕。注意，如果在执行
+
+5.！！微任务的过程中，又产生了微任务，那么会加入到微队列的末尾，也会在这个周期被调用执行；
+
+6.微队列中的所有微任务都执行完毕，此时微队列为空队列，执行栈 Stack 也为空； 7.取出宏队列中的任务，放入执行栈 Stack 中执行；
+
+执行完毕后，执行栈 Stack 为空；
+重复第 3-7 个步骤；
 
 ---
 
@@ -1987,6 +2088,7 @@ require.js 的核心原理是通过动态创建 script 脚本来异步引入模�
 ## 46. 数组和对象的解构赋值和拓展运算符号
 
 ```
+
 对象：
 let {apple, orange} = {apple: 'red appe', orange: 'yellow orange'};
 =>
@@ -2068,17 +2170,18 @@ async 函数返回一个 Promise 对象，可以使用 then 方法添加回调�
 当函数执行的时候，一旦遇到 await 就会先返回，等到异步操作完成，再接着执行函数体内后面的语句
 
 ```
-对比使用then和async
+
+对比使用 then 和 async
 
 function doIt() {
-    console.time("doIt");
-    const time1 = 300;
-    step1(time1)
-        .then(time2 => step2(time2))
-        .then(time3 => step3(time3))
-        .then(result => {
-            console.log(`result is ${result}`);
-        });
+console.time("doIt");
+const time1 = 300;
+step1(time1)
+.then(time2 => step2(time2))
+.then(time3 => step3(time3))
+.then(result => {
+console.log(`result is ${result}`);
+});
 }
 doIt();
 // step1 with 300
@@ -2086,17 +2189,17 @@ doIt();
 // step3 with 700
 // result is 900
 
-
-使用async/await
+使用 async/await
 async function doIt() {
-    console.time("doIt");
-    const time1 = 300;
-    const time2 = await step1(time1);
-    const time3 = await step2(time2);
-    const result = await step3(time3);
-    console.log(`result is ${result}`);
+console.time("doIt");
+const time1 = 300;
+const time2 = await step1(time1);
+const time3 = await step2(time2);
+const result = await step3(time3);
+console.log(`result is ${result}`);
 }
 doIt();
+
 ```
 
 async 较 Generator 的优势
@@ -2122,62 +2225,64 @@ async 较 Generator 的优势
 6、使用 JavaScript 和 DOM 实现局部刷新.
 
 ```
+
 var HTTPRequest;
 function checkUsername() {
-  //创建 XMLHTTPRequest 对象
-  if(window.XMLHTTPRequest) {
-    //在IE6以上的版本以及其他内核的浏览器(Mozilla)等
-    HTTPRequest = new XMLHTTPRequest();
-  }else if(window.ActiveXObject) {
-    //在IE6以下的版本
-    HTTPRequest = new ActiveXObject();
-  }
-  //创建HTTP请求
-  HTTPRequest.open("POST", "Servlet1", true);
-  //因为我使用的是post方式，所以需要设置消息头
-  HTTPRequest.setRequestHeader("Content-type", "application/x-www-formurlencoded");
-  //指定回调函数
-  HTTPRequest.onreadystatechange = response22;
-  //得到文本框的数据
+//创建 XMLHTTPRequest 对象
+if(window.XMLHTTPRequest) {
+//在 IE6 以上的版本以及其他内核的浏览器(Mozilla)等
+HTTPRequest = new XMLHTTPRequest();
+}else if(window.ActiveXObject) {
+//在 IE6 以下的版本
+HTTPRequest = new ActiveXObject();
+}
+//创建 HTTP 请求
+HTTPRequest.open("POST", "Servlet1", true);
+//因为我使用的是 post 方式，所以需要设置消息头
+HTTPRequest.setRequestHeader("Content-type", "application/x-www-formurlencoded");
+//指定回调函数
+HTTPRequest.onreadystatechange = response22;
+//得到文本框的数据
 
-  var name = document.getElementById("username").value;
-  //发送HTTP请求，把要检测的用户名传递进去
-  HTTPRequest.send("username=" + name);
+var name = document.getElementById("username").value;
+//发送 HTTP 请求，把要检测的用户名传递进去
+HTTPRequest.send("username=" + name);
 }
 //接收服务器响应数据
 function response22() {
-//判断请求状态码是否是4【数据接收完成】
-  if(HTTPRequest.readyState==4) {
-    //��判断状态码是否为200【200是成功的】
-    if(HTTPRequest.status==200) {
-      //得到服务端返回的文本数据
-      var text = HTTPRequest.responseText;
-      //把服务端返回的数据写在div上
-      var div = document.getElementById("result");
-      div.innerText = text;
-      }
-    }
+//判断请求状态码是否是 4【数据接收完成】
+if(HTTPRequest.readyState==4) {
+//�� 判断状态码是否为 200【200 是成功的】
+if(HTTPRequest.status==200) {
+//得到服务端返回的文本数据
+var text = HTTPRequest.responseText;
+//把服务端返回的数据写在 div 上
+var div = document.getElementById("result");
+div.innerText = text;
 }
- - 手写原生
+}
+}
 
-//1：创建Ajax对象
-var xhr = window.XMLHttpRequest?new XMLHttpRequest():new ActiveXObject('Microsoft.XMLHTTP');// 兼容IE6及以下版本
-//2：配置 Ajax请求地址
+- 手写原生
+
+//1：创建 Ajax 对象
+var xhr = window.XMLHttpRequest?new XMLHttpRequest():new ActiveXObject('Microsoft.XMLHTTP');// 兼容 IE6 及以下版本
+//2：配置 Ajax 请求地址
 xhr.open('get','index.xml',true);
 //3：发送请求
 xhr.send(null); // 严谨写法
 //4:监听请求，接受响应
 xhr.onreadysatechange=function(){
-     if(xhr.readySate==4&&xhr.status==200 || xhr.status==304 )
-          console.log(xhr.responsetXML)
+if(xhr.readySate==4&&xhr.status==200 || xhr.status==304 )
+console.log(xhr.responsetXML)
 }
 
 // promise 封装实现：
 
 function getJSON(url) {
-  // 创建一个 promise 对象
-  let promise = new Promise(function(resolve, reject) {
-    let xhr = new XMLHttpRequest();
+// 创建一个 promise 对象
+let promise = new Promise(function(resolve, reject) {
+let xhr = new XMLHttpRequest();
 
     // 新建一个 http 请求
     xhr.open("GET", url, true);
@@ -2207,7 +2312,8 @@ function getJSON(url) {
 
     // 发送 http 请求
     xhr.send(null);
-  });
+
+});
 
 ```
 
@@ -2274,9 +2380,10 @@ JSON.parse(JSON.stringify(object))，缺点诸多（会忽略 undefined、symbol
 浅拷贝+递归：
 
 ```
+
 function cloneDeep(target,map = new WeakMap()) {
-  if(typeOf taret ==='object'){
-     let cloneTarget = Array.isArray(target) ? [] : {};
+if(typeOf taret ==='object'){
+let cloneTarget = Array.isArray(target) ? [] : {};
 
      if(map.get(target)) {
         return target;
@@ -2286,11 +2393,13 @@ function cloneDeep(target,map = new WeakMap()) {
         cloneTarget[key] = cloneDeep(target[key], map);
      }
      return cloneTarget
-  }else{
-       return target
-  }
+
+}else{
+return target
+}
 
 }
+
 ```
 
 ## 52. 函数的柯里化
@@ -2302,15 +2411,16 @@ function cloneDeep(target,map = new WeakMap()) {
 直译：可以传任意多个参数，当不传参数时输出结果；柯里化了的函数，它返回一个新的函数，新的函数接收可分批次接受新的参数，延迟到最后一次计算
 
 ```
+
 //通用的函数柯里化函数
 function curry(fn, args) {
-  // 获取函数需要的参数长度
-  let length = fn.length;
+// 获取函数需要的参数长度
+let length = fn.length;
 
-  args = args || [];
+args = args || [];
 
-  return function() {
-    let subArgs = args.slice(0);
+return function() {
+let subArgs = args.slice(0);
 
     // 拼接得到现有的所有参数
     for (let i = 0; i < arguments.length; i++) {
@@ -2325,13 +2435,17 @@ function curry(fn, args) {
       // 如果不满足，递归返回柯里化的函数，等待参数的传入
       return curry.call(this, fn, subArgs);
     }
-  };
+
+};
 }
+
 <!-- fn.length 函数的形参个数  arguments.callee参数对象的函数递归调用 -->
+
 // es6 实现
 function curry(fn, ...args) {
-  return fn.length <= args.length ? fn(...args) : curry.bind(null, fn, ...args);
+return fn.length <= args.length ? fn(...args) : curry.bind(null, fn, ...args);
 }
+
 ```
 
 ## websocket
@@ -2395,20 +2509,20 @@ data 为什么必须是函数：
 Vue 定时器的使用与销毁：
 
 ```
+
 多个定时器：
 
-在data选项中创建一个对象timer，给每个定时器取个名
-字一一映射在对象timer中，
-在beforeDestroy构造函数中
+在 data 选项中创建一个对象 timer，给每个定时器取个名
+字一一映射在对象 timer 中，
+在 beforeDestroy 构造函数中
 for(let k in this.timer)
 {clearInterval(k)}；
 
-
-method中创建的定时器代码和销毁定时器
+method 中创建的定时器代码和销毁定时器
 
 const timer=setInterval(()=>{},500)
 this.$once("hook:beforeDestory",()=>{
-  clearInterval(timer)
+clearInterval(timer)
 })
 
 ```
@@ -2450,6 +2564,7 @@ Vue 实现了一套遵循 Web Components 规范草案 的内容分发系统，�
 插槽分默认插槽、一个组件只能有一个该类插槽。具名插槽,具名插槽可以在一个组件中出现 N 次，出现在不同的位置，只需要使用不同的 name 属性区分即可
 
 ```
+
 <template>
 <!-- 父组件 parent.vue -->
 <div class="parent">
