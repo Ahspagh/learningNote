@@ -57,10 +57,7 @@ const flatten = (arr, list=[])=>{
 }
 ```
 
-
-
 - 递归法 （一次性扁平所有）
-
 
 ```
 const flat = (arr,list=[])=>{
@@ -82,13 +79,7 @@ function flattenDeep(arr1) {
 .join(',').split(',').map(item=>Number(item))
 ```
 
----
-
-<<<<<<< HEAD
 实现 flat 功能（指定层数）
-
-=======
-
 
 ```
 function flat(arr, depth = 1) {
@@ -1911,3 +1902,48 @@ var index = Array.prototype.indexOf.call(li,target);
 console.log(index);
 }
 }
+
+## 任务队列陷阱题
+
+```
+console.log("start")
+setTimeout(() => {    //加入第二轮宏任务
+  console.log('children2');
+  Promise.resolve().then(() => {
+    console.log('children3');//加入第二轮微任务
+  })
+}, 0);
+new Promise(function (resolve, reject) {
+  console.log('children4');
+  setTimeout(() => { //第三轮宏任务
+    console.log("children5")
+    resolve("children6") //加入第三轮微任务 .then被延时执行
+  }, 0);
+}).then((res) => {  //第一轮宏任务并未resolve不会加入微任务队列 //加入第二轮微任务
+  console.log('children7');
+  setTimeout(() => {//第三轮宏任务
+    console.log(res);//
+  }, 0);
+
+})
+//start
+  //children4
+  //第一轮宏任务结束，第一轮并无微任务，开始第二轮宏任务
+  //children2
+   //第二轮宏任务结束 开始清空微任务
+  //children3
+  //第三轮宏任务开始
+  //children5
+  //清空第三轮微任务
+  //children7
+  //开始第四轮宏任务
+  //children6
+
+
+```
+
+before NodeV11 children2，children5，children3，children7，children6
+
+```
+
+```

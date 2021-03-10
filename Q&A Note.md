@@ -354,13 +354,35 @@ function throttle(fn, delay) {
         //记录当前函数触发的时间
         let nowTime = Date.now();
         if (nowTime - lastTime > delay) {
-            fn();
+            fn().apply(this,arguments);
             //同步时间
             lastTime = nowTime
             //可以让局部变量不被重置，通常来说 这是需要一个全局变量的。但是通过一个闭包也能完成。
         }
     }
 }
+//防止首次立即执行（timer）和避免最后触发延时优化
+function throttleFin(fn, delay) {
+    let startTime = Date.now();
+    let timer=null
+    return function () {
+        let currentTime = Date.now();
+        let remainTime=delay-(currentTime-startTime)
+        //
+        let context = this
+        let arg =arguments
+        //确保函数this指向和参数
+        clearTimeOut(timer)
+        if (remainTime<=0) {
+            fn().apply(context,arg);
+            startTime = Date.now()
+
+        }else{
+          timer=setTimeOut(fn,remainTime)
+        }
+    }
+}
+
 ```
 
 - 函数防抖器  
@@ -678,11 +700,33 @@ function Dog(){
 !!Dog.prototype=new animal()//1.这句话把Dog的原型指向了animal，构造函数的属性未失去，但失去了构造函数的原型方法sy
 var hashiqi=new Dog();
 hashiqi.dw();//2.Dog的实例对象hashiqi便有了动物的原型方法dw
-!!hashiqi.sy();//3.Dog的实例对象hashiqi便失去了构造函数原有的原型方法sy
+!!hashiqi.sy();//3.Dog的实例对象hashiqi便失去了构造函数（原型对象Dog）的原型方法sy
 console.log(hashiqi.a);//4.Dog的实例对象hashiqi便有了动物的所有属性,如上面的a
 console.log(hashiqi.b);//5.Dog的实例对象hashiqi构造函数的属性未失去,如上面的bark
 
+//定义类
+class Point {
 
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  toString() {
+    return '(' + this.x + ', ' + this.y + ')';
+  }
+
+}
+
+var point = new Point(2, 3);
+
+point.toString() // (2, 3)
+
+point.hasOwnProperty('x') // true
+point.hasOwnProperty('y') // true
+point.hasOwnProperty('toString') // false
+point.__proto__.hasOwnProperty('toString') // true
+toString()是原型对象的属性（因为定义在Point类上），所以hasOwnProperty()方法返回false。这些都与 ES5 的行为保持一致。
 ```
 
 - 20.2 工厂方式来创建（Object 关键字）
@@ -1194,7 +1238,7 @@ return true
 - 转为数组的方法
 
 1. Array.from()
-2. [].slice.call(eleArr)或 Array.prototype.slice.call(eleArr)
+2. [].slice.call(eleArr)或 Array.prototype.slice.call(eleArr) // 使用 eleArr 作为参数调用 slice 方法
 
 ## 25. 遍历对象上属性的方法
 
@@ -1518,7 +1562,30 @@ console.log(a.innerHTML);
 
   事件代理用到了两个在 JavaSciprt 事件中常被忽略的特性：事件冒泡以及目标元素。
 
-  ***
+  ps.ul>li 结构下给每个元素添加事件,再判断默认功能是否禁用
+
+  ```
+  const ul=document.querySelector('ul');
+  ul.addEventListener("click",function (e){
+    const target =e.target
+    if(target.tagName.toLowCase()==="li"){
+      const liList=this.querySelectorAll("li")
+      const index= Array.prototype.indexOf.call(liList,target)
+      //类数组 liList 使用数组的 indexOf 方法 target 作为参数
+      console.log(`内容为${target.innerHTML},索引${index}`)
+    }
+  })
+  //element.addEventListener(‘click’, function(){}, false) // 默认是 false。false：冒泡阶段执行，true：捕获阶段产生。
+  window.addEventListener("click",function (e){
+    if(banned===true){
+      e.stopProgagtion()
+      console.log("已封禁")}
+
+  },true)//捕获阶段阻止使用(阻止子级事件冒泡回调)
+  ```
+
+```
+---
 
 ## 33.JS 拖动原理
 
@@ -1531,9 +1598,11 @@ console.log(a.innerHTML);
 - 在鼠标按下的回调函数里添加鼠标移动的事件：
 
 ```
-  document.addEventListener("mousemove", moving, false)和添加鼠标抬起的事件
-  document.addEventListener("mouseup",function()
-  { document.removeEventListener("mousemove", moving, false);}, false);
+
+document.addEventListener("mousemove", moving, false)和添加鼠标抬起的事件
+document.addEventListener("mouseup",function()
+{ document.removeEventListener("mousemove", moving, false);}, false);
+
 ```
 
 这个抬起的事件是为了解除鼠标移动的监听，因为只有在鼠标按下才可以拖拽，抬起就停止不会移动了。
@@ -1545,6 +1614,7 @@ console.log(a.innerHTML);
   left=鼠标按下时记录的 dom 的 left 值+（移动中的 x 值 - 鼠标按下时的 x 值）;
 
 ```
+
     window.onload = function() {
     var dom = document.getElementById("draggle");
     dom.addEventListener(
@@ -1567,7 +1637,9 @@ console.log(a.innerHTML);
     },
     false
     )
-  };
+
+};
+
 ```
 
 ---
@@ -1650,14 +1722,14 @@ TCP 发送的包有序号，对方收到包后要给一个反馈，如果超过�
 
 避免使用 css 表达式(expression)，因为每次调用都会重新计算值（包括加载页面）
 
-input {  
-border:1px solid #B3D6EF;　  
-background:#ffffff;  
-}  
-input {  
- star : expression(  
- onmouseover=function(){this.style.backgroundColor="#D5E9F6"},  
- onmouseout=function(){this.style.backgroundColor="#ffffff"})  
+input {
+border:1px solid #B3D6EF;　
+background:#ffffff;
+}
+input {
+ star : expression(
+ onmouseover=function(){this.style.backgroundColor="#D5E9F6"},
+ onmouseout=function(){this.style.backgroundColor="#ffffff"})
  }
 
 尽量使用 css 属性简写，如：用 border 代替 border-width, border-style, bordercolor 批量修改元素样式：elem.className 和 elem.style.cssText 代替 elem.style.xxx
@@ -1694,15 +1766,14 @@ ECMA 新标准中引入了标准对象原型访问器”Object.getPrototypeOf(ob
 **通过引用来传递的，我们创建的每个新对象实体中并没有一份属于自己的原型副本。当我们修改原型时，与之相关的对象也会继承这一改变**
 
 ```
-1.构造函数 .prototype指向原型对象，原型对象.constructor即为构造函数
+
+1.构造函数 .prototype 指向原型对象，原型对象.constructor 即为构造函数
 function Person(name){
-    this.name = name;
-}
-2.通过原型链在原型对象上添加sayName
+this.name = name;
+} 2.通过原型链在原型对象上添加 sayName
 Person.prototype.sayName = function(welcome) {
-	console.log(welcome, this.name);
-}
-3.实例通过__proto__指向原型对象（将构造函数的作用域赋给实例对象，this就指向了这个实例对象）
+console.log(welcome, this.name);
+} 3.实例通过**proto**指向原型对象（将构造函数的作用域赋给实例对象，this 就指向了这个实例对象）
 var person1 = new Person('Smiley');
 person1.sayName('Hello');
 
@@ -1796,7 +1867,9 @@ new new Foo().getName(); //3
 2. for...in 循环出的是 key，for...of 循环出的是 value， map 结构可循环[key, value]支持 break、continue、return 和 throw
 
 ```
+
 for (const [key, value] of iterableMap)
+
 ```
 
 3. for...of 是 ES6 新引入的特性。修复了 ES5 引入的 for...in 的不足
@@ -1804,10 +1877,12 @@ for (const [key, value] of iterableMap)
 4. for...of 不能循环普通的对象，需要通过和 Object.keys()搭配使用或添加 length 属性使用 Array.from()类数组转化为数组实例
 
 ```
+
     （由object.keys(obj)先将要循环的普通对象key返回为一个数组）
     for(var key of Object.keys(obj))
     (搭配实例方法entries()，同时输出数组内容和索引)
     for (let [index, val] of key.entries())
+
 ```
 
 ---
@@ -1825,18 +1900,20 @@ new 运算符创建一个用户定义的对象类型的实例或具有构造函�
 4、判断返回值 返回对象就用该对象,没有的话就创建一个对象
 
 ```
+
 模拟过程
 function objectFactory(){
-    var obj = {};
-    //取得该方法的第一个参数(并删除第一个参数)，该参数是构造函数
-    var Constructor = [].shift.apply(arguments);
-    //将新对象的内部属性__proto__指向构造函数的原型，这样新对象就可以访问原型中的属性和方法
-    obj.__proto__ = Constructor.prototype;
-    //取得构造函数的返回值
-    var ret = Constructor.apply(obj, arguments);
-    //如果返回值是一个对象就返回该对象，否则返回构造函数的一个实例对象
-    return typeof ret === "object" ? ret : obj;
+var obj = {};
+//取得该方法的第一个参数(并删除第一个参数)，该参数是构造函数
+var Constructor = [].shift.apply(arguments);
+//将新对象的内部属性**proto**指向构造函数的原型，这样新对象就可以访问原型中的属性和方法
+obj.**proto** = Constructor.prototype;
+//取得构造函数的返回值
+var ret = Constructor.apply(obj, arguments);
+//如果返回值是一个对象就返回该对象，否则返回构造函数的一个实例对象
+return typeof ret === "object" ? ret : obj;
 }
+
 ```
 
 一个普通函数 new 出来打印结果还是原本的输出 new Foo.getName()===Foo.getName() new new Foo().getName()===new Foo().getName()===Foo().getName（Foo 为实例函数，向上查询构造函数 Foo.prototype.getname）
@@ -1853,10 +1930,9 @@ function objectFactory(){
 为 Event Loop（事件循环）
 
 ```
-1.所有同步任务都在主线程上执行，形成一个执行栈
-2.当主线程中的执行栈为空时，检查事件队列是否为空，如果为空则继续检查，如不为空执行下一步
-3.取出任务队列首部，加入执行栈
-4.执行任务，接着检查执行栈；如果执行栈为空，则跳回第二步；如不为空，则继续检查
+
+1.所有同步任务都在主线程上执行，形成一个执行栈 2.当主线程中的执行栈为空时，检查事件队列是否为空，如果为空则继续检查，如不为空执行下一步 3.取出任务队列首部，加入执行栈 4.执行任务，接着检查执行栈；如果执行栈为空，则跳回第二步；如不为空，则继续检查
+
 ```
 
 JS 的垃圾回收机制是为了以防内存泄漏
@@ -1881,9 +1957,10 @@ JS 的垃圾回收机制是为了以防内存泄漏
 ## 42. class 是构造函数的语法糖
 
 ```
-typeof MathHandle //'function'  //class类型判断为function
+
+typeof MathHandle //'function' //class 类型判断为 function
 MathHandle.prototype.constructor === MathHandle //constructor 方法是类的构造函数
-m.__proto__ === MathHandle.prototype
+m.**proto** === MathHandle.prototype
 
 ```
 
@@ -1965,8 +2042,7 @@ ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的�
 
 2. 微任务（microtask）：在新标准中叫 jobs
 
-   2.1 主要包括：process.nextTick(Node)， Promise，Object.observe，MutationObserver（html5 新特性）**process.nextTick 指定的异步任务总是发生在所有异步任务之前，因此先执行**
-   Nodev11 以后将 Node 环境的事件循环和浏览器的统一了，之前为每个宏任务阶段执行完毕后，开始执行微任务，再开始执行下一阶段宏任务，以此构成事件循环。
+   2.1 主要包括：process.nextTick(Node)， Promise，Object.observe，MutationObserver（html5 新特性，会在指定的 DOM 发生变化时被调用）**process.nextTick 指定的异步任务总是发生在所有异步任务之前，因此先执行**
 
 3. 扩展：
 
@@ -1974,10 +2050,12 @@ ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的�
 
    3.2 异步任务：不进入主线程，而进入“任务队列”的任务，只有“任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行
 
-   3.3 Nodev11 以后将 Node 环境的事件循环和浏览器的统一了，之前为每个宏任务阶段执行完毕后，开始执行微任务，再开始执行下一阶段宏任务，以此构成事件循环。
+   3.3 Nodev11 以后将 Node 环境的事件循环和浏览器的统一了，（
+   之前为每个宏任务阶段执行完毕后，开始执行微任务，再开始执行下一阶段宏任务，以此构成事件循环。 （1.执行完一个阶段的所有任务 2.执行 nextTick 队列的任务 3.执行微任务队列的任务）
 
-   ```
-   function fn(){
+```
+
+function fn(){
 
     console.log('start');
 
@@ -2019,25 +2097,24 @@ ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的�
     });
 
     console.log('end');
-   }
-   fn();
 
-   ```
+}
+fn();
+
+```
 
 // before version 11.0.0 start end 999 111 777 444 888 555 333 666 222
 // after version 11.0.0 start end 999 111 444 777 888 555 666 333 222
 
-```
-
 4. setTimeout、Promise、Async/Await 的区别
 
-   1. setTimeout 的回调函数放到宏任务队列里，等到执行栈清空以后执行
+1. setTimeout 的回调函数放到宏任务队列里，等到执行栈清空以后执行
 
-   2. Promise.then 里的回调函数会放到相应宏任务的微任务队列里，等宏任务里面的同步代码执行完再执行
+2. Promise.then 里的回调函数会在 resolve ()后放到相应宏任务的微任务队列里，等宏任务里面的同步代码执行完再执行
 
-   3. async 函数表示函数里面可能会有异步方法，await 后面跟一个表达式
+3. async 函数表示函数里面可能会有异步方法，await 后面跟一个表达式
 
-   4. async 方法执行时，遇到 await 会立即执行表达式，然后把表达式后面的代码放到微任务队列里，让出执行栈让同步代码先执行
+4. async 方法执行时，遇到 await 会立即执行表达式，然后把表达式后面的代码放到微任务队列里，让出执行栈让同步代码先执行
 
 ```
 
@@ -2069,8 +2146,6 @@ console.log(5);
 
 //2,3,5,4,1
 
-```
-
 async function async1() {
 console.log('async1 start');
 await async2();
@@ -2085,6 +2160,8 @@ console.log('async1 end');
 })
 }
 
+```
+
 async 函数中在 await 之前的代码是立即执行的，所以会立即输出 async1 start。
 遇到了 await 时，会将 await 后面的表达式执行一遍，所以就紧接着输出 async2，然后将 await 后面的代码也就是 console.log('async1 end')加入到 microtask 中的 Promise 队列中，接着跳出 async1 函数来执行后面的代码
 
@@ -2092,8 +2169,8 @@ async 函数中在 await 之前的代码是立即执行的，所以会立即输�
 JS 单线程，所以代码自上而下执行
 主进程优先级
 T0：process.nextTick
-T1:微任务 jobs（ Promise，await 后立即执行的 async，MutationObserver（html5 新特性），
-T2:宏任务 task （script(整体代码)，setTimeout，setInterval，setImmediate，I/O,uirendering，async,）
+T1:微任务 jobs（ Promise 在 resolve 后的 then 回调，await 后立即执行的 async，MutationObserver，
+T2:宏任务 task （script(整体代码)，setTimeout，setInterval，setImmediate（加入到当前队列队尾），I/O,uirendering，async,）
 TX.1:异步任务 微队列 然后 宏队列
 
 1.执行全局 Script 同步代码，这些同步代码有一些是同步语句，有一些是异步语句（比如 setTimeout 等）异步语句分别进入队列；
@@ -2210,8 +2287,6 @@ require.js 的核心原理是通过动态创建 script 脚本来异步引入模�
 
 ## 46. 数组和对象的解构赋值和拓展运算符号
 
-```
-
 对象：
 let {apple, orange} = {apple: 'red appe', orange: 'yellow orange'};
 =>
@@ -2227,42 +2302,68 @@ let [a,b,c] = [1,2,3]
 无中间变量交换位置
 [arr[i],arr[j]]=[arr[i],arr[j]]
 
-```
-
 ---
 
 ## 48. 箭头函数和普通函数的区别
 
 用了箭头函数，this 就不是指向 window，而是父级（指向是可变的）
 
-不能够使用 arguments 对象
+不能够使用 arguments 对象 但可以使用 rest 参数
 
 不能用作构造函数，这就是说不能够使用 new 命令，否则会抛出一个错误
 
 不可以使用 yield 命令，因此箭头函数不能用作 Generator 函数
 
-## 箭头函数自己没有定义 this 上下文，而是绑定到其父函数的上下文中，当你在 Vue 程序中使用箭头函数（=>）时，this 关键字病不会绑定到 Vue 实例，因此会引发错误，所以强烈建议改用标准函数声明
+**箭头函数自己没有定义 this 上下文，而是绑定到其父函数的上下文中，当你在 Vue 程序中使用箭头函数（=>）时，this 关键字病不会绑定到 Vue 实例，因此会引发错误，所以强烈建议改用标准函数声明**
+
+ps.rest 参数
+
+```
+
+1.在箭头函数中使用
+var object1=(head,...tail)=>{
+console.log([head,tail]);
+}
+object1(1,"one","two","three");//[1, Array(3)]
+
+2.在 constructor 语法中使用
+class A {
+constructor(...args) {
+if (args.length == 3) {
+this.\_x = args[0];
+this.\_y = args[1];
+this.\_z = args[2];
+}
+else if (args.length == 2) {
+this.\_x = args[0];
+this.\_y = args[1];
+this.\_z = 0;
+}
+else {
+throw TypeError("args error!");
+}
+}
 
 ## 47. ES6 对 Object 类型的升级
 
 1. 对象属性变量式声明
-属性名称使用变量,则必须使用“数组语法”
-obj = {
-  [prop]: 'value'
-};
+   属性名称使用变量,则必须使用“数组语法”
+   obj = {
+   [prop]: 'value'
+   };
 2. 对象的解构赋值
-let {title:oneTitle,test:[{title:twoTitle}]} = dataJson;  //重命名变量
-let { name } = dataJson;  //相当于es5的 let name = dataJson.name;
+   let {title:oneTitle,test:[{title:twoTitle}]} = dataJson; //重命名变量
+   let { name } = dataJson; //相当于 es5 的 let name = dataJson.name;
 
 3. 对象的拓展运算符
 
 4. super 关键字
 
 Class 类里新增 super 关键字总是指向当前函数所在对象的原型对象。
-在es5中我们用 被继承的函数名.call(this,参数,…参数) 来修改this的指向
-那么这里的super()负责初始化this.就相当于ES5中的call和apply方法。子类的构造函数中继承animal的name: animal.call(this.name)
+在 es5 中我们用 被继承的函数名.call(this,参数,…参数) 来修改 this 的指向
+那么这里的 super()负责初始化 this.就相当于 ES5 中的 call 和 apply 方法。子类的构造函数中继承 animal 的 name: animal.call(this.name)
 
-super作为对象，用在静态方法之中，这时super将指向父类，而不是父类的原型对象。即子类继承父类的静态方法通过子类直接使用而不是实例Child.staticFun()
+super 作为对象，用在静态方法之中，这时 super 将指向父类，而不是父类的原型对象。即子类继承父类的静态方法通过子类直接使用而不是实例 Child.staticFun()
 
 5. Object.is(a,b)用来修复全等符“===” Nah 返回 false 的 bug
 
@@ -2463,7 +2564,7 @@ AJAX 浏览器缓存解决方案：
 
 ## 50. 跨域及解决方式
 
-指的是浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的,是浏览器对javascript 施加的安全限制，防止他人恶意攻击网站
+指的是浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的,是浏览器对 javascript 施加的安全限制，防止他人恶意攻击网站
 
 解决方式：
 
@@ -2491,11 +2592,10 @@ Access-Control-Allow-Origin: HTTP://a.com //只允许所有域名访问
 ps. 安全策略
 
 CSP（Content-Security-Policy）指的是内容安全策略，
-它的本质是建立一个白名单，告诉浏览器哪些外部资源可以加载和执行。我们只需要配置规则，如何拦截由浏览器自己来实现。通常有两种方式来开启CSP，一种是设置HTTP 首部中的Content-Security-Policy，一种是设置meta 标签的方式<meta
-http-equiv="Content-Security-Policy"> CSP 也是解决XSS(跨站脚本漏洞) 攻击的一个强力手段。
+它的本质是建立一个白名单，告诉浏览器哪些外部资源可以加载和执行。我们只需要配置规则，如何拦截由浏览器自己来实现。通常有两种方式来开启 CSP，一种是设置 HTTP 首部中的 Content-Security-Policy，一种是设置 meta 标签的方式<meta
+http-equiv="Content-Security-Policy"> CSP 也是解决 XSS(跨站脚本漏洞) 攻击的一个强力手段。
 
-CSRF 攻击指的是跨站请求伪造攻击，攻击者诱导用户进入一个第三方网站，然后该网站向被攻击网站发送跨站请求。如果用户在被攻击网站中保存了登录状态，那么攻击者就可以利用这个登录状态（cookie），绕过后台的用户验证，冒充用户向服务器执行一些操作。防范方法有：设置token ， 同源检测，设置cookie的samesite，限制被第三方应用
----
+## CSRF 攻击指的是跨站请求伪造攻击，攻击者诱导用户进入一个第三方网站，然后该网站向被攻击网站发送跨站请求。如果用户在被攻击网站中保存了登录状态，那么攻击者就可以利用这个登录状态（cookie），绕过后台的用户验证，冒充用户向服务器执行一些操作。防范方法有：设置 token ， 同源检测，设置 cookie 的 samesite，限制被第三方应用
 
 ## 51. 深浅拷贝
 
