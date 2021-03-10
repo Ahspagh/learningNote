@@ -57,14 +57,10 @@ const flatten = (arr, list=[])=>{
 }
 ```
 
-<<<<<<< HEAD
+
 
 - 递归法 （一次性扁平所有）
 
-=======
-
-- 递归法 （一次性扁平所有）
-  > > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 const flat = (arr,list=[])=>{
@@ -92,9 +88,7 @@ function flattenDeep(arr1) {
 实现 flat 功能（指定层数）
 
 =======
-实现 flat 功能（指定层数）
 
-> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 function flat(arr, depth = 1) {
@@ -106,8 +100,7 @@ function flat(arr, depth = 1) {
         return [...acc, cur]
     } , [])
       : arr
-}
-<<<<<<< HEAD
+
 function flat(arr, depth = 1) {
     return depth > 0
         ? arr.reduce((acc, cur) => {
@@ -115,8 +108,8 @@ function flat(arr, depth = 1) {
     } , [])
       : arr
 }
-=======
->>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
+
+
 ```
 
 ## 数组元素随机排序
@@ -1502,8 +1495,6 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili"])
 <<<<<<< HEAD
 
 - # 如果数组元素是 object 类型且里面键的顺序不同则会认为是两个不同放入数组元素
-- 如果数组元素是 object 类型且里面键的顺序不同则会认为是两个不同放入数组元素
-  > > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 比较：
 
@@ -1516,11 +1507,8 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili"])
 采用 reduce 去重，初始 accumulator 为 []
 采用 findIndex 找到 accumulator 是否包含相同元素，如果不包含则加入，否则不加入
 返回最终的 accumulator ，则为去重后的数组
-<<<<<<< HEAD
 
 =======
-
-> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 // 获取类型
@@ -1550,7 +1538,7 @@ const isEqual = (o1, o2) => {
 
     // 比较类型是否一致
     if (t1 !== t2) return false
-<<<<<<< HEAD
+
 
     // 类型一致
     if (t1 === 'array') {
@@ -1562,7 +1550,6 @@ const isEqual = (o1, o2) => {
     if (t1 === 'array') {
         // 首先判断数组包含元素个数是否相等
         if (o1.length !== o2.length) return false
->>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
         // 比较两个数组中的每个元素
         return o1.every((item, i) => {
             // return item === target
@@ -1600,15 +1587,9 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili", {a:1
 // [123, {a: 1}, a: {b: 1}, {a: "1"}, "meili", {a: 1, b: 2}]
 ```
 
-<<<<<<< HEAD
-
 ## 手写 Array.splice
 
 =======
-
-## 手写 Array.splice
-
-> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ```
 Array.prototype._splice = function(start, deleteCount) {
@@ -1626,7 +1607,7 @@ Array.prototype._splice = function(start, deleteCount) {
     let delCount = computeSpliceDeleteCount(startIndex, deleteCount, len)
     // 记录删除的数组元素
     let deletedElements = new Array(delCount)
-<<<<<<< HEAD
+
 
     // 将待删除元素记录到 deletedArray
     recordDeleteElements(startIndex, delCount, array, deletedElements)
@@ -1636,7 +1617,7 @@ Array.prototype._splice = function(start, deleteCount) {
     // 将待删除元素记录到 deletedArray
     recordDeleteElements(startIndex, delCount, array, deletedElements)
 
->>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
+
     // 密封对象
     if(delCount !== addCount && Object.isSealed(array)) {
         throw new TypeError('the array is sealed')
@@ -1645,7 +1626,7 @@ Array.prototype._splice = function(start, deleteCount) {
     if(delCount > 0 && addCount > 0 && Object.isFrozen(array)) {
         throw new TypeError('the array is frozen')
     }
-<<<<<<< HEAD
+
 
     // 移动数组元素
     moveElements(startIndex, delCount, array, addCount)
@@ -1666,11 +1647,10 @@ Array.prototype._splice = function(start, deleteCount) {
     while (argumentsIndex < argumentsLen) {
         array[i++] = arguments[argumentsIndex++]
     }
-<<<<<<< HEAD
+
 
 =======
 
->>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
     array.length = len - delCount + addCount
 
     // 返回删除元素数组
@@ -1686,11 +1666,11 @@ function computeSpliceStartIndex(start, len) {
     }
     // 处理超出边界问题
     return start > len - 1 ? len - 1: start
-<<<<<<< HEAD
+
 }
-=======
+
 }
->>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
+
 
 // 计算真实的 deleteCount
 function computeSpliceDeleteCount(startIndex, deleteCount, len) {
@@ -1863,3 +1843,71 @@ function isObject(input) {
 ({}+{}).length === 30 Object.prototype.toString() //"[object Object]"[object object]+[object object]）.length =30
 ([]+[]).length === 0 Array.prototype.toString() 不同于 Object.prototype.tostring()将得到空字符串
 (function(){}).length === 0 函数的长度其实是形参的长度
+
+## 闭包的问题
+
+function box(){
+var arr = [];
+for(var i=0;i<5;i++){
+arr[i] = (function(num){ //自我执行，并传参(将匿名函数形成一个表达式)(传递一个参数)
+return num; //这里的 num 写什么都可以  
+ })(i); //这时候这个括号里面的 i 和上面 arr[i]的值是一样的都是取自 for 循环里面的 i  
+ }  
+ return arr;
+}
+在 for 循环里面的匿名函数执行 return i 语句的时候，由于匿名函数里面没有 i 这个变量，所以这个 i 他要从父级函数中寻找 i，而父级函数中的 i 在 for 循环中，当找到这个 i 的时候，是 for 循环完毕的 i，也就是 5，所以这个 box 得到的是一个数组[5,5,5,5,5]。
+
+for 循环在主线程执行完毕后才开始执行宏任务（Task） 此时 i 已经在同一个内存地址储存五次（堆栈）
+for(var i=1;i<5;i++){
+setTimeout(function(){console.log(i)},i\*1000);
+}
+改 1：立即执行函数创建闭包以保存其作用域内部变量
+for(var i=1;i<5;i++){
+(function(i){
+setTimeout(function(){console.log(i)},i\*1000);
+})(i)
+}
+改 2 ES6 let 关键字创建块级变量，在不同地址储存
+for(let i=1;i<5;i++){
+setTimeout(function(){console.log(i)},i\*1000);
+}
+var li = document.getElementsByTagName('li');
+var len = li.length;
+for (var i = 0; i < len; i++) {
+li[i].onclick = function () {
+console.log(i); //此处没有变量 i，因此需要向逐级向上寻找。
+}
+}
+
+//方法一
+var li = document.getElementsByTagName('li');
+var len = li.length;
+for (var i = 0; i < len; i++) {
+(function (j) {
+li[j].onclick = function () {
+console.log(j);
+}
+})(i);
+}
+
+//方法二
+var li = document.getElementsByTagName('li');
+var len = li.length;
+for (var i = 0; i < len; i++) {
+li[i].index = i;
+li[i].onclick = function () {
+console.log(this.index);
+}
+}
+
+//方法三
+var ul=document.getElementsByTagName('ul')[0];
+ul.onclick=function(e){
+var ev = ev || window.event;
+var target = ev.target || ev.srcElement;
+if(target.nodeName.toLowerCase() == "li"){
+var li=this.querySelectorAll("li");
+var index = Array.prototype.indexOf.call(li,target);
+console.log(index);
+}
+}

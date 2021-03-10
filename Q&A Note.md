@@ -557,6 +557,10 @@ undefined:表示变量声明单位初始化的值
 
 null:表是用来保存对象，还没有真正使用保存对象的值，从逻辑角度来看，null 表示一个空对象指针
 
+!exp && typeof(exp) != "undefined" && exp != 0
+typeof exp != "undefined" 排除了 undefined；exp != 0 排除了数字零和 false。
+或 exp===null
+
 _其实 null 不是对象，虽然 typeof null 会输出 object，但是这只是 JS 存在的一个悠久 Bug。在 JS 的最初版本中使用的是 32 位系统，为了性能考虑使用低位存储变量的类型信息，000 开头代表是对象，然而 null 表示为全零，所以将它错误的判断为 object 。虽然现在的内部类型判断代码已经改变了，但是对于这个 Bug 却是一直流传下来。_
 
 ECMA 标准中 object 属于复杂类型。null 值用 typeof 检测出来的结果是 object，而未初始化的定义值 typeof 检测为 undefined。事实上 undefined 值是派生于 null 值，ECMA 规定对两者进行相等性判断要返回 true。
@@ -657,6 +661,27 @@ function Pet(name,age,hobby){
 }
 var maidou =new Pet("麦兜",5,"睡觉");//实例化/创建对象
 maidou.eat();//调用 eat 方法(函数)
+
+function animal(){
+	this.a=1;
+}
+animal.prototype.dw=function(){
+	console.log("动物的原型方法")
+}
+function Dog(){
+	this.b=2;
+}
+!!Dog.prototype.sy=function(){
+	console.log("sy")
+}
+//改变原型指向
+!!Dog.prototype=new animal()//1.这句话把Dog的原型指向了animal，构造函数的属性未失去，但失去了构造函数的原型方法sy
+var hashiqi=new Dog();
+hashiqi.dw();//2.Dog的实例对象hashiqi便有了动物的原型方法dw
+!!hashiqi.sy();//3.Dog的实例对象hashiqi便失去了构造函数原有的原型方法sy
+console.log(hashiqi.a);//4.Dog的实例对象hashiqi便有了动物的所有属性,如上面的a
+console.log(hashiqi.b);//5.Dog的实例对象hashiqi构造函数的属性未失去,如上面的bark
+
 
 ```
 
@@ -838,8 +863,6 @@ Array.from(input,map,context)
   context: 绑定map中用到的this
 ```
 
-# <<<<<<< HEAD
-
 用于映射转换
 
 ```
@@ -849,8 +872,6 @@ function arga(...args) {
 ```
 
 Array.of( )
-
-> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 用于映射转换
 
@@ -1595,7 +1616,18 @@ DOM 树与 HTML 标签一一对应，包括 head 和隐藏元素
 
 渲染树不包括 head 和隐藏元素，大段文本的每一个行都是独立节点，每一个节点都有对应的 css 属性
 
----
+ps.HTTP 三次握手
+第一次握手：建立连接时，客户端发送 syn 包（syn=j）到服务器，并进入 SYN_SENT 状
+态， 等待服务器确认；SYN：同步序列编号（Synchronize Sequence Numbers）。
+第二次握手：服务器收到 syn 包，必须确认客户的 SYN（ack=j+1），同时自己也发送一
+个 SYN 包（syn=k），即 SYN+ACK 包，此时服务器进入 SYN_RECV 状态；
+第三次握手：客户端收到服务器的 SYN+ACK 包，向服务器发送确认包 ACK(ack=k+1），
+此 包发送完毕，客户端和服务器进入 ESTABLISHED（TCP 连接成功）状态，完成三次握手。
+
+ps. TCP 协议
+
+TCP 发送的包有序号，对方收到包后要给一个反馈，如果超过一定时间还没收到反馈就 自动执行超时重发，因此 TCP 最大的优点是可靠。
+如果数据量比较小的话建立连接的过程反而占了大头，不断地重发也会造成网络延迟，因此比如视频聊天通常就使用 UDP，因为丢失一些包也没关系，速度流畅才是重要的。
 
 ## 35. 页面重绘和回流
 
@@ -1617,6 +1649,16 @@ DOM 树与 HTML 标签一一对应，包括 head 和隐藏元素
 尽量避免用 table 布局（table 元素一旦触发回流就会导致 table 里所有的其它元素回流）
 
 避免使用 css 表达式(expression)，因为每次调用都会重新计算值（包括加载页面）
+
+input {  
+border:1px solid #B3D6EF;　  
+background:#ffffff;  
+}  
+input {  
+ star : expression(  
+ onmouseover=function(){this.style.backgroundColor="#D5E9F6"},  
+ onmouseout=function(){this.style.backgroundColor="#ffffff"})  
+ }
 
 尽量使用 css 属性简写，如：用 border 代替 border-width, border-style, bordercolor 批量修改元素样式：elem.className 和 elem.style.cssText 代替 elem.style.xxx
 
@@ -1684,6 +1726,55 @@ f instanceof FOO 的判断逻辑：f 是 Foo new 出来的一个类型（正确�
 判断方式：f 的隐式原型（proto）一层一层往上，能否对应到 Foo.prototype(显式原型）
 
 试判断：f instance of Object (正确）见上图
+
+先处理变量提升再函数提升 然后从上到下覆盖同名函数合并得下：
+getName = function() {
+console.log(4);
+
+                }
+
+        function Foo() {
+            getName = function() {
+                console.log(1);
+
+            }
+            return this;
+        }
+        Foo.getName = function() {
+            console.log(2);
+
+        };
+        Foo.prototype.getName = function() {
+            console.log(3);
+
+        }
+
+Foo.getName(); //2
+这里相当于调用了 Foo 这个构造函数里面的 getName 的静态方法，所以这里输出 2
+
+getName(); //4
+这里显然我们找的是全局的 getName 方法，从上面的分析中，我们可以看出全局的 getName 执行输出 4，所以这里打印 4
+
+Foo().getName(); //1
+这一题分为两个步骤
+
+首先我们从左到右执行 Foo()执行时，由于 foo 内部的 getName 不是 var 声明的，也没有形参来声明他，所以这里将全局的 getName = function() { console.log(1); }，而且这里返回了 this 指向 window,所以这里下面相当于 window.getName()
+由上一步，我们可以得知全局中的 getName 已经改变，并且 Foo 执行指向了全局，所以这里我们在全局中找到 getName，指向 1，所以这里输出 1
+
+getName();//1
+这里基于第三问，第三问已经将全局的 getName 改变，所以这里输出 1
+
+new Foo().getName()；//3
+这题 从左往右 先 new 了一个 Foo(),当 new 的时候 this 指向我们 new 出来的新对象，而且由于 Foo()本身并没有带有 this.getName 的方法，于是向原型链上寻找，因此找到了 Foo.prototype.getName = function() {console.log(3); },所以这里输出 3
+
+new Foo().**proto**.getName();//3
+Foo.prototype.getName();所以这里直接拿到 3；
+
+new Foo.getName(); //2
+这里去头去尾，先看中间，拿到的是 Foo.getName = function() { console.log(2); };，所以这里打印 2
+
+new new Foo().getName(); //3
+从内向外，去头去尾，我们 发现这一题等价于 new Foo().getName
 
 ---
 
@@ -1803,6 +1894,9 @@ m.__proto__ === MathHandle.prototype
 1. super 作为函数使用 ES6 要求，子类的构造函数（constructor）必须先执行一次 super 函数 ，代表了父类的构造函数，super() 内部的 this 指向的是子类
 
 2. super 作为对象使用 指向父类原型对象 ，通过 super 调用父类的方法时，super 会绑定子类的 this。
+   这里的 super 相当于父类的 constructor 构造函数，会执行父类的 constructor,但是此时的 this 指向的是子类,所以打印出子类
+   //换一种方法理解是：在执行 super 时，父类把 constructor 方法给了子类，此时子类有了父类的功能，但是执
+   //行的是子类的内容，也就是 es5 的父类.prototype.constructor.call(this)。
 
 - Class 和 ES5 构造函数的不同点
 
@@ -1927,6 +2021,7 @@ ps. 使用栈结构存储数据，讲究“先进后出”，即最先进栈的�
     console.log('end');
    }
    fn();
+
    ```
 
 // before version 11.0.0 start end 999 111 777 444 888 555 333 666 222
@@ -2039,6 +2134,34 @@ import {sum,multiply,time} from "./exportExample.js"
 // 导入一整个模块
 import \* as example from "./exportExample.js"
 
+```
+
+//info.js
+export const name='linda'
+export const age ="17'
+export default function sum(x)=>{
+//数组递归求和
+if (x.length == 0) {
+return 0;
+} else if (x.length == 1) {
+return x[0];
+} else {
+return x[0] + sum(x.slice(1));
+} }
+
+//index.js
+inport \* as default from './info'
+
+<!-- default:{
+    default:function sum(),
+    name:"linda",
+    age:"17“
+} -->
+
+调用该函数： default.default()
+
+```
+
 导出模块
 
 导出通过 export 关键字
@@ -2123,14 +2246,23 @@ let [a,b,c] = [1,2,3]
 ## 47. ES6 对 Object 类型的升级
 
 1. 对象属性变量式声明
-
+属性名称使用变量,则必须使用“数组语法”
+obj = {
+  [prop]: 'value'
+};
 2. 对象的解构赋值
+let {title:oneTitle,test:[{title:twoTitle}]} = dataJson;  //重命名变量
+let { name } = dataJson;  //相当于es5的 let name = dataJson.name;
 
 3. 对象的拓展运算符
 
 4. super 关键字
 
 Class 类里新增 super 关键字总是指向当前函数所在对象的原型对象。
+在es5中我们用 被继承的函数名.call(this,参数,…参数) 来修改this的指向
+那么这里的super()负责初始化this.就相当于ES5中的call和apply方法。子类的构造函数中继承animal的name: animal.call(this.name)
+
+super作为对象，用在静态方法之中，这时super将指向父类，而不是父类的原型对象。即子类继承父类的静态方法通过子类直接使用而不是实例Child.staticFun()
 
 5. Object.is(a,b)用来修复全等符“===” Nah 返回 false 的 bug
 
@@ -2331,8 +2463,7 @@ AJAX 浏览器缓存解决方案：
 
 ## 50. 跨域及解决方式
 
-指的是浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的,是浏览器对
-javascript 施加的安全限制，防止他人恶意攻击网站
+指的是浏览器不能执行其他网站的脚本，它是由浏览器的同源策略造成的,是浏览器对javascript 施加的安全限制，防止他人恶意攻击网站
 
 解决方式：
 
@@ -2357,6 +2488,13 @@ Access-Control-Allow-Origin: HTTP://a.com //只允许所有域名访问
 
 4. window+iframe
 
+ps. 安全策略
+
+CSP（Content-Security-Policy）指的是内容安全策略，
+它的本质是建立一个白名单，告诉浏览器哪些外部资源可以加载和执行。我们只需要配置规则，如何拦截由浏览器自己来实现。通常有两种方式来开启CSP，一种是设置HTTP 首部中的Content-Security-Policy，一种是设置meta 标签的方式<meta
+http-equiv="Content-Security-Policy"> CSP 也是解决XSS(跨站脚本漏洞) 攻击的一个强力手段。
+
+CSRF 攻击指的是跨站请求伪造攻击，攻击者诱导用户进入一个第三方网站，然后该网站向被攻击网站发送跨站请求。如果用户在被攻击网站中保存了登录状态，那么攻击者就可以利用这个登录状态（cookie），绕过后台的用户验证，冒充用户向服务器执行一些操作。防范方法有：设置token ， 同源检测，设置cookie的samesite，限制被第三方应用
 ---
 
 ## 51. 深浅拷贝
