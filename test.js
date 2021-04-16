@@ -1,19 +1,26 @@
-git config--global http.proxy 'http://127.0.0.1:7890'
-git config--global https.proxy 'http://127.0.0.1:7890'
-git config--global--unset https.proxy
+// git config--global http.proxy 'http://127.0.0.1:7890'
+// git config--global https.proxy 'http://127.0.0.1:7890'
+// git config--global--unset https.proxy
 // 去重数组对象
 const DATA = [{ id: 1 }, { id: 2 }, { id: 1 }, { id: 2 }, { id: 3 },]
 let res = []
 let obj = {}
+let map = new Map()
 DATA.forEach(e => {
-	if (!obj[e.id]) {
-		obj[e.id] = true;
+	if (!map.has(e.id)) {
+		map.set(e.id, true);
 		res.push(e)
 	}
 })
+// DATA.forEach(e => {
+// 	if (!obj[e.id]) {
+// 		obj[e.id] = true;
+// 		res.push(e)
+// 	}
+// })
 console.log(res)
 
-//返回数组中制指定key值对象
+//返回数组中指定key值对象
 
 
 const arr = [1, 2, 3, 4, 5, 6, 7]
