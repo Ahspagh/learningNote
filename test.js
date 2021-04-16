@@ -1,3 +1,6 @@
+git config--global http.proxy 'http://127.0.0.1:7890'
+git config--global https.proxy 'http://127.0.0.1:7890'
+git config--global--unset https.proxy
 // 去重数组对象
 const DATA = [{ id: 1 }, { id: 2 }, { id: 1 }, { id: 2 }, { id: 3 },]
 let res = []
