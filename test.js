@@ -67,6 +67,7 @@ if (true) {
 
 //“vuex.action 只能传递两个参数, 一个state是自动添加的,一个payload,是用户自己传到
 
+//if语句的条件表达式，js会自动调用Boolean()将条件表达式转换为布尔值即： Boolean([])   //true 
 
 if(true){
   console.log(1)
