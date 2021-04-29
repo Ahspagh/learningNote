@@ -1947,3 +1947,87 @@ before NodeV11 children2，children5，children3，children7，children6
 ```
 
 ```
+- 数组类型的原型链
+```
+a=[]
+a.__proto__===Array.prototype//true
+Array.prototype.__proto__===Object.prototype//true
+Object.prototype.__proto__===null//true
+Array.prototype.constructor===Array
+Object.prototype.constructor===Object
+```
+
+- 多维数组初始化
+
+dim( d1 [,d2 [,d3 [... ]]], value )
+d1,d2,d3代表各个维度数组所引用的元素个数，value代表初始值
+dim( 3,3,"x" ) // => [['x','x','x'],['x','x','x'],['x','x','x']]
+这里一位数组引用了3个二维数组，每个二维数组引用了3个初始化值’x’
+dim( 2,2,2,0 ) // => [[[0,0],[0,0]],[[0,0],[0,0]]]
+dim( 3, true ) // => [true,true,true]
+
+var xxx = function(){ return "xX" }
+dim( 2,5,xxx ) // => [['xX','xX','xX','xX','xX'],['xX','xX','xX','xX','xX']]
+
+
+1
+
+
+```
+
+function dim(){ 
+
+    var len = arguments.length; 
+
+    var args = Array.prototype.slice.call(arguments,0,len-1); 
+
+    var content = arguments[len-1]; 
+
+    var result = []; 
+
+       
+
+    var traverse = function foo(from,deep){ 
+
+        var arg = args[deep]; 
+
+        if(deep < args.length - 1){ 
+
+            for(var i=0;i
+                var array = []; 
+
+                from.push(array); 
+
+                foo(array,deep+1); 
+
+            } 
+
+        } 
+
+        else{ 
+
+            for(var i=0;i
+                if(typeof content === "function"){ 
+
+                    from.push(content()); 
+
+                } 
+
+                else{ 
+
+                    from.push(content); 
+
+                } 
+
+            } 
+
+        } 
+
+    }; 
+
+    traverse(result,0); 
+
+    return result; 
+
+}
+```
