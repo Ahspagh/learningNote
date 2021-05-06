@@ -61,17 +61,17 @@ if (true) {
 //4. 删除本地分支 git branch -d/D dev0.0.1
 //5. 删除远程分支 ： git branch -r -d origin/dev0.0.1 并推送 git push origin ：dev0.0.1
 
+//git 重命名追踪的文件或文件夹
+// git mv -f oldfolder newfolder   -n显示重命名会发生的改变，不进行重命名操作
+// git add -u newfolder (-u选项会更新已经追踪的文件和文件夹)
+//git mv foldername tempname && git mv tempname folderName 大小写不敏感系统使用临时名
+
 // JS比较运算符可以返回类型转换后的布尔值， 全等还要判断类型
 
 //computed计算属性在created生命周期未初始化，即data()中无法拿到，mounted()生命周期时可获取，store中state或getter的值可直接在data()中初始化
 
 //“vuex.action 只能传递两个参数, 一个state是自动添加的,一个payload,是用户自己传到
 
-//if语句的条件表达式，js会自动调用Boolean()将条件表达式转换为布尔值即： Boolean([])   //true 
+//if语句的条件表达式，js会自动调用Boolean()将条件表达式转换为布尔值即： Boolean([])   //true
 
-if(true){
-  console.log(1)
-  if(true){
-    return
-  }
-}else if()
+// eslint 某一文件  eslint --fix "C:\code\hello-world.js"
