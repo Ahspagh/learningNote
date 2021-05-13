@@ -122,3 +122,6 @@ Object.fromEntries(new URLSearchParams('foo=bar&baz=qux'));
 document
   .querySelector('#sumsub-websdk-container>iframe') //获得iframe元素
   .contentWindow.querySelector('sumsub-logo'); // 允许跨域的元素内部需要.contentWindow 或（IE）  .contentDocument
+// iframe子页面在控制下时   父页面： 使用postMessage发送需要修改的信息。子iframe： 监听onmessage 事件，修改自身的样式。
+
+//import { mapState, mapActions, mapMutations } from 'vuex';  分别可用在computed和 method 中 是$store中state、commit、dispatch方法的缩略写法
