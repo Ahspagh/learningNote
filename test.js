@@ -125,3 +125,11 @@ document
 // iframe子页面在控制下时   父页面： 使用postMessage发送需要修改的信息。子iframe： 监听onmessage 事件，修改自身的样式。
 
 //import { mapState, mapActions, mapMutations } from 'vuex';  分别可用在computed和 method 中 是$store中state、commit、dispatch方法的缩略写法
+
+//el-pagination total值为undefined时，total和pager均不显示甚至不报错 layout="slot" 插值模板
+
+// if (!redeTransaction[fund]) {
+//   redeTransaction[fund] = [];
+// }
+// redeTransaction[fund].push(item.total_amount);
+// 这里是遍历是对象中还不存在的属性为undefined 所以首次先定义为数组 拿到push方法
