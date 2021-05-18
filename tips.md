@@ -2045,3 +2045,43 @@ function dim(){
 
 }
 ```
+
+- 使用 settimeout 实现 setInterval
+
+```
+function interval (fn，timeout=300){
+    let timer={flag:true}
+    function recursion(){
+        if(timer.flag){
+            fn.call(null)
+            setTimeout(recursion,timeout)
+        }
+
+    }
+    setTimeout(recursion,timeout)
+    return timer
+}
+
+```
+
+setInterval 并不是真的每隔一定时间立即执行一次回调函数，而是将函数加入到事件队列，只有当执行栈为空时才会取出事件执行，所以可能会出现执行栈执行时间超过设定的间隔时间
+导致事件队列中累计多个定时器加入，这时便会依次执行而没有达到间隔时间的效果
+
+额外增加一个计次参数
+
+```
+function mySetInterval(fn, millisec,count){
+  function interval(){
+    if(typeof count===‘undefined’||count-->0){
+      setTimeout(interval, millisec);
+      try{
+        fn()
+      }catch(e){
+        count = 0;
+        throw e.toString();
+      }
+    }
+  }
+  setTimeout(interval, millisec)
+
+```

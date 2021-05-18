@@ -94,11 +94,7 @@ if (redFruits.includes(fruit)) {
   console.log('red');
 }
 // 少嵌套，早返回 发现无效的条件时，及早return。
-// let params = {
-//   expired_date: individualForm.expired_date,
-//   issue_date: individualForm.issue_date,
-//   passport: individualForm.passport,
-// };
+
 // Bolb下载文件
 let blob = new Blob([res], {
   type: 'application/vnd.ms-excel;charset=utf-8',
@@ -133,3 +129,81 @@ document
 // }
 // redeTransaction[fund].push(item.total_amount);
 // 这里是遍历是对象中还不存在的属性为undefined 所以首次先定义为数组 拿到push方法
+
+// vue传参数：子传父 this.$emit('input',val) 在父级可直接v-model绑定获取
+
+// ------------exportXls.js------------
+// import { CLIENT_TYPE } from '@/config/baseConfig';
+
+/**
+ * npm install xlsx file-saver -S
+npm install script-loader -S -D
+ * @param {object} tableRef
+ * @param {Array} tableData
+ * @param {Function} customFormat
+ * @param {object} option
+ */
+function formatJson(filterVal, jsonData, customFormat) {
+  return jsonData.map(item =>
+    filterVal.map(v => {
+      // defaultFormat sample
+      //   if (v === 'amount') {
+      //     return item[v].toLocaleString();
+      //   } else if (v === 'user_type') {
+      //     console.log(CLIENT_TYPE);
+      //     return CLIENT_TYPE[Number(item[v])];
+      //   }
+      if (customFormat) {
+        return customFormat(item, v);
+      } else {
+        return item[v];
+      }
+    })
+  );
+}
+export function export2xls(tableRef, tableData, customFormat, option) {
+  import('@/components/export/Export2Excel').then(excel => {
+    console.log('export2xls', tableRef.columns, tableData);
+    const tHeader = [],
+      filterVal = [];
+    tableRef.columns.forEach(item => {
+      tHeader.push(item.label);
+      filterVal.push(item.property);
+    });
+    console.log('header filter', tHeader, filterVal);
+
+    const data = formatJson(filterVal, tableData, customFormat);
+    console.log('formatJson', data);
+    excel.export_json_to_excel({
+      header: tHeader,
+      data,
+      filename: option ? option.filename : 'filter-investor-holdings-list', //非必填
+      bookType: option ? option.bookType : 'xlsx', //非必填
+      autoWidth: true, //非必填
+    });
+  });
+}
+// -------in page.vue
+function formatJson(dataItem, filterVal) {
+  switch (filterVal) {
+    case 'user_type':
+      console.log('callback', filterVal, dataItem);
+      return CLIENT_TYPE[dataItem[filterVal]];
+    case 'amount':
+      return dataItem[filterVal].toLocaleString();
+    default:
+      return dataItem[filterVal];
+  }
+}
+export2xls(this.$refs.holdingTable, this.tableData, formatJson);
+// ------------exportXls.js------------
+
+// vue-cli3 npm指令 —mode后面添加test、production、xxx 等预留参数无效
+// 在项目根目录添加文件.env.xxx 打包还需添加属性 NODE_ENV = 'production'，不同环境baseUrl:process.env.VUE_APP_BASE_URL
+
+// 更高效的数组最大值使用apply的第二个参数传入数组
+// function getMax2(arr){
+//   return Math.max.apply(null,arr)
+// }
+// 还有拼接数组的apply方法 concat不改变arr1本身 返回新数组
+// Array.prototype.push.apply(arr1,arr2)
