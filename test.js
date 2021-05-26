@@ -209,3 +209,25 @@ export2xls(this.$refs.holdingTable, this.tableData, formatJson);
 // Array.prototype.push.apply(arr1,arr2)
 
 //  object如果键名为数字 ，会递增排序键值对
+
+// ES9引入了命名捕获组，允许为每一个组匹配指定一个名字，既便于阅读代码，又便于引用。
+// const re = /(\d{4})-(\d{2})-(\d{2})/;  ===> const re = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/;
+// console.log(match.groups);          // → {year: "2019", month: "01", day: "01"}
+// console.log(match.groups.year);     // → 2019
+
+// el-form 的 validateField方法校验部分表单字段
+this.$refs['form'].validateField(
+  ['region', 'funder', 'subbranchId'],
+  errorMsg => {
+    if (!errorMsg) {
+      //执行校验成功的相关操作  会遍历每个字段的结果并执行回调函数
+    }
+  }
+);
+// 改进方法
+const { region, funder, subbranchId } = this.form;
+if (region && funder && subbranchId) {
+  //执行校验成功的相关操作
+} else {
+  this.$refs['form'].validateField(['region', 'funder', 'subbranchId']);
+}
