@@ -231,3 +231,58 @@ if (region && funder && subbranchId) {
 } else {
   this.$refs['form'].validateField(['region', 'funder', 'subbranchId']);
 }
+
+// 汉明距离：两个整数之间的汉明距离是对应位置上数字不同的位数; 所以结果异或后1的位数
+
+var hammingDistance1 = function (x, y) {
+  let s = x ^ y,
+    ret = 0;
+  while (s != 0) {
+    ret += s & 1; //最后一位 位与运算 统计1个数
+    s >>= 1; //每一位向右移位
+  }
+  return ret;
+};
+
+var hammingDistance2 = function (x, y) {
+  //Brian Kernighan 算法 ：x与x-1异或恰为x删去最后一位1的二进制结果 优化了上述方法的0位循环次数
+  let s = x ^ y,
+    ret = 0;
+  while (s != 0) {
+    s &= s - 1; //与s-1做位与运算
+    ret++;
+  }
+  return ret;
+};
+
+// 自适应方案 rem单位以及vh，vw容器
+
+// mounted() {
+//   window.onresize = () => {
+//     //绑定resize事件方法 -- 设置rem单位相对大小
+//     const size = (window.innerWidth || 1920) / 1920;
+//     let htmlDom = document.getElementsByTagName('html')[0];
+//     htmlDom && (htmlDom.style.fontSize = `${size * 40}px`);
+//   };
+//   if (document.createEvent) {
+//     let event = document.createEvent('HTMLEvents');
+//     event.initEvent('resize', true, true); //手动触发resize事件
+//     window.dispatchEvent(event);
+//   } else if (document.createEventObject) {
+//     window.fireEvent('onresize');
+//   }
+// }
+// --------------------
+
+// data(){return{}} data,watch,computed,method 要求写法一致
+
+// eslint --fix "C:\code\hello-world.js"
+
+// // 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
+// const originalPush = Router.prototype.push;
+// Router.prototype.push = function push(location) {
+//   return originalPush.call(this, location).catch(err => err);
+// };
+
+// item&&item.id 检验undefined
+// 遍历内遍历可采取自增序号减少复杂度
