@@ -286,3 +286,16 @@ var hammingDistance2 = function (x, y) {
 
 // item&&item.id 检验undefined
 // 遍历内遍历可采取自增序号减少复杂度
+
+//  code run 終端亂碼問題
+//   "code-runner.executorMapByFileExtension": {
+  // "code-runner.runInTerminal":true,}
+
+//flutter和dart的null safety模式
+  // flutter run --no-sound-null-safety
+  //  dart --no-sound-null-safety run  
+// 在vscode  ； additional args ；  dart ，flutter run；--no-sound-null-safety
+  // 
+
+  // 箭头函数默认没有大括号时不需写return 加了大括号要手动return 若无return如axios请求后则无res
+  // dialogVisible 必须在前 否则弹窗里面的refs无效
