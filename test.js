@@ -299,3 +299,42 @@ var hammingDistance2 = function (x, y) {
 
   // 箭头函数默认没有大括号时不需写return 加了大括号要手动return 若无return如axios请求后则无res
   // dialogVisible 必须在前 否则弹窗里面的refs无效
+
+  // 垂直分割线： 可使用span标签设置background width颜色实现，同行长短可设置background-origin背景图像相对于content-box来定位，然后设置padding
+  // 水平分割线 使用背景颜色与高度1px的div 并使用百分比宽度缩进
+
+
+
+  // Vue2 不能检测到对象属性的添加或删除。
+      // 由于 Vue 会在初始化实例时对属性遍历执行 getter/setter 转化过程，
+      // 所以属性必须在 data 对象上存在才能让 Vue 转换它，这样才能让它是响应的。
+      // this.$set(this.contentOff, index, false);
+
+
+// 使用activated:{}周期函数代替mounted:{}函数即可 路由跳转跳转时执行组件内钩子函数 ，之前方法使用dialog@opened回调触发子组件method
+
+
+
+// el-dialog   :append-to-body 弹窗嵌套 防止被上一弹窗层遮罩蒙层 
+
+// 重置vue中data数据
+// 方法一：element的resetfields
+// this.$refs[formRef].resetfields()
+// 方法二： vue的this.$options.data().form方法对form重置
+// this.form = this.$options.data().form
+// 方法三： vue的data重置
+// this.$data = this.$options.data();
+
+
+// // modules.js
+// function add(x, y) {
+//   return x * y;
+// }
+// export {add as default};
+// // 等同于
+// // export default add;
+
+// // app.js
+// import { default as foo } from 'modules';
+// // 等同于
+// // import foo from 'modules';
