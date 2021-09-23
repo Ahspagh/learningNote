@@ -81,6 +81,8 @@ if (true) {
 
 //computed计算属性在created生命周期未初始化，即data()中无法拿到，mounted()生命周期时可获取，store中state或getter的值可直接在data()中初始化
 
+//  Vue组件上使用的key值发生变化会自动重新渲染该组件 ！ 结合store和computed使用十分方便
+
 //“vuex.action 只能传递两个参数, 一个state是自动添加的,一个payload,是用户自己传到
 
 //if语句的条件表达式，js会自动调用Boolean()将条件表达式转换为布尔值即： Boolean([])   //true
@@ -289,33 +291,28 @@ var hammingDistance2 = function (x, y) {
 
 //  code run 終端亂碼問題
 //   "code-runner.executorMapByFileExtension": {
-  // "code-runner.runInTerminal":true,}
+// "code-runner.runInTerminal":true,}
 
 //flutter和dart的null safety模式
-  // flutter run --no-sound-null-safety
-  //  dart --no-sound-null-safety run  
+// flutter run --no-sound-null-safety
+//  dart --no-sound-null-safety run
 // 在vscode  ； additional args ；  dart ，flutter run；--no-sound-null-safety
-  // 
+//
 
-  // 箭头函数默认没有大括号时不需写return 加了大括号要手动return 若无return如axios请求后则无res
-  // dialogVisible 必须在前 否则弹窗里面的refs无效
+// 箭头函数默认没有大括号时不需写return 加了大括号要手动return 若无return如axios请求后则无res
+// dialogVisible 必须在前 否则弹窗里面的refs无效
 
-  // 垂直分割线： 可使用span标签设置background width颜色实现，同行长短可设置background-origin背景图像相对于content-box来定位，然后设置padding
-  // 水平分割线 使用背景颜色与高度1px的div 并使用百分比宽度缩进
+// 垂直分割线： 可使用span标签设置background width颜色实现，同行长短可设置background-origin背景图像相对于content-box来定位，然后设置padding
+// 水平分割线 使用背景颜色与高度1px的div 并使用百分比宽度缩进
 
-
-
-  // Vue2 不能检测到对象属性的添加或删除。
-      // 由于 Vue 会在初始化实例时对属性遍历执行 getter/setter 转化过程，
-      // 所以属性必须在 data 对象上存在才能让 Vue 转换它，这样才能让它是响应的。
-      // this.$set(this.contentOff, index, false);
-
+// Vue2 不能检测到对象属性的添加或删除。
+// 由于 Vue 会在初始化实例时对属性遍历执行 getter/setter 转化过程，
+// 所以属性必须在 data 对象上存在才能让 Vue 转换它，这样才能让它是响应的。
+// this.$set(this.contentOff, index, false);
 
 // 使用activated:{}周期函数代替mounted:{}函数即可 路由跳转跳转时执行组件内钩子函数 ，之前方法使用dialog@opened回调触发子组件method
 
-
-
-// el-dialog   :append-to-body 弹窗嵌套 防止被上一弹窗层遮罩蒙层 
+// el-dialog   :append-to-body 弹窗嵌套 防止被上一弹窗层遮罩蒙层
 
 // 重置vue中data数据
 // 方法一：element的resetfields
@@ -324,7 +321,6 @@ var hammingDistance2 = function (x, y) {
 // this.form = this.$options.data().form
 // 方法三： vue的data重置
 // this.$data = this.$options.data();
-
 
 // // modules.js
 // function add(x, y) {
@@ -338,3 +334,7 @@ var hammingDistance2 = function (x, y) {
 // import { default as foo } from 'modules';
 // // 等同于
 // // import foo from 'modules';
+
+// 节流函数的问题：因为使用了闭包来保存临时变量不被改变，返回的执行函数所在内存地址均不同，在消除监听器上使用的回调函数时 无法生效（无法找到对应函数）
+
+// 热更新时 vuex的store不会重置 这是开发环境和线上环境产生的不同，线上环境一般不会产生热更新情况
