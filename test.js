@@ -340,3 +340,8 @@ var hammingDistance2 = function (x, y) {
 // 热更新时 vuex的store不会重置 这是开发环境和线上环境产生的不同，线上环境一般不会产生热更新情况
 
 // 当一个 form 元素中只有一个输入框时，在该输入框中按下回车应提交该表单。如果希望阻止这一默认行为，可以 在 标签上添加 @submit.native.prevent。
+
+
+// 如果直接输出error，等于error.message 状态码400的返回值在error=>{error.response}
+
+// git cherry-pick命令的作用，就是将指定的提交（commit）应用于其他分支 \参数，不一定是提交的哈希值，分支名也是可以的，表示转移该分支的最新提交。
