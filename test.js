@@ -345,3 +345,6 @@ var hammingDistance2 = function (x, y) {
 // 如果直接输出error，等于error.message 状态码400的返回值在error=>{error.response}
 
 // git cherry-pick命令的作用，就是将指定的提交（commit）应用于其他分支 \参数，不一定是提交的哈希值，分支名也是可以的，表示转移该分支的最新提交。
+
+
+// flutter 键盘遮挡输入框：resizeToAvoidBottomInset: false,  在sccaffold里面添加该属性
