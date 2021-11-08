@@ -348,3 +348,13 @@ var hammingDistance2 = function (x, y) {
 
 
 // flutter 键盘遮挡输入框：resizeToAvoidBottomInset: false,  在sccaffold里面添加该属性
+
+// 接口返png文件转base64展示 接口设置{ responseType: 'arraybuffer' }
+// QRImageUrl =
+//           'data:image/png;base64,' +
+//           btoa(
+//             new Uint8Array(res).reduce(
+//               (data, byte) => data + String.fromCharCode(byte),
+//               ''
+//             )
+//           );
