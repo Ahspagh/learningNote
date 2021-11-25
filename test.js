@@ -358,3 +358,25 @@ var hammingDistance2 = function (x, y) {
 //               ''
 //             )
 //           );
+
+
+
+
+
+
+
+// gitERR: would clobber existing tag 
+// 原因通常是本地与远程仓库tag不一致
+// 1.查看远程tags
+
+//       git ls-remote -t  
+// 2.查看本地tags
+
+//       git tag -l 
+// 3.删除本地与远程不一致的tag
+
+//       git tag -d tag名字
+// 4.重新拉取远程tag
+
+//       git fetch origin --prune-tags
+// 5.git pull 拉取代码
