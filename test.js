@@ -399,3 +399,6 @@ var hammingDistance2 = function (x, y) {
 //       sessionStorage.setItem("store", JSON.stringify(this.$store.state));
 //     });
 // },
+
+// 保留小数点（非四舍五入）~~按位非
+const toFixed=(n,fixed)=> ~~(Math.pow(10,fixed)*n)/Math.pow(10,fixed)
