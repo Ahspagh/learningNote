@@ -402,3 +402,33 @@ var hammingDistance2 = function (x, y) {
 
 // 保留小数点（非四舍五入）~~按位非
 const toFixed=(n,fixed)=> ~~(Math.pow(10,fixed)*n)/Math.pow(10,fixed)
+
+// 多选框输入数组
+// selected=null
+// let toggleItem2selected= function (index){
+//   if(this.selected===null)
+//   this.selected=new Set()
+//   this.selected=new Set(this.selected)
+//   if(this.selected.has(index)){
+//     this.selected.delete(index)
+//   }else{
+//     this.selected.add(index)
+//   }
+//   this.selected=[...this.selected]
+  
+// }
+
+
+
+// git merge解决冲突后 如果使用vscode的提交按钮会先git pull 接着会触发rebase 
+// 首先git merge--abort中断merge 再git rebase --abort 中断rebase 冲突文件提交后直接git push
+
+//業務場景 所有的輸入框不要中文簡繁
+// 封裝使用的el-input組件限制輸入 中文 簡繁 標點
+// 方法：
+//  inheritAttrs: false的含义是不希望本组件的根元素继承父组件的attribute
+//  v-bind="$attrs" 將父元素傳遞過來的包括未prop接受的屬性添加到子組件綁定的標簽上 類似v-on="$listeners"綁定事件
+//  正則全局匹配不需要的類型replace為空
+// 遇到問題：@input.native事件由輸入法輸入中文標點時出現錯誤觸發順序 首次輸入標點會執行兩次而且無法成功去除 下一個輸入字符會全局刪除不符合的類型
+// 解決辦法：再添加一個@keyup.native事件來處理標點
+// 尚有缺陷：由keyup處理的類型刪除會有閃現效果
