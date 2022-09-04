@@ -1,0 +1,211 @@
+{
+  "workbench.iconTheme": "vscode-icons",
+  "leek-fund.funds": [
+    "161725",
+    "001632",
+    "003096",
+    "006867",
+    "110028",
+    "005633",
+    "002903",
+    "217011",
+    "005693",
+    "001595",
+    "003766",
+    "002611",
+    "588080",
+    "006031",
+    "513050",
+    "011513",
+    "009214",
+    "009610",
+    "005669",
+    "001752"
+  ],
+
+  "emmet.preferences": {},
+  // "editor.formatOnSave": true,
+  // "editor.defaultFormatter": "Prettier",
+  "leek-fund.immersiveBackground": true,
+  "leek-fund.showEarnings": 0,
+  "editor.fontFamily": "Fira Code", //后边的引号中写上要设置的字体类型，个人比较喜欢Fira Code
+  "editor.fontLigatures": false, //这个控制是否启用字体连字，true启用，false不启用，这里选择启用
+  "editor.fontSize": 14, //设置字体大小，这个不多说都明白
+  "editor.fontWeight": "normal", //这个设置字体粗细，可选normal,bold,"100"~"900"等，选择合适的就行
+  "prettier.arrowParens": "avoid",
+  "prettier.singleQuote": true,
+  "eslint.workingDirectories": [],
+  "files.autoSave": "onWindowChange",
+  "editor.quickSuggestionsDelay": 2,
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "files.autoSaveDelay": 500,
+  "files.associations": {
+    "*.wpy": "vue",
+    "*.vue": "vue",
+    "*.tpl": "html"
+  },
+  "emmet.syntaxProfiles": {
+    "vue-html": "html",
+    "vue": "html"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "vue",
+    "html",
+    "jsx",
+    {
+      "language": "html",
+      "autoFix": true
+    },
+    {
+      "language": "vue",
+      "autoFix": true
+    }
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.options": {}, //使用单引号而不是双引号
+  "prettier.jsxBracketSameLine": true,
+  "prettier.arrowParens": "avoid",
+  "prettier.singleQuote": true,
+  "vetur.validation.interpolation": false, //保存时自动格式化
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.jsxSingleQuote": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.fixAll.eslint": true
+  },
+  "editor.codeActionsOnSaveTimeout": 5000,
+
+  "vetur.format.defaultFormatterOptions": {
+    "prettyhtml": {
+      "printWidth": 100,
+      "singleQuote": true,
+      "wrapAttributes": false,
+      "sortAttributes": false
+    },
+    "js-beautify-html": {
+      "wrap_attributes": "force-expand-multiline"
+    },
+
+    "prettier": {
+      // Prettier option here
+      "htmlWhitespaceSensitivity": "ignore",
+      "tabWidth": 2, // 会忽略vetur的tabSize配置
+      "useTabs": false, // 是否利用tab替代空格
+      "semi": false, // 句尾是否加;
+      "singleQuote": true, // 使用单引号而不
+      "arrowParens": "avoid" // allow paren-less arrow functions 箭头函数的参数使用圆括号
+    },
+    "js-beautify-html": {
+      "wrap_attributes": "force-expand-multiline", //   "wrap_attributes": "auto", // " // html 标签属性 换行设置[auto|force|force-aligned|force-expand-multiline] [“auto”]
+      "wrap_line_length": 0, // 设置多个字符后换行 0 表示忽略
+      "end_with_newline": false, // 在文件结尾添加新行
+      "semi": false //   "wrap_attributes": "aligned-multiple"
+    }
+  },
+
+  // "vetur.format.defaultFormatter.html": "js-beautify-html",
+  "vetur.experimental.templateInterpolationService": true,
+  "vetur.format.defaultFormatter.js": "prettier-eslint",
+  "leek-fund.stocks": [
+    "sh000001",
+    "sh000300",
+    "sh000016",
+    "sh000688",
+    "hk03690",
+    "hk00700",
+    "usr_ixic",
+    "usr_dji",
+    "usr_inx",
+    "sh688696",
+    "usr_bili",
+    "sh600519",
+    "sh601658",
+    "hk03968",
+    "hk02318",
+    "sh601318",
+    "sh600031",
+    "sz002594",
+    "sz300750",
+    "sh601919",
+    "sh603338",
+    "sz300124",
+    "sz002050",
+    "sh600036",
+    "sh601600",
+    "sz000858",
+    "sh601012",
+    "sz002714"
+  ],
+  "leek-fund.statusBarStock": ["sh000688"],
+  "dart.flutterSdkPath": "C:\\SDK\\flutter",
+  "leek-fund.fundSort": 1,
+  "leek-fund.binance": ["BTC_USDT", "ETH_USDT", "EOS_USDT"],
+  "dart.debugExternalLibraries": true,
+  "dart.debugSdkLibraries": true,
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    // "editor.rulers": [
+    //   80
+    // ],
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": false
+  },
+  "code-runner.executorMapByFileExtension": {
+    "code-runner.runInTerminal": true,
+
+    ".vb": "cd $dir && vbc /nologo $fileName && $dir$fileNameWithoutExt",
+    ".vbs": "cscript //Nologo",
+    ".scala": "scala",
+    ".jl": "julia",
+    ".cr": "crystal",
+    ".ml": "ocaml",
+    ".exs": "elixir",
+    ".hx": "haxe --cwd $dirWithoutTrailingSlash --run $fileNameWithoutExt",
+    ".rkt": "racket",
+    ".scm": "csi -script",
+    ".ahk": "autohotkey",
+    ".au3": "autoit3",
+    ".kt": "cd $dir && kotlinc $fileName -include-runtime -d $fileNameWithoutExt.jar && java -jar $fileNameWithoutExt.jar",
+    ".kts": "kotlinc -script",
+    ".dart": "dart",
+    ".pas": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+    ".pp": "cd $dir && fpc $fileName && $dir$fileNameWithoutExt",
+    ".d": "cd $dir && dmd $fileName && $dir$fileNameWithoutExt",
+    ".hs": "runhaskell",
+    ".nim": "nim compile --verbosity:0 --hints:off --run",
+    ".csproj": "dotnet run --project",
+    ".fsproj": "dotnet run --project",
+    ".lisp": "sbcl --script",
+    ".kit": "kitc --run",
+    ".v": "v run",
+    ".vsh": "v run",
+    ".sass": "sass --style expanded",
+    ".cu": "cd $dir && nvcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt"
+  },
+  "dart.flutterRunAdditionalArgs": ["--no-sound-null-safety"],
+  "terminal.integrated.tabs.enabled": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "leek-fund.stockSort": 1,
+  "gitlens.defaultTimeFormat": ""
+}

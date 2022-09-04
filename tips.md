@@ -495,6 +495,20 @@ for(var i = 1; i <= re(str).length; i++){
 }
 ```
 
+```
+function format1(num){
+    return num&& num.replace(/(?!^)(?=(\d{3})+\.)/g,",")
+}
+
+function format2 (num){
+    return Intl.NumberFormat().format(num)
+}
+
+function format3 (num){
+    return num.toLocaleString('en')
+}
+```
+
 ---
 
 ## 数组递归求和
@@ -2359,5 +2373,129 @@ function Afun(array){
   }
 }
 }
+
+```
+
+- 数组类型的原型链
+
+```
+a=[]
+a.__proto__===Array.prototype//true
+Array.prototype.__proto__===Object.prototype//true
+Object.prototype.__proto__===null//true
+Array.prototype.constructor===Array
+Object.prototype.constructor===Object
+```
+
+- 多维数组初始化
+
+dim( d1 [,d2 [,d3 [... ]]], value )
+d1,d2,d3 代表各个维度数组所引用的元素个数，value 代表初始值
+dim( 3,3,"x" ) // => [['x','x','x'],['x','x','x'],['x','x','x']]
+这里一位数组引用了 3 个二维数组，每个二维数组引用了 3 个初始化值’x’
+dim( 2,2,2,0 ) // => [[[0,0],[0,0]],[[0,0],[0,0]]]
+dim( 3, true ) // => [true,true,true]
+
+var xxx = function(){ return "xX" }
+dim( 2,5,xxx ) // => [['xX','xX','xX','xX','xX'],['xX','xX','xX','xX','xX']]
+
+1
+
+```
+
+function dim(){
+
+    var len = arguments.length;
+
+    var args = Array.prototype.slice.call(arguments,0,len-1);
+
+    var content = arguments[len-1];
+
+    var result = [];
+
+
+
+    var traverse = function foo(from,deep){
+
+        var arg = args[deep];
+
+        if(deep < args.length - 1){
+
+            for(var i=0;i
+                var array = [];
+
+                from.push(array);
+
+                foo(array,deep+1);
+
+            }
+
+        }
+
+        else{
+
+            for(var i=0;i
+                if(typeof content === "function"){
+
+                    from.push(content());
+
+                }
+
+                else{
+
+                    from.push(content);
+
+                }
+
+            }
+
+        }
+
+    };
+
+    traverse(result,0);
+
+    return result;
+
+}
+```
+
+- 使用 settimeout 实现 setInterval
+
+```
+function interval (fn，timeout=300){
+    let timer={flag:true}
+    function recursion(){
+        if(timer.flag){
+            fn.call(null)
+            setTimeout(recursion,timeout)
+        }
+
+    }
+    setTimeout(recursion,timeout)
+    return timer
+}
+
+```
+
+setInterval 并不是真的每隔一定时间立即执行一次回调函数，而是将函数加入到事件队列，只有当执行栈为空时才会取出事件执行，所以可能会出现执行栈执行时间超过设定的间隔时间
+导致事件队列中累计多个定时器加入，这时便会依次执行而没有达到间隔时间的效果
+
+额外增加一个计次参数
+
+```
+function mySetInterval(fn, millisec,count){
+  function interval(){
+    if(typeof count===‘undefined’||count-->0){
+      setTimeout(interval, millisec);
+      try{
+        fn()
+      }catch(e){
+        count = 0;
+        throw e.toString();
+      }
+    }
+  }
+  setTimeout(interval, millisec)
 
 ```
