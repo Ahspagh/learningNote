@@ -49,10 +49,6 @@ https://mp.weixin.qq.com/s/OvyYCQ5lK0QS_AVBWEqeRw
 
 https://juejin.cn/post/6911472693405548557
 
-- 2.7 前端性能分析
-
-https://juejin.cn/post/6911472693405548557
-
 ## 3. flex 可以做的事
 
 - 3.1 双飞翼布局 左右固定中间自适应
@@ -670,6 +666,30 @@ Array.isArray(value)可以用来判断value是否是数组
 
 ## 20. 用函数来模拟 Class
 
+（1）第一种是工厂模式，工厂模式的主要工作原理是用函数来封装创建对象的细节，从而通过调用函数来达到复用的目的。但是它有一个很大的问题就是创建出来的对象无法和某个类型联系起来，它只是简单的封装了复用代码，而没有建立起对象和类型间的关系。
+
+（2）第二种是构造函数模式。js 中每一个函数都可以作为构造函数，只要一个函数是通过 new 来调用的，那么我们就可以把它称为构造函数。执行构造函数首先会创建一个对象，然后将对象的原型指向构造函数的 prototype 属性，然后将执行上下文中的 this 指向这个对象，最后再执行整个函数，如果返回值不是对象，则返回新建的对象。因为 this 的值指向了新建的对象，因此我们可以使用 this 给对象赋值。构造函数模式相对于工厂模式的优点是，所创建的对象和构造函数建立起了联系，因此我们可以通过原型来识别对象的类型。但是构造函数存在一个缺点就是，造成了不必要的函数对象的创建，因为在 js 中函数也是一个对象，因此如果对象属性中如果包含函数的话，那么每次我们都会新建一个函数对象，浪费了不必要的内存空间，因为函数是所有的实例都可以通用的。
+
+（3）第三种模式是原型模式，因为每一个函数都有一个 prototype 属性，这个属性是一个对象，它包含了通过构造函数创建的所有实例都能共享的属性和方法。因此我们可以使用原型对象来添加公用属性和方法，从而实现代码的复用。这种方式相对于构造函数模式来说，解决了函数对象的复用问题。但是这种模式也存在一些问题，一个是没有办法通过传入参数来初始化值，另一个是如果存在一个引用类型如 Array 这样的值，那么所有的实例将共享一个对象，一个实例对引用类型值的改变会影响所有的实例。
+
+（4）第四种模式是组合使用构造函数模式和原型模式，这是创建自定义类型的最常见方式。因为构造函数模式和原型模式分开使用都存在一些问题，因此我们可以组合使用这两种模式，通过构造函数来初始化对象的属性，通过原型对象来实现函数方法的复用。这种方法很好的解决了两种模式单独使用时的缺点，但是有一点不足的就是，因为使用了两种不同的模式，所以对于代码的封装性不够好。
+
+（5）第五种模式是动态原型模式，这一种模式将原型方法赋值的创建过程移动到了构造函数的内部，通过对属性是否存在的判断，可以实现仅在第一次调用函数时对原型对象赋值一次的效果。这一种方式很好地对上面的混合模式进行了封装。
+
+（6）第六种模式是寄生构造函数模式，这一种模式和工厂模式的实现基本相同，我对这个模式的理解是，它主要是基于一个已有的类型，在实例化时对实例化的对象进行扩展。这样既不用修改原来的构造函数，也达到了扩展对象的目的。它的一个缺点和工厂模式一样，无法实现对象的识别。
+
+寄生式组合继承效率高，避免了在 SubType.prototype 上创建不必要的属性。与此同时还能保持原型链不变
+
+function inheritPrototype(subType, superType){
+
+    var prototype = object(superType.prototype); // 创建原型对象是超类原型对象的一个实例对象
+
+    prototype.constructor = subType; // 弥补因为重写原型而失去的默认的 constructor 属性。
+
+    subType.prototype = prototype; // 实现原型继承
+
+}
+
 - 20.1 可以用有参构造函数来实现
 
 ```
@@ -765,6 +785,43 @@ alert("我是"+this.name+"，我现在卖"+this.price+"万元");
 }
 var camry =new Car("凯美瑞",27);
 camry.sell();
+
+
+
+function SuperType(name){
+    this.name = name
+    this.colors = ["red", "blue", "green"];
+}
+
+SuperType.prototype.sayName = function(){
+    console.log(this.name);
+}
+
+function SubType(name, age){
+
+    //继承属性
+    SuperType.call(this,name);
+
+    this.age = age;
+}
+
+//继承方法  父类实例指向子类原型，子类指向子类对象的构造函数
+SubType.prototype = new SuperType();
+SubType.prototype.constructor = SubType;
+SubType.prototype.sayAge = function(){
+    console.log(this.age);
+}
+
+var instance1 = new SubType("james",9);
+instance1.colors.push("black");
+console.log(instance1.colors);  //"red,blue,green,black"
+instance1.sayName(); // "james"
+instance1.sayAge(); // 9
+
+var instance2 = new SubType("kobe",10);
+console.log(instance2.colors);  //"red,blue,green"
+instance2.sayName(); // "kobe"
+instance2.sayAge(); // 10
 ```
 
 - 20.5 动态原型
@@ -906,16 +963,6 @@ Array.from(input,map,context)
       Array.from({ length: 2 }, () => 'jack')// ['jack', 'jack']
   context: 绑定map中用到的this
 ```
-
-用于映射转换
-
-```
-function arga(...args) {
-     return Array.from(args, value => value + 1);
-}
-```
-
-Array.of( )
 
 用于映射转换
 
@@ -1094,7 +1141,7 @@ https://www.runoob.com/regexp/regexp-syntax.html
 
   .slice( ) 同 Array.slice 抽取一个子串 如果是负数，则该参数规定的是从字符串的尾部开始算起的位置。
 
-slice、substring,substr 区别：当接收的参数是负数时，slice 会将它字符串的长度与对应的负数相加
+slice、substring,substr 区别：当接收的参数是负数时，slice 会将它字符串的长度与对应的负数相加 ，substring 取小的参数为 start，且负参数转换为零
 新增，可方便的用于查找 startsWith(), endsWith(),等方法，补全 padStart(),padEnd(),repeat()字符串。
 
 ---
@@ -1286,7 +1333,7 @@ alert(propertys.join("\n")); //toString等
 
 ## 25. src 与 href 的区别
 
-- src（source）指向外部资源的位置，当解析到该元素时，会暂停其他资源的下载和处理，直到该资源加载、编译、执行完毕，请求 src 资源时会把其指向的资源下载并应用到文档当前标签所在位置。
+- src（source）指向外部资源的位置，当解析到该元素时，会暂停其他资源的下载和处理，直到该资源加载、编译、执行完毕，请求 src 资源时会把++++++++++++++++++++++++++++++++++++++++++
 
 - href （hypertext reference/超文本引用） 能建立当前元素（锚点）或当前文档（链接）之间的链接，可以并行下载资源并不会停止对当前文档的处理。
 
@@ -1462,11 +1509,8 @@ CSS3 动画优势：
 
 1. 浏览器可以对动画进行优化。
 
-```
-浏览器使用与 requestAnimationFrame 类似的机制，requestAnimationFrame比起setTimeout，setInterval设置动画的优势主要是:1)requestAnimationFrame 会把每一帧中的所有DOM操作集中起来，在一次重绘或回流中就完成,并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率,一般来说,这个频率为每秒60帧。2)在隐藏或不可见的元素中requestAnimationFrame不会进行重绘或回流，这当然就意味着更少的的cpu，gpu和内存使用量。
+浏览器使用与 requestAnimationFrame 类似的机制，requestAnimationFrame 比起 setTimeout，setInterval 设置动画的优势主要是:1)requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成,并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率,一般来说,这个频率为每秒 60 帧。2)在隐藏或不可见的元素中 requestAnimationFrame 不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
 1.1.2)强制使用硬件加速 （通过 GPU 来提高动画性能）
-
-```
 
 2. 代码相对简单,性能调优方向固定
 
@@ -1490,17 +1534,12 @@ JS 动画 ：
   况。
 - 代码的复杂度高于 CSS 动画
 
-```
 总结：
-  如果动画只是简单的状态切换，不需要中间过程控制，在这种情况下，css动画是优选方案。它可以让你将动画逻辑放在样式文件里面，而不会让你的页面充斥 Javascript 库。
+如果动画只是简单的状态切换，不需要中间过程控制，在这种情况下，css 动画是优选方案。它可以让你将动画逻辑放在样式文件里面，而不会让你的页面充斥 Javascript 库。
 
-  然而如果你在设计很复杂的富客户端界面或者在开发一个有着复杂UI状态的 APP。那么你应该使用js动画，这样你的动画可以保持高效，并且你的工作流也更可控。
+然而如果你在设计很复杂的富客户端界面或者在开发一个有着复杂 UI 状态的 APP。那么你应该使用 js 动画，这样你的动画可以保持高效，并且你的工作流也更可控。
 
-  所以，在实现一些小的交互动效的时候，就多考虑考虑CSS动画。对于一些复杂控制的动画，使用javascript比较可靠。
-
-```
-
----
+所以，在实现一些小的交互动效的时候，就多考虑考虑 CSS 动画。对于一些复杂控制的动画，使用 javascript 比较可靠。
 
 ## 32. 事件
 
@@ -1553,7 +1592,6 @@ var a = document.getElementById('a1');
 bindEvent(div1, 'click', function(e) {
 console.log(a.innerHTML);
 })
----
 ```
 
 - 事件委托
@@ -1584,7 +1622,6 @@ console.log(a.innerHTML);
   },true)//捕获阶段阻止使用(阻止子级事件冒泡回调)
   ```
 
-```
 ---
 
 ## 33.JS 拖动原理
@@ -1727,10 +1764,10 @@ border:1px solid #B3D6EF;　
 background:#ffffff;
 }
 input {
- star : expression(
- onmouseover=function(){this.style.backgroundColor="#D5E9F6"},
- onmouseout=function(){this.style.backgroundColor="#ffffff"})
- }
+star : expression(
+onmouseover=function(){this.style.backgroundColor="#D5E9F6"},
+onmouseout=function(){this.style.backgroundColor="#ffffff"})
+}
 
 尽量使用 css 属性简写，如：用 border 代替 border-width, border-style, bordercolor 批量修改元素样式：elem.className 和 elem.style.cssText 代替 elem.style.xxx
 
@@ -2110,11 +2147,11 @@ fn();
 
 1. setTimeout 的回调函数放到宏任务队列里，等到执行栈清空以后执行
 
-2. Promise.then 里的回调函数会在 resolve ()后放到相应宏任务的微任务队列里，等宏任务里面的同步代码执行完再执行
+1. Promise.then 里的回调函数会在 resolve ()后放到相应宏任务的微任务队列里，等宏任务里面的同步代码执行完再执行
 
-3. async 函数表示函数里面可能会有异步方法，await 后面跟一个表达式
+1. async 函数表示函数里面可能会有异步方法，await 后面跟一个表达式
 
-4. async 方法执行时，遇到 await 会立即执行表达式，然后把表达式后面的代码放到微任务队列里，让出执行栈让同步代码先执行
+1. async 方法执行时，遇到 await 会立即执行表达式，然后把表达式后面的代码放到微任务队列里，让出执行栈让同步代码先执行
 
 ```
 
@@ -2343,6 +2380,7 @@ else {
 throw TypeError("args error!");
 }
 }
+```
 
 ## 47. ES6 对 Object 类型的升级
 
@@ -2640,6 +2678,47 @@ return target
 
 ```
 
+浅拷贝指的是将一个对象的属性值复制到另一个对象，如果有的属性的值为引用类型的话，那么会将这个引用的地址复制给对象，因此两个对象会有同一个引用类型的引用。浅拷贝可以使用 Object.assign 和展开运算符来实现。
+
+深拷贝相对浅拷贝而言，如果遇到属性值为引用类型的时候，它新建一个引用类型并将对应的值复制给它，因此对象获得的一个新的引用类型而不是一个原有类型的引用。深拷贝对于一些对象可以使用 JSON 的两个函数来实现，但是由于 JSON 的对象格式比 js 的对象格式更加严格，所以如果属性值里边出现函数或者 Symbol 类型的值时，会转换失败。
+// 浅拷贝的实现;
+
+function shallowCopy(object) {
+// 只拷贝对象
+if (!object || typeof object !== "object") return;
+
+// 根据 object 的类型判断是新建一个数组还是对象
+let newObject = Array.isArray(object) ? [] : {};
+
+// 遍历 object，并且判断是 object 的属性才拷贝
+for (let key in object) {
+if (object.hasOwnProperty(key)) {
+newObject[key] = object[key];
+}
+}
+
+return newObject;
+}
+
+// 深拷贝的实现;
+
+function deepCopy(object) {
+if (!object || typeof object !== "object") return;
+
+let newObject = Array.isArray(object) ? [] : {};
+
+for (let key in object) {
+if (object.hasOwnProperty(key)) {
+newObject[key] =
+typeof object[key] === "object" ? deepCopy(object[key]) : object[key];
+}
+}
+
+return newObject;
+}
+
+---
+
 ## 52. 函数的柯里化
 
 // 函数柯里化指的是一种将使用多个参数的一个函数转换成一系列使用一个参数的函数的技术,Function.prototype.bind 方法也是柯里化应用
@@ -2683,6 +2762,12 @@ let subArgs = args.slice(0);
 function curry(fn, ...args) {
 return fn.length <= args.length ? fn(...args) : curry.bind(null, fn, ...args);
 }
+
+const currying = fn =>
+judge = (...args) =>
+args.length >= fn.length
+? fn(...args)
+: (...arg) => judge(...args, ...arg)
 
 ```
 
@@ -3171,7 +3256,7 @@ git config --global user.name "your name"
 
 工作流程：
 
-0. 在本地文件夹简历工作目录作为本地代码仓库 git init
+0. 在本地文件夹建立工作目录作为本地代码仓库 git init
 1. 在工作目录中修改某些文件 添加到本地仓库 git add helloworld.md/ -A
 2. 对修改后的文件进行快照，然后保存进暂存区域 git commit -m "修改注释"
 3. 提交更新，将保存在暂存区域的文件快照永久转储到 Git 目录中 git push origin dev
@@ -3514,3 +3599,256 @@ Plugin 可以拓展 webpack 的功能，让 webpack 具有更多的灵活性，�
 loader 在 module.rules 中配置，也就是说他作为模块的解析规则而存在。类型为数组，每一项都是一个 Object，里面描述了对于什么类型的文件（test），使用什么加载（loader）和使用的参数（options）
 
 Plugin 在 Plugins 中单独配置类型为数组，每一项是一个 plugin 的实例，参数都通过构造函数传入
+
+## Object.defineProperty 和 proxy
+
+“数据绑定”的关键在于监听数据的变化，主要的实现方法是 defineProperty(数据劫持)和 proxy(代理)这两种方法，vue2.0 实现数据绑定正是使用前者，vue3.0 使用是后者
+
+- Object.defineProperty() 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象。IE8 不兼容。
+
+Object.defineProperty(obj, prop, descriptor)
+
+参数
+obj: 要定义属性的对象。
+
+prop: 要定义或修改的属性的名称或 Symbol 。
+
+descriptor: 要定义或修改的属性描述符。
+属性描述符有两种主要形式：数据描述符 value 、writable 和存取描述符 get set。
+
+configurable
+
+当且仅当该属性的 configurable 为 true 时，该属性描述符才能够被改变，也能够被删除。默认为 false。
+
+enumerable
+
+当且仅当该属性的 enumerable 为 true 时，该属性才能够出现在对象的枚举属性中。默认为 false。
+
+- Proxy 对象用于定义基本操作的自定义行为（如属性查找、赋值、枚举、函数调用等）。IE 不兼容。
+
+const p = new Proxy(target, handler)
+
+参数
+target: 要使用 Proxy 包装的目标对象（可以是任何类型的对象，包括原生数组，函数，甚至另一个代理）。
+handler: 一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理 p 的行为。
+返回一个 Proxy 代理的对象，操作这个对象会触发 handler 对应操作。改变原始对象不会触发。 有十三种拦截器
+handler.getPrototypeOf()
+handler.setPrototypeOf()
+handler.isExtensible()
+handler.preventExtensions()
+handler.getOwnPropertyDescriptor()
+handler.defineProperty()
+handler.has()//in 操作符的捕捉器。
+handler.get(target, property)
+handler.set(target, property, value)
+handler.deleteProperty()//delete 操作符的捕捉器。
+handler.ownKeys()
+handler.apply()
+handler.construct()//new 操作符的捕捉器
+
+使用 defineProperty 和 proxy 的区别，当使用 defineProperty，我们修改原来的 obj 对象就可以触发拦截，而使用 proxy，就必须修改代理对象，即 Proxy 的实例才可以触发拦截。
+
+第一个区别在于 defineproperty 只能监听某个属性不能全对象监听
+
+proxy 不用设置具体属性
+
+defineproperty 监听需要知道那个对象的那个属性，而 proxy 只需要知道那个对象就可以了。也就是会省去 for  in  循环提高了效率
+
+响应式方面 性能得到很大提升 不用初始化的时候就递归遍历属性
+
+第二个区别在于 proxy 不需要借助外部 value，也有单独相配的对象即 Reflect，
+
+eg：var ob={a:1,b:2}
+
+在 proxy 的 get 里面有 target，key，receiver 三个值，其中 target 是对象 ob，key 是 ob.a，receiver 是，set 里面除了这三个额外多加了一个 value，value 是传出来的新值。所以在 get 里 return 的就是 target[key]，set 里面 return 的是 target[key]=value 或者用 proxy 里的 Reflect.set(target，key，value）这样写优雅一点
+
+第三个区别在于不会污染原对象（关键区别）
+
+proxy 去代理了 ob，他会返回一个新的代理对象不会对原对象 ob 进行改动，而 defineproperty 是去修改元对象，修改元对象的属性，而 proxy 只是对元对象进行代理并给出一个新的代理对象
+
+## Vue3 的 composition api 和 Vue2 的 Option
+
+提取到一个独立的组合式函数以专注某一逻辑的实现
+3.0 去掉了 filter, 生命周期 beforeCreate created,用 setup 取代 体现了高内聚低耦合的特点
+
+composition api 是 vue3 一系列新的 api 合集，主要有：
+1、ref 和 reactive
+使用 proxy 原理创建响应式引用 基础类型和复杂类型
+toRefs - 解构响应式对象数据：为 reactive 对象的属性创建一个 ref,使用.value 访问引用值
+
+reactive 对象没有响应功能，需要用 toRefs 函数将其转化为 ref 格式
+
+2、computed 和 watch
+
+3、新的生命周期函数
+
+4、自定义函数 Hook
+
+setup()可以包含许多特性包括 data、生命周期、watch、computed 等等，注意该方法中无法访问 this。
+
+```
+props: {
+    user: {
+      type: String,
+      required: true
+    }
+  },
+setup(props, context){
+  return {
+
+    // Attribute (非响应式对象)
+  console.log(context.attrs)
+  // 插槽 (非响应式对象)
+  console.log(context.slots)
+  // 触发事件 (方法)
+  console.log(context.emit)
+    //context 是一个普通的 JavaScript 对象，也就是说，它不是响应式的可以用es6{ attrs, slots, emit }解构
+  // 要绑定的数据和方法
+
+  const counter = ref(0)
+  watch(counter, (newValue, oldValue) => {
+    console.log('The new counter value is: ' + counter.value)
+  })
+  const twiceTheCounter = computed(() => counter.value * 2)
+  counter.value++
+  console.log(counter.value) // 1
+  console.log(twiceTheCounter.value) // 2
+  onMounted(()=>{
+        document.addEventListener('click',updateMouse)
+    })
+    onUnmounted(()=>{
+        document.removeEventListener('click',updateMouse)
+})
+    return {
+        x,
+        y
+    }
+
+  }
+}
+
+export default userMousePosition
+```
+
+this.$emit 在 setup 中用 context.emit 方法来替代
+
+如果需要解构 prop，可以通过使用 setup 函数中的 toRefs 来完成此操作，若为传入的可选 prop 则使用 toRef 替代：
+
+setup 返回的 refs 在模板中访问时是被自动解开的，因此不应在模板中使用 .value
+
+Teleport 提供了一种干净的方法，使我们可以控制要在 DOM 中哪个父对象下呈现 HTML
+teleport 组件+父子组件传参
+指定被包裹组件挂载在何处
+
+```
+<template>
+<!-- 子组件 -->
+    <teleport to="#to">
+        <div id="center" v-if="isOpen">
+            <h2><slot>this is a model </slot></h2>
+            <button @click="buttonClick">关闭（向父组件传递数据）</button>
+        </div>
+    </teleport>
+
+</template>
+<script lang="ts">
+import { defineComponent } from 'vue'
+export default defineComponent({
+    name:'Modal',
+    props:{
+        isOpen: Boolean
+    },
+
+    emits: {
+        'close-modal':(payload: any)=>{
+            return payload.type === 'close'
+        }
+    },
+    setup(props, context) {
+        const buttonClick = ()=>{
+            return context.emit('close-modal', {
+                type: 'hello'
+            })
+        }
+        return {
+            buttonClick
+        }
+    },
+})
+</script>
+
+
+<template>
+<!-- 父组件 -->
+    <div id="to" class="to">
+        <button @click="openModal">打开吧点数去</button>
+        <Modal :isOpen="modalIsOPen" @closeModal="closeModal">solt展示</Modal>
+    </div>
+</template>
+
+<script lang="ts">
+import { ref } from 'vue';
+import Modal from '../components/Modal.vue';
+export default {
+    name:'DefineComponent',
+    setup() {
+        const modalIsOPen = ref(false)
+        const openModal = ()=>{
+            modalIsOPen.value = true
+            console.log('触发openModal',modalIsOPen.value )
+        }
+        const closeModal = ()=>{
+            modalIsOPen.value = false
+        }
+        return{
+            openModal,
+            modalIsOPen,
+            closeModal
+        }
+    },
+    components:{
+      Modal: Modal,
+    }
+}
+</script>
+
+```
+
+异步组件 suspense
+需要返回一个 promise 。suspense 希望能够处理异步问题，可以根据不同的情况渲染组件
+
+```
+setup(){
+  return new Promise((resolve)=>{
+    setTimeout(()=>{
+      return resolve({
+        result:42
+      })
+    },3000)
+  })
+}
+ <Suspense>
+        <template #default>
+            <AsyncSHow   ></AsyncSHow>
+        </template>
+        <template #fallback>
+            <Modal :isOpen="true"></Modal>
+        </template>
+      </Suspense>
+
+```
+
+## Vue 中的路由模式原理
+
+1、hash 模式：原理是 onhashchange 事件，url 都会被浏览器记录下来，只能改变#后面的 url 片段
+
+2、history 模式：根据 history api 中的 pushState,replaceState 两个方法。
+
+## v-for 设置 key 值
+
+vue 组件高度复用增加 Key 可以标识组件的唯一性，为了更好地区别各个组件 key 的作用主要是为了高效的更新虚拟 DOM
+若用数组索引 index 为 key，当向数组中指定位置插入一个新元素后，对应着后面的虚拟 DOM 的 key 值全部更新了，这个时候还是会做不必要的更新，就像没有加 KEY 一样
+
+可以这样简单地理解，无：key 属性时，状态默认绑定的是位置；有：key 属性时，状态根据 key 的属性值绑定到了相应的数组元素。
+
+key 的作用主要是为了高效的更新虚拟 DOM。另外 vue 中在使用相同标签名元素的过渡切换时，也会使用到 key 属性，其目的也是为了让 vue 可以区分它们，否则 vue 只会替换其内部属性而不会触发过渡效果。

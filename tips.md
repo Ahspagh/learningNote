@@ -480,7 +480,9 @@ for(var i in json){
 
 ```
 15732426 => 15,732,426
-
+Number(data).ToLocaleString('en');
+Intl.NumberFormat().format(number)
+number && number.replace(/(?!^)(?=(\d{3})+\.)/g, ',')
 num.
 //思路：先将数字转为字符， str= str + '' ;
 //利用反转函数，每三位字符加一个 ','最后一位不加； re()是自定义的反转函数，最后再反转回去！str.split("").reverse().join("")
@@ -494,6 +496,21 @@ for(var i = 1; i <= re(str).length; i++){
 ```
 
 ---
+
+## 数组递归求和
+
+```
+const sum = arr => {
+  var len = arr.length;
+  if (len == 0) {
+    return 0;
+  } else if (len == 1) {
+    return arr[0];
+  } else {
+    return arr[0] + sum(arr.slice(1));
+  }
+}; //  ---数组递归求和
+```
 
 ## 深度 clone 深拷贝简易实现
 
@@ -525,6 +542,15 @@ function clone(obj)
 	{
 	return obj;
 	}
+}
+
+function deepClone(obj){
+var newObj= obj instanceof Array ? []:{};
+for(var item in obj){
+var temple= typeof obj[item] == 'object' ? deepClone(obj[item]):obj[item];
+newObj[item] = temple;
+}
+return newObj;
 }
 
 ```
@@ -695,6 +721,8 @@ return eval(arguments[1]);
 ---
 
 ## 实现 Promise
+
+promise 在实例化时已经执行
 
 ```
 var Promise = new Promise((resolve, reject) => {
@@ -893,24 +921,39 @@ function resolvePromise(promise2, x, resolve, reject) {
 ```
  /**
  * Promise.all Promise进行并行处理
- * 参数: promise对象组成的数组作为参数
+ * 参数: promise对象组成的数组(存在非promise对象如数字)作为参数
  * 返回值: 返回一个Promise实例
  * 当这个数组里的所有promise对象全部进入FulFilled状态的时候才会resolve。
+ * 出现一个报错则抛出一个错误，但余下的仍会执行
  */
 
  Promise.all = function(promises) {
     return new Promise((resolve, reject) => {
+      if(!Array.isArray(promises)){
+        return reject(new Error("传入参数必须是数组"))
+      }
         let values = []
         let count = 0
         promises.forEach((promise, index) => {
-            promise.then(value => {
+          Promise.resolve(promise).then(res=>{
+            //Promise.resolve会自动转换数组中的非promise对象
+            values[index] = res
+            //Promise.all返回的结果保持原定顺序 由索引序号赋值
+            count++
+            if (count === promises.length) {
+              //返回值索引会影响数组长度，所以必须使用计数器
+                    resolve(values)
+                }
+          }).catch(e=>reject(e))
+
+            <!-- promise.then(value => {
                 console.log('value:', value, 'index:', index)
                 values[index] = value
                 count++
                 if (count === promises.length) {
                     resolve(values)
                 }
-            }, reject)
+            }, reject) -->
         })
     })
 }
@@ -927,6 +970,30 @@ function resolvePromise(promise2, x, resolve, reject) {
         });
     });
 }
+//装饰器
+const cacheMap = new Map();
+function enableCache(target,name,descriptor){
+  const val = async function(..args){
+    const cacheKey = name + JSON.stringify(args)
+    if(!cacheMap.get(cacheKey){
+      const cacheValue= Promise.resolve(val.apply(this,args)).catch(e=>{
+        cacheMap.set(cacheKey,null)
+      })
+      cacheMap.set(cacheKey,cacheValue);
+    }
+    return cacheMap.get(cacheKey)
+  }
+  return descriptor
+}
+class PromiseClass{
+  @enableCache
+  static async getInfo(){
+
+  }
+}
+PromiseClass.getInfo() 请求返回结果保存到cacheMap
+PromiseClass.getInfo() 直接返回cacheMap.get(cacheKey)
+
 ```
 
 ---
@@ -1403,7 +1470,7 @@ dp[i] = dp[i-1] + dp[i-2];
 dp[i] = dp[i-1] + dp[i-2]; ==>
 
 因为 dp[i]只与 dp[i-1] 和 dp[i-2] 有关，没有必要存储所有出现过的 dp 项，只用两个临时变量去存储这两个状态即可。
-<<<<<<< HEAD
+
 [a1, a2] = [a2, a1 + a2];
 
 const climbStairs = function(n) {
@@ -1416,7 +1483,7 @@ return a2;
 }
 时间复杂度：O(n)
 空间复杂度：O(1)
-=======
+
 [a1, a2] = [a2, a1 + a2];
 
 for (let i = 2; i <= n; i++) {
@@ -1426,8 +1493,6 @@ for (let i = 2; i <= n; i++) {
 空间复杂度：O(1)
 
 ## Vue 踩坑案例
-
-> > > > > > > 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
 
 ## Vue 踩坑案例
 
@@ -1483,9 +1548,7 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili"])
 
 ```
 
-<<<<<<< HEAD
-
-- # 如果数组元素是 object 类型且里面键的顺序不同则会认为是两个不同放入数组元素
+## 如果数组元素是 object 类型且里面键的顺序不同则会认为是两个不同放入数组元素
 
 比较：
 
@@ -1499,217 +1562,83 @@ removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili"])
 采用 findIndex 找到 accumulator 是否包含相同元素，如果不包含则加入，否则不加入
 返回最终的 accumulator ，则为去重后的数组
 
-=======
-
 ```
-// 获取类型
-const getType = (function() {
-    const class2type = { '[object Boolean]': 'boolean', '[object Number]': 'number', '[object String]': 'string', '[object Function]': 'function', '[object Array]': 'array', '[object Date]': 'date', '[object RegExp]': 'regexp', '[object Object]': 'object', '[object Error]': 'error', '[object Symbol]': 'symbol' }
-
-    return function getType(obj) {
-        if (obj == null) {
-            return obj + ''
-        }
-        // javascript高级程序设计中提供了一种方法,可以通用的来判断原始数据类型和引用数据类型
-        //ps.Object.prototype.toString.call不能准确判断person是Person类的实例，而只能用instanceof 操作符来进行判断
-        const str = Object.prototype.toString.call(obj)
-        return typeof obj === 'object' || typeof obj === 'function' ? class2type[str] || 'object' : typeof obj
-    };
-})();
-
-/**
- * 判断两个元素是否相等
- * @param {any} o1 比较元素
- * @param {any} o2 其他元素
- * @returns {Boolean} 是否相等
- */
-const isEqual = (o1, o2) => {
-    const t1 = getType(o1)
-    const t2 = getType(o2)
-
-    // 比较类型是否一致
-    if (t1 !== t2) return false
-
-
-    // 类型一致
-    if (t1 === 'array') {
-        // 首先判断数组包含元素个数是否相等
-        if (o1.length !== o2.length) return false
-=======
-
-    // 类型一致
-    if (t1 === 'array') {
-        // 首先判断数组包含元素个数是否相等
-        if (o1.length !== o2.length) return false
-        // 比较两个数组中的每个元素
-        return o1.every((item, i) => {
-            // return item === target
-
-            return isEqual(item, o2[i])
-        })
-    }
-
-    if (t2 === 'object') {
-        // object类型比较类似数组
-        const keysArr = Object.keys(o1)
-        if (keysArr.length !== Object.keys(o2).length) return false
-        // 比较每一个元素
-        return keysArr.every(k => {
-            return isEqual(o1[k], o2[k])
-        })
-    }
-
-    return o1 === o2
-}
-
-// 数组去重
-const removeDuplicates = (arr) => {
-    return arr.reduce((accumulator, current) => {
-        const hasIndex = accumulator.findIndex(item => isEqual(current, item))
-        if (hasIndex === -1) {
-            accumulator.push(current)
-        }
-        return accumulator
-    }, [])
-}
-
-// 测试
-removeDuplicates([123, {a: 1}, {a: {b: 1}}, {a: "1"}, {a: {b: 1}}, "meili", {a:1, b:2}, {b:2, a:1}])
-// [123, {a: 1}, a: {b: 1}, {a: "1"}, "meili", {a: 1, b: 2}]
-```
-
-## 手写 Array.splice
-
-=======
-
-```
-Array.prototype._splice = function(start, deleteCount) {
-    // 入参元素个数
-    let argumentsLen = arguments.length
-    // 数组
-    let array = Object(this)
-    // 数组长度
-    let len = array.length
-    // 添加元素个数
-    let addCount = argumentsLen > 2 ? argumentsLen -2 : 0
-    // 计算有效的 start
-    let startIndex = computeSpliceStartIndex(start, array)
-    // 计算有效的 deleteCount
-    let delCount = computeSpliceDeleteCount(startIndex, deleteCount, len)
-    // 记录删除的数组元素
-    let deletedElements = new Array(delCount)
-
-
-    // 将待删除元素记录到 deletedArray
-    recordDeleteElements(startIndex, delCount, array, deletedElements)
-
-=======
-
-    // 将待删除元素记录到 deletedArray
-    recordDeleteElements(startIndex, delCount, array, deletedElements)
-
-
-    // 密封对象
-    if(delCount !== addCount && Object.isSealed(array)) {
-        throw new TypeError('the array is sealed')
-    }
-    // 冻结对象
-    if(delCount > 0 && addCount > 0 && Object.isFrozen(array)) {
-        throw new TypeError('the array is frozen')
-    }
-
-
-    // 移动数组元素
-    moveElements(startIndex, delCount, array, addCount)
-
-    let i = startIndex
-    let argumentsIndex = 2
-
-=======
-
-    // 移动数组元素
-    moveElements(startIndex, delCount, array, addCount)
-
-    let i = startIndex
-    let argumentsIndex = 2
-
->>>>>>> 7d2b5f4b484106105492af62d5e5846dcb6ff7f5
-    // 插入新元素
+// 插入新元素
     while (argumentsIndex < argumentsLen) {
         array[i++] = arguments[argumentsIndex++]
     }
 
 
-=======
 
     array.length = len - delCount + addCount
 
     // 返回删除元素数组
     return deletedElements;
+
 }
 
 // 计算真实的 start
 function computeSpliceStartIndex(start, len) {
-    // 处理负值，如果负数的绝对值大于数组的长度，则表示开始位置为第0位
-    if(start < 0) {
-        start += len
-        return start < 0 ? 0 : start
-    }
-    // 处理超出边界问题
-    return start > len - 1 ? len - 1: start
+// 处理负值，如果负数的绝对值大于数组的长度，则表示开始位置为第 0 位
+if(start < 0) {
+start += len
+return start < 0 ? 0 : start
+}
+// 处理超出边界问题
+return start > len - 1 ? len - 1: start
 
 }
 
 }
-
 
 // 计算真实的 deleteCount
 function computeSpliceDeleteCount(startIndex, deleteCount, len) {
-    // 超出边界问题
-    if(deleteCount > len - startIndex) deleteCount = len - startIndex
-    // 负值问题
-    if(deleteCount < 0) deleteCount = 0
-    return deleteCount
+// 超出边界问题
+if(deleteCount > len - startIndex) deleteCount = len - startIndex
+// 负值问题
+if(deleteCount < 0) deleteCount = 0
+return deleteCount
 }
 
 // 记录删除元素，用于 Array.prototype.splice() 返回
 function recordDeleteElements(startIndex, delCount, array, deletedElementd) {
-    for(let i = 0; i < delCount; i++) {
-        deletedElementd[i] = array[startIndex + i]
-    }
+for(let i = 0; i < delCount; i++) {
+deletedElementd[i] = array[startIndex + i]
+}
 }
 
 // 移动数组元素，便于插入新元素
 function moveElements(startIndex, delCount, array, addCount) {
-    let over = addCount - delCount
-    if(over) {
-        // 向后移
-        for(let i = array.length - 1; i >= startIndex + delCount; i--) {
-            array[i+over] = array[i]
-        }
-    } else if (over < 0) {
-        // 向前移
-        for(let i = startIndex + delCount; i <= array.length - 1; i++) {
-            if(i + Math.abs(over) > array.length - 1) {
-                // 删除冗于元素
-                delete array[i]
-                continue
-            }
-            array[i] = array[i + Math.abs(over)]
-        }
-    }
+let over = addCount - delCount
+if(over) {
+// 向后移
+for(let i = array.length - 1; i >= startIndex + delCount; i--) {
+array[i+over] = array[i]
+}
+} else if (over < 0) {
+// 向前移
+for(let i = startIndex + delCount; i <= array.length - 1; i++) {
+if(i + Math.abs(over) > array.length - 1) {
+// 删除冗于元素
+delete array[i]
+continue
+}
+array[i] = array[i + Math.abs(over)]
+}
+}
 }
 
 const months = ['Jan', 'March', 'April', 'June']
-console.log(months._splice(1, 0, 'Feb'))
+console.log(months.\_splice(1, 0, 'Feb'))
 // []
 console.log(months)
 // ["Jan", "Feb", "March", "April", "June"]
 
-console.log(months._splice(4, 1, 'May'))
+console.log(months.\_splice(4, 1, 'May'))
 // ["June"]
 console.log(months)
 // ["Jan", "Feb", "March", "April", "May"]
+
 ```
 
 ## 尾递归 和 尾调用
@@ -1721,32 +1650,34 @@ console.log(months)
 阶乘函数
 
 ```
+
 function factorial(n) {
-  if (n === 1) return 1;
-  return n * factorial(n - 1);
+if (n === 1) return 1;
+return n \* factorial(n - 1);
 }
 
 factorial(5) // 120
+
 ```
 
 尾递归阶乘函数 只保留一个调用记录，复杂度 O(1) 。
 
 ```
+
 function factorial(n, total) {
-  if (n === 1) return total;
-  return factorial(n - 1, n * total);
+if (n === 1) return total;
+return factorial(n - 1, n \* total);
 }
 
 factorial(5, 1) // 120
 
-
 function tailFactorial(n, total) {
-  if (n === 1) return total;
-  return tailFactorial(n - 1, n * total);
+if (n === 1) return total;
+return tailFactorial(n - 1, n \* total);
 }
 
 function factorial(n) {
-  return tailFactorial(n, 1);
+return tailFactorial(n, 1);
 }
 
 factorial(5) // 120
@@ -1754,51 +1685,54 @@ factorial(5) // 120
 柯里化（currying），意思是将多参数的函数转换成单参数的形式。这里也可以使用柯里化。
 
 function currying(fn, n) {
-  return function (m) {
-    return fn.call(this, m, n);
-  };
+return function (m) {
+return fn.call(this, m, n);
+};
 }
 
 function tailFactorial(n, total) {
-  if (n === 1) return total;
-  return tailFactorial(n - 1, n * total);
+if (n === 1) return total;
+return tailFactorial(n - 1, n \* total);
 }
 
 const factorial = currying(tailFactorial, 1);
 
 factorial(5) // 120
 
-
 第二种 使用 ES6 的函数默认值。
 function factorial(n, total = 1) {
-  if (n === 1) return total;
-  return factorial(n - 1, n * total);
+if (n === 1) return total;
+return factorial(n - 1, n \* total);
 }
 
 factorial(5) // 120
+
 ```
 
 非尾递归的 Fibonacci 数列
 
 ```
-function Fibonacci (n) {
-  if ( n <= 1 ) {return 1};
 
-  return Fibonacci(n - 1) + Fibonacci(n - 2);
+function Fibonacci (n) {
+if ( n <= 1 ) {return 1};
+
+return Fibonacci(n - 1) + Fibonacci(n - 2);
 }
 
 Fibonacci(10) // 89
 Fibonacci(100) // 超时
 Fibonacci(500) // 超时
+
 ```
 
 尾递归优化过的 Fibonacci 数列
 
 ```
-function Fibonacci2 (n , ac1 = 1 , ac2 = 1) {
-  if( n <= 1 ) {return ac2};
 
-  return Fibonacci2 (n - 1, ac2, ac1 + ac2);
+function Fibonacci2 (n , ac1 = 1 , ac2 = 1) {
+if( n <= 1 ) {return ac2};
+
+return Fibonacci2 (n - 1, ac2, ac1 + ac2);
 }
 
 Fibonacci2(100) // 573147844013817200000
@@ -1810,23 +1744,25 @@ Fibonacci2(10000) // Infinity
 ## params 对象中的 value 为 null，''，undefined 的 key
 
 ```
+
 function filterParams(obj) {
-  const keys = Object.keys(obj)
-  keys.forEach(key => {
-    const value = obj[key]
-    if (isObject(value)) filterParams(value)
-    if (isEmpty(value)) delete obj[key]
-  })
-  return obj
+const keys = Object.keys(obj)
+keys.forEach(key => {
+const value = obj[key]
+if (isObject(value)) filterParams(value)
+if (isEmpty(value)) delete obj[key]
+})
+return obj
 }
 
 function isEmpty(input) {
-  return ['', undefined, null].includes(input)
+return ['', undefined, null].includes(input)
 }
 
 function isObject(input) {
-  return input !== null && (!Array.isArray(input)) && typeof input === 'object'
+return input !== null && (!Array.isArray(input)) && typeof input === 'object'
 }
+
 ```
 
 ## length
@@ -1841,10 +1777,10 @@ function box(){
 var arr = [];
 for(var i=0;i<5;i++){
 arr[i] = (function(num){ //自我执行，并传参(将匿名函数形成一个表达式)(传递一个参数)
-return num; //这里的 num 写什么都可以  
- })(i); //这时候这个括号里面的 i 和上面 arr[i]的值是一样的都是取自 for 循环里面的 i  
- }  
- return arr;
+return num; //这里的 num 写什么都可以
+})(i); //这时候这个括号里面的 i 和上面 arr[i]的值是一样的都是取自 for 循环里面的 i
+}
+return arr;
 }
 在 for 循环里面的匿名函数执行 return i 语句的时候，由于匿名函数里面没有 i 这个变量，所以这个 i 他要从父级函数中寻找 i，而父级函数中的 i 在 for 循环中，当找到这个 i 的时候，是 for 循环完毕的 i，也就是 5，所以这个 box 得到的是一个数组[5,5,5,5,5]。
 
@@ -1906,44 +1842,522 @@ console.log(index);
 ## 任务队列陷阱题
 
 ```
+
 console.log("start")
-setTimeout(() => {    //加入第二轮宏任务
-  console.log('children2');
-  Promise.resolve().then(() => {
-    console.log('children3');//加入第二轮微任务
-  })
+setTimeout(() => { //加入第二轮宏任务
+console.log('children2');
+Promise.resolve().then(() => {
+console.log('children3');//加入第二轮微任务
+})
 }, 0);
 new Promise(function (resolve, reject) {
-  console.log('children4');
-  setTimeout(() => { //第三轮宏任务
-    console.log("children5")
-    resolve("children6") //加入第三轮微任务 .then被延时执行
-  }, 0);
-}).then((res) => {  //第一轮宏任务并未resolve不会加入微任务队列 //加入第二轮微任务
-  console.log('children7');
-  setTimeout(() => {//第三轮宏任务
-    console.log(res);//
-  }, 0);
+console.log('children4');
+setTimeout(() => { //第三轮宏任务
+console.log("children5")
+resolve("children6") //加入第三轮微任务 .then 被延时执行
+}, 0);
+}).then((res) => { //第一轮宏任务并未 resolve 不会加入微任务队列 //加入第二轮微任务
+console.log('children7');
+setTimeout(() => {//第三轮宏任务
+console.log(res);//
+}, 0);
 
 })
 //start
-  //children4
-  //第一轮宏任务结束，第一轮并无微任务，开始第二轮宏任务
-  //children2
-   //第二轮宏任务结束 开始清空微任务
-  //children3
-  //第三轮宏任务开始
-  //children5
-  //清空第三轮微任务
-  //children7
-  //开始第四轮宏任务
-  //children6
-
+//children4
+//第一轮宏任务结束，第一轮并无微任务，开始第二轮宏任务
+//children2
+//第二轮宏任务结束 开始清空微任务
+//children3
+//第三轮宏任务开始
+//children5
+//清空第三轮微任务
+//children7
+//开始第四轮宏任务
+//children6
 
 ```
 
 before NodeV11 children2，children5，children3，children7，children6
 
 ```
+
+const p = function () {
+return new Promise((resolve, reject) => {
+const p1 = new Promise((resolve, reject) => {
+setTimeout(() => {
+resolve(1)
+}, 0);
+resolve(2) //注释后 3,end,4,1
+})
+p1.then(res => {
+console.log(res)
+})
+console.log(3)
+resolve(4)
+})
+}
+p().then((res) => {
+console.log(res)
+})
+console.log("end")
+//3,end,2,4
+
+```
+
+## 接雨水算法面试题
+
+![avatar](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X3BuZy9tSTZvN0gwNXNoaWF1R2ZCRFpMNVkxVWptUFVGU2VWMTZvQnkxWXg3aGJ6aWJVMEo5TldNaWE5OHp4Z0ZhVXAxWHd0M1hENVR4ZGo3WnRtWFVWaDFENTI3Zy82NDA?x-oss-process=image/format,png)
+
+解决思路为得出 i 位置的接水量，位置 i 取决于左右最高的柱中的最低高度减去自身高度然后累加每个位置
+
+```
+
+1.暴力法 时间复杂度 O(N^2) 空间复杂度 O(1)
+function trap (height = []) {
+if (height.length === 0) {
+return 0
+}
+const n = height.length
+let res = 0
+for (let i = 1; i < n - 1; i++) {
+let l_max = 0
+let r_max = 0
+for (let j = i; j <n; j++) {
+//右侧的最高的柱子
+r_max = Math.max(r_max, height[j])
+}
+for (let j = i; j >= 0; j--) {
+//左侧的最高的柱子
+l_max = Math.max(l_max, height[j])
+}
+res += Math.min((l_max, r_max)) - height[i]
+//累计雨水数量：左右最低的柱子-自身位置的高度 累加
+return res
+}
+} 2.优化 时间复杂度 O(1) 空间复杂度 O(N)
+function trap (height = []) {
+if (height.length === 0) {
+return 0
+}
+const n = height.length
+let res = 0
+let l_max = new Array(n)
+let r_max = new Array(n)
+l_max[0] = height[0]
+r_max[n - 1] = height[n - 1]
+//计算左侧的最高值数组 从左到右计算
+for (let i = 1; i < n; i++) {
+l_max[i] = Math.max(l_max[i - 1], height[i])
+}
+for (let i = n - 2; i > 0; i--)
+//计算右侧侧的最高值数组 从又到左计算
+{
+r_max[i] = Math.max(r_max[i + 1], height[i])
+}
+for (let i = 0; i < n - 1; i++)
+res += Math.min((l_max[i], r_max[i])) - height[i]
+// //累计雨水数量：左右最低的柱子-自身位置的高度 累加
+return res
+} 3. 双指针
+function trap (height = []) {
+if (height.length === 0) {
+return 0
+}
+const n = height.length
+let res = 0
+
+let left = 0
+let right = n - 1//双指针即双坐标
+let l_max = height[0]
+let r_max = height[n - 1]
+while (left <= right) {
+l_max = Math.max(height[left], l_max)
+r_max = Math.max(height[right], r_max)
+if (l_max < r_max) {
+res += l_max - height[left]
+left++
+} else {
+res += r_max - height[right]
+right--
+}
+}
+return res
+}
+console.log(trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]))
+
+```
+
+## 优化冒泡排序
+
+冒泡排序在平均和最坏情况下的时间复杂度都是 O(n^2)，最好情况下都是 O(n)，空间复
+杂度是 O(1)。因为就算你给一个已经排好序的数组，如[1,2,3,4,5,6] 它也会走
+一遍流程，白白浪费资源
+
+```
+
+function maopao(arr){
+const array = [...arr]
+let isOk = true //加个标识，如果已经排好序了就直接跳出循环。
+for(let i = 0, len = array.length;i < len - 1; i++){
+  for(let j = i + 1; j < len; j++) {
+    if (array[i] > array[j]) {
+    [array[i],array[j]]=[array[j],array[i]]
+    isOk = false
+    }
+  }
+  if(isOk){
+   Break
+  }
+}
+return array}
+
+```
+
+## 洗牌算法随机排序
+
+```
+
+function randomSort(array) {
+let length = array.length;
+
+if (!Array.isArray(array) || length <= 1) return;
+
+for (let index = 0; index < length - 1; index++) {
+let randomIndex = Math.floor(Math.random() \* (length - index)) + index;
+
+    [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
+
+}
+
+return array;
+}
+
+```
+
+## 需要定制[[Class]]
+
+```
+
+class Class2 {
+get [Symbol.toStringTag]() {
+return "Class2";
+}
+}
+Object.prototype.toString.call(new Class2()); // "[object Class2]"
+
+```
+
+---
+
+## ["1", "2", "3"].map(parseInt)
+
+parseInt() 函数能解析一个字符串，并返回一个整数，需要两个参数 (val, radix)，其中 radix 表示要解析的数字的基数。（该值介于 2 ~ 36 之间，并且字符串中的数字不能大于 radix 才能正确返回数字结果值）。
+map 为 parseInt 传递了三个参数
+
+(element, index, array) 数组的值，数组的索引，数组本身
+
+结果为 [1, NaN, NaN]
+
+## 建议使用位运算代替四则运算
+
+1、>>（右移） ：将操作数向右 移动，高位补 0
+1、>>（右移） ：将操作数向右 移动，高位补 0
+3、&（位与） :两个操作数 a 和 b 同时为 1 的时候结果为 1，否则结果为 0。
+4、|（位或）：两个操作数 a 和 b 只要有一个为 1 的时候结果就为 1，否则结果为 0。
+4、|（位或）：两个操作数 a 和 b 只要有一个为 1 的时候结果就为 1，否则结果为 0。
+6、^（异或）：两个操作数 a 和 b 相同的时候结果为 0，否则结果则为 1。
+
+类型转化
+let myVar = "3.14";
+str = "" + myVar; // 转化为 字符串
+int = ~~myVar; // 转化为整数
+bool = !!myVar; // 转化为布尔
+使用~, >>, <<, >>>, |来取整
+console.log(~~8.88) // 8
+console.log(8.88 >> 0) // 8
+console.log(8.88 << 0) // 8
+console.log(8.88 | 0) // 8
+// >>>不可对负数取整
+console.log(8.88 >>> 0) // 8
+切换变量 0 或 1
+/ 一般方法：
+if (toggle) {
+toggle = 0;
+} else {
+toggle = 1;
+}
+
+// 一般方法的简写：
+togle = toggle ? 0 : 1;
+
+// 使用位运算的方法：
+toggle ^= 1;
+使用&运算符判断一个数的奇偶
+// 偶数 & 1 = 0
+// 奇数 & 1 = 1
+console.log(2 & 1) // 0
+console.log(3 & 1) // 1
+使用按位非 ~ 判断索引存在
+这是一个很常用的技巧，如判断一个数是否在数组里面：
+
+// 如果 url 含有?号，则后面拼上&符号，否则加上?号
+url += ~url.indexOf("?") ? "&" : "?";
+其中 ~ 满足-(X+1)这个规律。
+
+使用 异或^ 交换两个数
+交换两个整数的值，最直观的做法是借助一个临时变量：
+
+let a = 5,
+b = 6;
+// 交换 a, b 的值
+let c = a;
+a = b;
+b = c;
+现在要求不能使用额外的变量或内容空间来交换两个整数的值。这个时候就得借助位运算，使用异或可以达到这个目的：
+
+let a = 5,
+b = 6;
+
+a = a ^ b; // 1 式
+b = a ^ b; // 2 式 b 等于 5
+a = a ^ b; // 3 式 a 等于 6
+这个是为什么呢？很简单，把 1、2 式：
+
+a = a ^ b;
+b = a ^ b;
+连起来就等价于：
+
+b = (a ^ b) ^ b = a ^ (b ^ b) = a ^ 0 = a;
+同理连同第 3 式可得：
+
+a = (a ^ b) ^ a // 在执行第 3 式的时候 b 已经变成 a 了，而 a 是第 1 式的 a ^ b
+= a ^ a ^ b = 0 ^ b = b;
+异或还经常被用于加密。
+
+使用按位与&去掉高位
+按位与有很多作用，其中一个就是去操作数的高位，只保留低位，例如有 a, b 两个数：
+
+let a = 0b01000110; // 十进制为 70
+let b = 0b10000101; // 十进制为 133
+现在认为他们的高位是没用的，只有低 4 位是有用的，即最后面 4 位，为了比较 a，b 后 4 位的大小，可以这样比较：
+
+a & 0b00001111 < b & 0b00001111 // true
+a, b 的前 4 位和 0000 与一下之后就都变成 0 了，而后四位和 1111 与一下之后还是原来的数。这个实际的作用是有一个数字它的前几位被当作 A 用途，而后几位被用当 B 用途，为了去掉前几位对 B 用途的影响，就可以这样与一下。
+
+```
+
+/\*\*
+
+- 两数加法运算
+- **/
+  const add = function (num1, num2) {
+  //进位运算为 0 则结束
+  if (num2 === 0) {
+  return num1;
+  }
+  //没有进位的运算 亦或操作，（两不相等则 1）
+  let sum = num1 ^ num2;
+  //与操作，同 1 则 1，这时候使用左移一位的操作表示进位
+  let carry = (num1 & num2) << 1;
+  return this.add(sum, carry);
+  }
+  /**
+- 两数减法运算
+- 减法，简单的做法就是把减法看做是加法，（加一个负数）
+- **/
+  const plus = function (num1, num2) {
+  //取反相加
+  let num3 = this.add(~num2, 1);
+  let result = this.add(num1, num3);
+  return result;
+  }
+  /**
+- 两数乘法运算 m \* n
+- 实际上就是将 m 进行 n 次相加运算，但是要考虑到负数的情况等
+- 所以需要对负数进行取反处理
+- **/
+  const multi = function (num1, num2) {
+  let a = num1 < 0 ? this.add(~num1, 1) : num1;
+  let b = num2 < 0 ? this.add(~num2, 1) : num2;
+  let result = 0;
+  while (b > 0) {
+  //取尾数，因为要累加
+  if ((b & 0x1) > 0) {
+  result = this.add(result, a);
+  }
+  //每次运算结束，被乘数进行一次左移运算，进位的操作
+  a = a << 1;
+  //乘数进行一次右移操作，表示要执行次数
+  b = b >> 1;
+  }
+  //亦或操作，两不相等则 1，判断正负号，取最高位比较，如果为负数，则取反加一
+  if ((num1 ^ num2) < 0) {
+  result = this.add(~result, 1);
+  }
+  return result;
+  }
+  /**
+- 两数除法运算
+- 后续实现，目前仅用的到加法与乘法
+- \*\*/
+  const division = function (num1, num2) {
+  //可以想一想如何使用位运算实现除法的方式 折半法
+  let d1 = a<0?(~a)+1:a;
+  let d2= b<0?(~b)+1:b;
+  console.log(b!=0,"除数不能为 0")
+  let num = 0;
+  let i =31;
+  while(i>=0){
+  if (d2 <= (d1>>i)) {
+  num = num+(1<<i);
+  d1 = plus(d1,(d2<<i));
+  }
+  i = plus(i,1);
+  }
+  if ((a^b)<0) {
+  num = (~num)+1;
+  d1 = (~d1)+1;
+  }
+  console.log("a/b= " +num+"……"+d1);
+  return num;
+
+}
+
+```
+
+## 手写 call、apply 及 bind 函数
+
+// call 函数实现
+Function.prototype.myCall = function(context) {
+// 判断调用对象
+if (typeof this !== "function") {
+console.error("type error");
+}
+
+// 获取参数
+let args = [...arguments].slice(1),
+result = null;
+
+// 判断 context 是否传入，如果未传入则设置为 window
+context = context || window;
+
+// 将调用函数设为对象的方法
+context.fn = this;
+
+// 调用函数
+result = context.fn(...args);
+
+// 将属性删除
+delete context.fn;
+
+return result;
+};
+
+// apply 函数实现
+
+Function.prototype.myApply = function(context) {
+// 判断调用对象是否为函数
+if (typeof this !== "function") {
+throw new TypeError("Error");
+}
+
+let result = null;
+
+// 判断 context 是否存在，如果未传入则为 window
+context = context || window;
+
+// 将函数设为对象的方法
+context.fn = this;
+
+// 调用方法
+if (arguments[1]) {
+result = context.fn(...arguments[1]);
+} else {
+result = context.fn();
+}
+
+// 将属性删除
+delete context.fn;
+
+return result;
+};
+
+// bind 函数实现
+Function.prototype.myBind = function(context) {
+// 判断调用对象是否为函数
+if (typeof this !== "function") {
+throw new TypeError("Error");
+}
+
+// 获取参数
+var args = [...arguments].slice(1),
+fn = this;
+
+function Fn() {
+// 根据调用方式，传入不同绑定值
+return fn.apply(
+this instanceof Fn ? this : context,
+//这个时候的 arguments 是指 bind 返回的函数传入的参数
+args.concat(...arguments)
+);
+};
+// 修改返回函数的 prototype 为绑定函数的 prototype，**实例**就可以继承绑定函数的原型中的值
+Fn.prototype = this.prototype;
+return Fn
+};
+
+## 0.1 + 0.2 != 0.3
+
+0.1 和 0.2 在转换为二进制表示的时候会出现位数无限循环的情况。js 中是以 64 位双精度格式来存储数字的，只有 53 位的有效数字，超过这个长度的位数会被截取掉这样就造成了精度丢失的问题。这是第一个会造成精度丢失的地方。在对两个以 64 位双精度格式的数据进行计算的时候，首先会进行对阶的处理，对阶指的是将阶码对齐，也就是将小数点的位置对齐后，再进行计算，一般是小阶向大阶对齐，因此小阶的数在对齐的过程中，有效数字会向右移动，移动后超过有效位数的位会被截取掉，这是第二个可能会出现精度丢失的地方。当两个数据阶码对齐后，进行相加运算后，得到的结果可能会超过 53 位有效数字，因此超过的位数也会被截取掉，这是可能发生精度丢失的第三个地方。
+
+可以将两个数相加的结果和右边相减，如果相减的结果小于一个极小数，那么我们就可以认定结果是相等的，这个极小数可以使用 es6 的 Number.EPSILON
+
+## 封装一个 javascript 的类型判断函数
+
+```
+
+function getType(value) {
+// 判断数据是 null 的情况
+if (value === null) {
+return value + "";
+}
+
+// 判断数据是引用类型的情况
+if (typeof value === "object") {
+let valueClass = Object.prototype.toString.call(value),
+type =valueClass.split(" ")[1].split("").slice(0,-1).join("")
+return type
+
+} else {
+// 判断数据是基本数据类型的情况和函数的情况
+return typeof value;
+}
+}
+
+```
+
+- 排列 A53
+
+```
+function Afun(array){
+  for(var i = 0, len1 = array.length; i < len1; i++) {
+  var a2 = array.concat();
+  /*
+  排除之前已经组合过的数据
+  比如：第一次的时候，i[0] = 1, 这个时候2层循环, 只循环 2~5,
+  第二次的时候, i[1] = 2, 这个时候2层循环, 只循环 3~5
+  同理：3层循环也是相比于2层循环来
+  */
+  a2.splice(0, i + 1);
+  for(var j = 0, len2 = a2.length; j < len2; j++) {
+      var a3 = a2.concat();
+      a3.splice(0, j + 1);
+      for(var k = 0, len3 = a3.length; k < len3; k++) {
+            console.log(array[i] + ' ' +a2[j] + ' ' + a3[k]);
+      }
+  }
+}
+}
 
 ```
