@@ -2327,7 +2327,89 @@ return Fn
 
 可以将两个数相加的结果和右边相减，如果相减的结果小于一个极小数，那么我们就可以认定结果是相等的，这个极小数可以使用 es6 的 Number.EPSILON
 
+## 快速排序JS 
+```
+var quickSort = function(arr) {
+ 
+　　if (arr.length <= 1) { return arr; }
+ 
+　　var pivotIndex = Math.floor(arr.length / 2);
+ 
+　　var pivot = arr.splice(pivotIndex, 1)[0];
+ 
+　　var left = [];
+ 
+　　var right = [];
+ 
+　　for (var i = 0; i < arr.length; i++){
+ 
+　　　　if (arr[i] < pivot) {
+ 
+　　　　　　left.push(arr[i]);
+ 
+　　　　} else {
+ 
+　　　　　　right.push(arr[i]);
+ 
+　　　　}
+ 
+　　}
+ 
+　　return quickSort(left).concat([pivot], quickSort(right));
+ 
+};
+```
+// 快排改进
+```
+var quickSort_New = function(ary, left, right) {
+        if(left >= right) {
+            return ary;
+        }
+
+        var i = left,
+             j = right;
+             base = ary[left];
+
+        while (i < j) {
+            // 从右边起，寻找比基数小的数
+            while (i<j && ary[j] >= base) {
+                j--;
+            }
+
+            // 从左边起，寻找比基数大的数
+            while (i<j && ary[i] <= base) {
+                i++
+            } 
+
+            if (i<j) {
+                var temp = ary[i];
+                ary[i] = ary[j];
+                ary[j] = temp;
+            }
+        }
+
+        ary[left] = ary[i];
+        ary[i] = base;
+
+        quickSort_New(ary, left, i-1);
+        quickSort_New(ary, i+1, right);
+
+        return ary;
+    }
+```
+
+## instanceOf 自定义内容
+```
+class MyArray {
+  static [Symbol.hasInstance](instance) {
+    <!-- 用于判断某对象是否为某构造器的实例。因此你可以用它自定义 instanceof 操作符在某个类上的行为。 -->
+    return Array.isArray(instance);
+  }
+}
+console.log([] instanceof MyArray); // true
+```
 ## 封装一个 javascript 的类型判断函数
+
 
 ```
 

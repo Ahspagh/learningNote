@@ -3852,3 +3852,37 @@ vue 组件高度复用增加 Key 可以标识组件的唯一性，为了更好�
 可以这样简单地理解，无：key 属性时，状态默认绑定的是位置；有：key 属性时，状态根据 key 的属性值绑定到了相应的数组元素。
 
 key 的作用主要是为了高效的更新虚拟 DOM。另外 vue 中在使用相同标签名元素的过渡切换时，也会使用到 key 属性，其目的也是为了让 vue 可以区分它们，否则 vue 只会替换其内部属性而不会触发过渡效果。
+
+
+## 懒加载方案：
+1. 鉴定滚动方案
+
+```
+IntersectionObserver接口 监听目标元素与其祖先或视窗交叉状态
+2. /**
+   *IntersectionObserver返回一个实例
+   * callback当元素的可见性变化时候触发回调函数
+   *options设置一些配置项(可选)
+ * 图片懒加载
+ * @param {*} img 需要懒加载的img元素(标签)
+ * @param {*} attr 图片的真实url地址
+ */
+function ImgLazyLoad(img,attr){
+    var imgLazyLoad = document.querySelectorAll(img) // 获取全部需要加载的图片
+    function LazyLoad(target){
+        const io = new IntersectionObserver((entries,Observer)=>{
+            entries.forEach(entry=>{
+                if(entry.isIntersecting){
+                    const img = entry.target
+                    const src = img.getAttribute(attr)
+                    img.setAttribute("src",src)
+                    Observer.disconnect()
+                }   
+            })
+        })
+        io.observe(target)
+    }
+    imgLazyLoad.forEach(LazyLoad)
+}
+ImgLazyLoad("body img[data-img]","data-img")
+```
