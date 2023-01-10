@@ -432,3 +432,64 @@ const toFixed=(n,fixed)=> ~~(Math.pow(10,fixed)*n)/Math.pow(10,fixed)
 // 遇到問題：@input.native事件由輸入法輸入中文標點時出現錯誤觸發順序 首次輸入標點會執行兩次而且無法成功去除 下一個輸入字符會全局刪除不符合的類型
 // 解決辦法：再添加一個@keyup.native事件來處理標點
 // 尚有缺陷：由keyup處理的類型刪除會有閃現效果
+
+// 目标源不限制
+const targetOrigin='*'
+window.frames[0].window.postMessage(data,targetOrigin)
+// 接收消息
+window.addEventListener('message', (e) => {
+  console.log(e.data)
+})
+const bc= new BroadcastChannel('同源通信')
+// 收到来自页面的消息后，在 iframe 间进行广播
+window.addEventListener('message', (e) => {
+    bc.postMessage(e.data)
+}); 
+// 浏览器渲染流程 loader 处理所有HTTP请求以及网络资源缓存
+// parser模块 负责解析html css js
+// layout模块 排版 包括渲染树创建和计算布局
+// paint模块 讲 render树映射成可视图形
+
+
+// 浏览器缓存
+// 页面缓存 内存缓存 磁盘缓存
+
+// 离屏渲染 通过webworker在异步线程完成动态计算页面布局、解析压缩图片返回的blobUrl
+// 以阻塞主线程的方式提供绘制所需要的数据 被称为离屏渲染
+
+// 路由模式：history 和 hash
+//    原理：history hash对象属性和对象方法 pushState() replaceState()方法
+          //hash 出發hashchange事件
+// CSS3 文字 
+// 换行 word-break：normal 浏览器默认换行规则 
+// keep-all 只在半角空格或者连字符换行 break-all 单词内换行
+//  word-wrap: break-word 允许长单词或者URL地址内部进行换行  否则只在允许的断字点换行
+// 省略号： text-overflow：'ellipsis'  clip 剪裁
+// 禁止換行超出隱藏多餘省略號：overflow:hidden;white-space:nowrap;  text-overflow:ellipsis;
+// 多行省略号仅webkit浏览器 （高度=行高*行数（webkit-line-clamp））
+// text-overflow: ellipsis;
+//     display: -webkit-box;
+//     -webkit-line-clamp: 2;
+//     -webkit-box-orient: vertical;
+
+
+// loadingCSS3样式
+.loading{
+  width:120px;
+  height:120px;
+  background:fff;
+  border-radius:50%;
+  border-top-color:#3498db;
+  animation:spin 2s cubic-bezier(0.1,0.7,1,0.1) infinite;
+
+}
+@keyframe spin{
+  0% { transform:route(0deg) }
+  100% { transfrom:route(360deg) }
+}
+
+Animation 动画:
+// animation-
+//  name,duration,time-function,delay, iteration-count, direction
+//  fill-mode play-state
+animation-play-state:running,paused;

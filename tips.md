@@ -70,8 +70,9 @@ const flat = (arr,list=[])=>{
 
 ```
 function flattenDeep(arr1) {
-   return arr1.reduce((acc, val) => {Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val)}, []);
-   //ES6简写：{Array.isArray(val)?[...acc,...flattenDeep(val)]:[...acc,val] }   ,[]
+   return arr1.reduce((acc, val) => { return Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val)}, []);
+   //ES6简写：{return Array.isArray(val)?[...acc,...flattenDeep(val)]:[...acc,val] }   ,[]
+   <!-- 箭头函数用了花括号就要手动return 返回内容 一行时不用花括号不用return直接返回 -->
 }
 ```
 

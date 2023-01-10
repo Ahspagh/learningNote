@@ -2763,6 +2763,7 @@ function curry(fn, ...args) {
 return fn.length <= args.length ? fn(...args) : curry.bind(null, fn, ...args);
 }
 
+
 const currying = fn =>
 judge = (...args) =>
 args.length >= fn.length
@@ -3855,7 +3856,7 @@ key 的作用主要是为了高效的更新虚拟 DOM。另外 vue 中在使用�
 
 
 ## 懒加载方案：
-1. 鉴定滚动方案
+1.监听滚动方案
 
 ```
 IntersectionObserver接口 监听目标元素与其祖先或视窗交叉状态
@@ -3886,3 +3887,28 @@ function ImgLazyLoad(img,attr){
 }
 ImgLazyLoad("body img[data-img]","data-img")
 ```
+## web安全
+
+- CSRF(Cross Site Request Forgery)，即跨站请求伪造，是一种常见的Web攻击，它利用用户已登录的身份，在用户毫不知情的情况下，以用户的名义完成非法操作。
+完成 CSRF 攻击必须要有三个条件
+
+用户已经登录了站点 A，并在本地记录了 cookie
+
+在用户没有登出站点 A 的情况下（也就是 cookie 生效的情况下），访问了恶意攻击者提供的引诱危险站点 B (B 站点要求访问站点A)。
+
+站点 A 没有做任何 CSRF 防御
+
+解决方案：
+Get 请求不对数据进行修改
+
+不让第三方网站访问到用户 Cookie
+
+阻止第三方网站请求接口
+
+请求时附带验证信息，比如验证码或者 Token
+对 Cookie 设置 SameSite 属性。该属性表示 Cookie 不随着跨域请求发送
+ Referer Check 通过检查http包头referer的值是不是这个页面，来判断是不是CSRF攻击。
+ - XSS攻击通常指的是通过利用网页开发时留下的漏洞，通过巧妙的方法注入恶意指令代码到网页，使用户加载并执行攻击者恶意制造的网页程序。这些恶意网页程序通常是JavaScript，但实际上也可以包括Java、 VBScript、ActiveX、 Flash 或者甚至是普通的HTML。
+
+参数进行过滤，如使用过滤函数、转义函数、正则表达式，避免将未经处理的用户输入数据直接运行或者输出到页面 ,
+字符转译  CSP(Content Security Policy)白名单 配置外部加载资源规则
