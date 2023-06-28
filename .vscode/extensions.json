@@ -1,0 +1,14 @@
+{
+	"recommendations": [
+		"usernamehw.errorlens",
+		"zhuangtongfa.material-theme",
+		"esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint",
+		"meteorstudio.cursorcode",
+		"wallabyjs.quokka-vscode",
+		"csstools.postcss",
+		"stylelint.vscode-stylelint",
+		"rangav.vscode-thunder-client",
+		"pmneo.tsimporter"
+	]
+}

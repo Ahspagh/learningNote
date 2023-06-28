@@ -7,12 +7,24 @@ let res = [];
 let obj = {};
 let map = new Map();
 DATA.forEach(e => {
-  if (!map.has(e.id)) {
-    //map.get(e.id)?true:undefined
-    map.set(e.id, true);
-    res.push(e);
-  }
+	if (!map.has(e.id)) {
+		//map.get(e.id)?true:undefined
+		map.set(e.id, true);
+		res.push(e);
+	}
 });
+function uniqueByFilter(arr, key) {
+	return arr.filter(
+		(item, index, self) =>
+			self.findIndex(
+				obj =>
+					//findindex返回成立条件的第一个索引
+					obj[key] === item[key]
+			) ===
+			//  filter返回成立条件的数组
+			index
+	);
+}
 // DATA.forEach(e => {
 // 	if (!obj[e.id]) {
 // 		obj[e.id] = true;
@@ -25,11 +37,11 @@ console.log(res);
 
 const arr = [1, 2, 3, 4, 5, 6, 7];
 const list = [
-  { id: 1, timelineId: 1, showNo: 1, uid: 1 },
-  { id: 2, timelineId: 1, showNo: 1, uid: 1 },
-  { id: 9, timelineId: 1, showNo: 1, uid: 1 },
-  { id: 4, timelineId: 1, showNo: 1, uid: 1 },
-  { id: 5, timelineId: 1, showNo: 1, uid: 1 },
+	{ id: 1, timelineId: 1, showNo: 1, uid: 1 },
+	{ id: 2, timelineId: 1, showNo: 1, uid: 1 },
+	{ id: 9, timelineId: 1, showNo: 1, uid: 1 },
+	{ id: 4, timelineId: 1, showNo: 1, uid: 1 },
+	{ id: 5, timelineId: 1, showNo: 1, uid: 1 },
 ];
 
 const params = list.filter(item => arr.indexOf(item.id) > -1);
@@ -37,10 +49,10 @@ console.log(params);
 
 //if return
 if (1) {
-  return;
+	return;
 }
 if (true) {
-  console.log('不会执行');
+	console.log("不会执行");
 }
 
 // Finding the hash 查找git stash hash ，以用来恢复pop过的stash记录
@@ -90,36 +102,36 @@ if (true) {
 // eslint 某一文件  eslint --fix "C:\code\hello-world.js"
 
 // 多重判断中使用Array.includes  fruit == 'apple' || fruit == 'strawberry'
-const redFruits = ['apple', 'strawberry', 'cherry', 'cranberries'];
+const redFruits = ["apple", "strawberry", "cherry", "cranberries"];
 
 if (redFruits.includes(fruit)) {
-  console.log('red');
+	console.log("red");
 }
 // 少嵌套，早返回 发现无效的条件时，及早return。
 
 // Bolb下载文件
 let blob = new Blob([res], {
-  type: 'application/vnd.ms-excel;charset=utf-8',
+	type: "application/vnd.ms-excel;charset=utf-8",
 });
 let url = window.URL.createObjectURL(blob);
-let aLink = document.createElement('a');
-aLink.style.display = 'none';
+let aLink = document.createElement("a");
+aLink.style.display = "none";
 aLink.href = url;
-aLink.setAttribute('download', '');
+aLink.setAttribute("download", "");
 document.body.appendChild(aLink);
 aLink.click();
 document.body.removeChild(aLink);
 window.URL.revokeObjectURL(url);
 // URLSearchParams对象，将查询字符串转为对象
-Object.fromEntries(new URLSearchParams('foo=bar&baz=qux'));
+Object.fromEntries(new URLSearchParams("foo=bar&baz=qux"));
 // { foo: "bar", baz: "qux" }
 
 // input type=file  选择文件类型
 // accept="image/*"  ； accept="image/*,application/pdf"
 
 document
-  .querySelector('#sumsub-websdk-container>iframe') //获得iframe元素
-  .contentWindow.querySelector('sumsub-logo'); // 允许跨域的元素内部需要.contentWindow 或（IE）  .contentDocument
+	.querySelector("#sumsub-websdk-container>iframe") //获得iframe元素
+	.contentWindow.querySelector("sumsub-logo"); // 允许跨域的元素内部需要.contentWindow 或（IE）  .contentDocument
 // iframe子页面在控制下时   父页面： 使用postMessage发送需要修改的信息。子iframe： 监听onmessage 事件，修改自身的样式。
 
 //import { mapState, mapActions, mapMutations } from 'vuex';  分别可用在computed和 method 中 是$store中state、commit、dispatch方法的缩略写法
@@ -146,56 +158,56 @@ npm install script-loader -S -D
  * @param {object} option
  */
 function formatJson(filterVal, jsonData, customFormat) {
-  return jsonData.map(item =>
-    filterVal.map(v => {
-      // defaultFormat sample
-      //   if (v === 'amount') {
-      //     return item[v].toLocaleString();
-      //   } else if (v === 'user_type') {
-      //     console.log(CLIENT_TYPE);
-      //     return CLIENT_TYPE[Number(item[v])];
-      //   }
-      if (customFormat) {
-        return customFormat(item, v);
-      } else {
-        return item[v];
-      }
-    })
-  );
+	return jsonData.map(item =>
+		filterVal.map(v => {
+			// defaultFormat sample
+			//   if (v === 'amount') {
+			//     return item[v].toLocaleString();
+			//   } else if (v === 'user_type') {
+			//     console.log(CLIENT_TYPE);
+			//     return CLIENT_TYPE[Number(item[v])];
+			//   }
+			if (customFormat) {
+				return customFormat(item, v);
+			} else {
+				return item[v];
+			}
+		})
+	);
 }
 export function export2xls(tableRef, tableData, customFormat, option) {
-  import('@/components/export/Export2Excel').then(excel => {
-    console.log('export2xls', tableRef.columns, tableData);
-    const tHeader = [],
-      filterVal = [];
-    tableRef.columns.forEach(item => {
-      tHeader.push(item.label);
-      filterVal.push(item.property);
-    });
-    console.log('header filter', tHeader, filterVal);
+	import("@/components/export/Export2Excel").then(excel => {
+		console.log("export2xls", tableRef.columns, tableData);
+		const tHeader = [],
+			filterVal = [];
+		tableRef.columns.forEach(item => {
+			tHeader.push(item.label);
+			filterVal.push(item.property);
+		});
+		console.log("header filter", tHeader, filterVal);
 
-    const data = formatJson(filterVal, tableData, customFormat);
-    console.log('formatJson', data);
-    excel.export_json_to_excel({
-      header: tHeader,
-      data,
-      filename: option ? option.filename : 'filter-investor-holdings-list', //非必填
-      bookType: option ? option.bookType : 'xlsx', //非必填
-      autoWidth: true, //非必填
-    });
-  });
+		const data = formatJson(filterVal, tableData, customFormat);
+		console.log("formatJson", data);
+		excel.export_json_to_excel({
+			header: tHeader,
+			data,
+			filename: option ? option.filename : "filter-investor-holdings-list", //非必填
+			bookType: option ? option.bookType : "xlsx", //非必填
+			autoWidth: true, //非必填
+		});
+	});
 }
 // -------in page.vue
 function formatJson(dataItem, filterVal) {
-  switch (filterVal) {
-    case 'user_type':
-      console.log('callback', filterVal, dataItem);
-      return CLIENT_TYPE[dataItem[filterVal]];
-    case 'amount':
-      return dataItem[filterVal].toLocaleString();
-    default:
-      return dataItem[filterVal];
-  }
+	switch (filterVal) {
+		case "user_type":
+			console.log("callback", filterVal, dataItem);
+			return CLIENT_TYPE[dataItem[filterVal]];
+		case "amount":
+			return dataItem[filterVal].toLocaleString();
+		default:
+			return dataItem[filterVal];
+	}
 }
 export2xls(this.$refs.holdingTable, this.tableData, formatJson);
 // ------------exportXls.js------------
@@ -218,43 +230,40 @@ export2xls(this.$refs.holdingTable, this.tableData, formatJson);
 // console.log(match.groups.year);     // → 2019
 
 // el-form 的 validateField方法校验部分表单字段
-this.$refs['form'].validateField(
-  ['region', 'funder', 'subbranchId'],
-  errorMsg => {
-    if (!errorMsg) {
-      //执行校验成功的相关操作  会遍历每个字段的结果并执行回调函数
-    }
-  }
-);
+this.$refs["form"].validateField(["region", "funder", "subbranchId"], errorMsg => {
+	if (!errorMsg) {
+		//执行校验成功的相关操作  会遍历每个字段的结果并执行回调函数
+	}
+});
 // 改进方法
 const { region, funder, subbranchId } = this.form;
 if (region && funder && subbranchId) {
-  //执行校验成功的相关操作
+	//执行校验成功的相关操作
 } else {
-  this.$refs['form'].validateField(['region', 'funder', 'subbranchId']);
+	this.$refs["form"].validateField(["region", "funder", "subbranchId"]);
 }
 
 // 汉明距离：两个整数之间的汉明距离是对应位置上数字不同的位数; 所以结果异或后1的位数
 
 var hammingDistance1 = function (x, y) {
-  let s = x ^ y,
-    ret = 0;
-  while (s != 0) {
-    ret += s & 1; //最后一位 位与运算 统计1个数
-    s >>= 1; //每一位向右移位
-  }
-  return ret;
+	let s = x ^ y,
+		ret = 0;
+	while (s != 0) {
+		ret += s & 1; //最后一位 位与运算 统计1个数
+		s >>= 1; //每一位向右移位
+	}
+	return ret;
 };
 
 var hammingDistance2 = function (x, y) {
-  //Brian Kernighan 算法 ：x与x-1异或恰为x删去最后一位1的二进制结果 优化了上述方法的0位循环次数
-  let s = x ^ y,
-    ret = 0;
-  while (s != 0) {
-    s &= s - 1; //与s-1做位与运算
-    ret++;
-  }
-  return ret;
+	//Brian Kernighan 算法 ：x与x-1异或恰为x删去最后一位1的二进制结果 优化了上述方法的0位循环次数
+	let s = x ^ y,
+		ret = 0;
+	while (s != 0) {
+		s &= s - 1; //与s-1做位与运算
+		ret++;
+	}
+	return ret;
 };
 
 // 自适应方案 rem单位以及vh，vw容器
@@ -341,11 +350,9 @@ var hammingDistance2 = function (x, y) {
 
 // 当一个 form 元素中只有一个输入框时，在该输入框中按下回车应提交该表单。如果希望阻止这一默认行为，可以 在 标签上添加 @submit.native.prevent。
 
-
 // 如果直接输出error，等于error.message 状态码400的返回值在error=>{error.response}
 
 // git cherry-pick命令的作用，就是将指定的提交（commit）应用于其他分支 \参数，不一定是提交的哈希值，分支名也是可以的，表示转移该分支的最新提交。
-
 
 // flutter 键盘遮挡输入框：resizeToAvoidBottomInset: false,  在sccaffold里面添加该属性
 
@@ -359,20 +366,14 @@ var hammingDistance2 = function (x, y) {
 //             )
 //           );
 
-
-
-
-
-
-
-// gitERR: would clobber existing tag 
+// gitERR: would clobber existing tag
 // 原因通常是本地与远程仓库tag不一致
 // 1.查看远程tags
 
-//       git ls-remote -t  
+//       git ls-remote -t
 // 2.查看本地tags
 
-//       git tag -l 
+//       git tag -l
 // 3.删除本地与远程不一致的tag
 
 //       git tag -d tag名字
@@ -380,7 +381,6 @@ var hammingDistance2 = function (x, y) {
 
 //       git fetch origin --prune-tags
 // 5.git pull 拉取代码
-
 
 // 解决刷新后vuex丢失store的解决方法
 // created() {
@@ -401,7 +401,7 @@ var hammingDistance2 = function (x, y) {
 // },
 
 // 保留小数点（非四舍五入）~~按位非
-const toFixed=(n,fixed)=> ~~(Math.pow(10,fixed)*n)/Math.pow(10,fixed)
+const toFixed = (n, fixed) => ~~(Math.pow(10, fixed) * n) / Math.pow(10, fixed);
 
 // 多选框输入数组
 // selected=null
@@ -415,12 +415,10 @@ const toFixed=(n,fixed)=> ~~(Math.pow(10,fixed)*n)/Math.pow(10,fixed)
 //     this.selected.add(index)
 //   }
 //   this.selected=[...this.selected]
-  
+
 // }
 
-
-
-// git merge解决冲突后 如果使用vscode的提交按钮会先git pull 接着会触发rebase 
+// git merge解决冲突后 如果使用vscode的提交按钮会先git pull 接着会触发rebase
 // 首先git merge--abort中断merge 再git rebase --abort 中断rebase 冲突文件提交后直接git push
 
 //業務場景 所有的輸入框不要中文簡繁
@@ -434,22 +432,21 @@ const toFixed=(n,fixed)=> ~~(Math.pow(10,fixed)*n)/Math.pow(10,fixed)
 // 尚有缺陷：由keyup處理的類型刪除會有閃現效果
 
 // 目标源不限制
-const targetOrigin='*'
-window.frames[0].window.postMessage(data,targetOrigin)
+const targetOrigin = "*";
+window.frames[0].window.postMessage(data, targetOrigin);
 // 接收消息
-window.addEventListener('message', (e) => {
-  console.log(e.data)
-})
-const bc= new BroadcastChannel('同源通信')
+window.addEventListener("message", e => {
+	console.log(e.data);
+});
+const bc = new BroadcastChannel("同源通信");
 // 收到来自页面的消息后，在 iframe 间进行广播
-window.addEventListener('message', (e) => {
-    bc.postMessage(e.data)
-}); 
+window.addEventListener("message", e => {
+	bc.postMessage(e.data);
+});
 // 浏览器渲染流程 loader 处理所有HTTP请求以及网络资源缓存
 // parser模块 负责解析html css js
 // layout模块 排版 包括渲染树创建和计算布局
 // paint模块 讲 render树映射成可视图形
-
 
 // 浏览器缓存
 // 页面缓存 内存缓存 磁盘缓存
@@ -459,9 +456,9 @@ window.addEventListener('message', (e) => {
 
 // 路由模式：history 和 hash
 //    原理：history hash对象属性和对象方法 pushState() replaceState()方法
-          //hash 出發hashchange事件
-// CSS3 文字 
-// 换行 word-break：normal 浏览器默认换行规则 
+//hash 出發hashchange事件
+// CSS3 文字
+// 换行 word-break：normal 浏览器默认换行规则
 // keep-all 只在半角空格或者连字符换行 break-all 单词内换行
 //  word-wrap: break-word 允许长单词或者URL地址内部进行换行  否则只在允许的断字点换行
 // 省略号： text-overflow：'ellipsis'  clip 剪裁
@@ -472,24 +469,23 @@ window.addEventListener('message', (e) => {
 //     -webkit-line-clamp: 2;
 //     -webkit-box-orient: vertical;
 
-
 // loadingCSS3样式
-.loading{
-  width:120px;
-  height:120px;
-  background:fff;
-  border-radius:50%;
-  border-top-color:#3498db;
-  animation:spin 2s cubic-bezier(0.1,0.7,1,0.1) infinite;
+// .loading{
+//   width:120px;
+//   height:120px;
+//   background:fff;
+//   border-radius:50%;
+//   border-top-color:#3498db;
+//   animation:spin 2s cubic-bezier(0.1,0.7,1,0.1) infinite;
 
-}
-@keyframe spin{
-  0% { transform:route(0deg) }
-  100% { transfrom:route(360deg) }
-}
+// }
+// @keyframe spin{
+//   0% { transform:route(0deg) }
+//   100% { transfrom:route(360deg) }
+// }
 
-Animation 动画:
-// animation-
-//  name,duration,time-function,delay, iteration-count, direction
-//  fill-mode play-state
-animation-play-state:running,paused;
+// Animation 动画:
+// // animation-
+// //  name,duration,time-function,delay, iteration-count, direction
+// //  fill-mode play-state
+// animation-play-state:running,paused;

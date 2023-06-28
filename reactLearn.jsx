@@ -226,3 +226,23 @@ function Todolist(){
     listRef.current.lastChild.scrollIntoView();
   }
 }
+
+// 1. useEffect 与 useLayoutEffect 的区别是什么？
+//     答: useEffect 是在浏览器重绘后异步执行的，useLayoutEffect 是在数据变更后浏览器重绘前同步执行 effect, 是 useEffect 的一个特例。
+      
+// 2. useEffect 中通过 return 返回的函数，它的执行时机是在什么时候？
+//     答: return 返回的函数执行时机在 dependencies 有所改变之后(通过 Object.is 判断是否更改)。
+
+// 3. React 18 中，如果使用 ReactDOM.createRoot 创建节点，而不用 ReactDOM.render 会有什么区别？
+//     答: React18 中使用 ReactDOM.createRoot 创建节点会开启并发模式，在 batchUpdate 机制中不会存在     setTimeout 等 WebAPI 内是同步执行 setState 的情况，全部都会 batchUpdate。
+
+// 4. React Hooks 中最常见的闭包陷阱，通常是指在副作用的回调中去获取最新的 state 值，一般有什么方案可以解决呢？
+//     答: 
+//         1. 在 useEffect 里增加 state 的 dependencies，每次 state 变化都重新执行 effect ，但这样做性能消耗大。  
+//         2. 可以参考社区的 useStateRef 实现，使用 useRef 来获取最新的 state 值。
+
+// 5. 如何模拟 React Class 写法中的 this.setState 中的执行回调呢？this.setState({ a: 1 }, () => { // 模拟回调 })
+//     答:
+//          1. 使用 setTimeout 的宏任务特性，一定是在 state 更新完之后执行， 但因为是宏任务所以会有延迟。
+//          2. 使用 useLayoutEffect ，在 state 变化后浏览器重绘前执行回调，比宏任务快。
+//          3. 使用 flushSync ，flushSync 后续的逻辑都将在 state 变化后和DOM更新完执行，相当于同步更新 state 。

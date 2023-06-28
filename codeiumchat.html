@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<style>
+		.box {
+			width: 100px;
+			height: 100vh;
+			background-color: #ccc;
+			position: relative;
+			opacity: 0;
+			transform: translateY(50%);
+			transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+		}
+
+		.box.animate {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	</style>
+	<body>
+		<div class="box" data-animation="slide-up">1111111111111</div>
+		<div class="box" data-animation="fade-in">2222222222222</div>
+		<div class="box" data-animation="scale-up">333333333333333</div>
+	</body>
+	<script>
+		const boxes = document.querySelectorAll(".box");
+
+		function handleIntersection(entries) {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					const box = entry.target;
+					const animation = box.getAttribute("data-animation");
+					box.classList.add("animate", animation);
+				}
+			});
+		}
+
+		const observer = new IntersectionObserver(handleIntersection, { threshold: 0 });
+
+		boxes.forEach(box => {
+			observer.observe(box);
+		});
+	</script>
+</html>

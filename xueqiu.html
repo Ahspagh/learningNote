@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>分时图</title>
+		<script type="text/javascript" src="js/jQuery.js"></script>
+		<script type="text/javascript" src="js/echarts.min.js"></script>
+		<style>
+			#charts {
+				/*折线图的宽度*/
+				width: 640px;
+				/*折线图的高度*/
+				height: 390px;
+			}
+			.tooltips-item {
+				display: flex;
+				display: -webkit-flex;
+				justify-content: space-between;
+				color: #33333c;
+				font-size: 10px;
+				width: 120px;
+			}
+			.green {
+				color: #009933;
+			}
+			.red {
+				color: #e24528;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="charts"></div>
+		<script type="text/javascript">
+			// 雪球json数据 到雪球网站获取 https://stock.xueqiu.com/v5/stock/chart/minute.json?symbol=SH000001&period=1d
+			var jsonData = "";
+			var data = JSON.parse(jsonData);
+
+			// 第一个grid的数据（折线图）
+			var grid1Data = [];
+			// 第二个grid的数据（柱状图）
+			var grid2Data = [];
+			// 第三个grid数据（折线图）
+			var grid3Data = [];
+			var grid3DateData = [];
+			// 第四个grid数据（柱状图）
+			var grid4Data = [];
+			var grid4DateData = [];
+
+			// 柱状图的颜色
+			// 柱状图的红绿规则比较麻烦，所以本次采用的规则则是根据价格的涨跌来区分
+			var volumeColor1 = [];
+			var volumeColor2 = [];
+
+			var UP_COLOR = "#E24528";
+			var DOWN_COLOR = "#009933";
+			var NORMAL_COLOR = "#33353C";
+
+			var priceMax = 0,
+				priceMin = 0,
+				priceInterval = 0,
+				volumeMax = 0,
+				volumeMin = 0,
+				volumeInterval = 0;
+			var lastPrice = data.data.last_close;
+
+			initData();
+
+			function colorCls(num) {
+				if (num > lastPrice) {
+					return "red";
+				} else if (num == lastPrice) {
+					return "";
+				}
+				return "green";
+			}
+
+			function initData() {
+				for (var i in data.data.items) {
+					// 上午的数据
+					if (i < 121) {
+						if (data.data.items[i].current > priceMax) {
+							priceMax = data.data.items[i].current;
+						}
+						if (data.data.items[i].current < priceMin || priceMin == 0) {
+							priceMin = data.data.items[i].current;
+						}
+						// 左上方折线图
+						grid1Data.push([data.data.items[i].timestamp, data.data.items[i].current]);
+
+						if (data.data.items[i].volume > volumeMax) {
+							volumeMax = data.data.items[i].volume;
+						}
+						if (data.data.items[i].volume < volumeMin) {
+							volumeMin = data.data.items[i].volume;
+						}
+
+						if (i == 0) {
+							if (data.data.items[i].current >= lastPrice) {
+								volumeColor1.push(UP_COLOR);
+							} else {
+								volumeColor1.push(DOWN_COLOR);
+							}
+						} else {
+							if (data.data.items[i].current >= data.data.items[i - 1].current) {
+								volumeColor1.push(UP_COLOR);
+							} else {
+								volumeColor1.push(DOWN_COLOR);
+							}
+						}
+
+						// 左下方柱状图
+						grid2Data.push([data.data.items[i].timestamp, data.data.items[i].volume]);
+					} else {
+						// 下午的数据
+
+						if (data.data.items[i].current > priceMax) {
+							priceMax = data.data.items[i].current;
+						}
+						if (data.data.items[i].current < priceMin || priceMin == 0) {
+							priceMin = data.data.items[i].current;
+						}
+						// 第三grid的数据先添加一条数据
+						if (grid3Data.length == 0) {
+							grid3Data.push(data.data.items[i - 1].current);
+							grid3DateData.push(data.data.items[i - 1].timestamp);
+						}
+						// 右上方折线图
+						grid3Data.push(data.data.items[i].current);
+						grid3DateData.push(data.data.items[i].timestamp);
+
+						if (data.data.items[i].volume > volumeMax) {
+							volumeMax = data.data.items[i].volume;
+						}
+						if (data.data.items[i].volume < volumeMin) {
+							volumeMin = data.data.items[i].volume;
+						}
+
+						if (data.data.items[i].current >= data.data.items[i - 1].current) {
+							volumeColor2.push(UP_COLOR);
+						} else {
+							volumeColor2.push(DOWN_COLOR);
+						}
+
+						// 第四grid的数据先添加一条数据
+						if (grid4Data.length == 0) {
+							grid4Data.push(data.data.items[i - 1].volume);
+							grid4DateData.push(data.data.items[i - 1].timestamp);
+						}
+						// 右下方柱状图
+						grid4Data.push(data.data.items[i].volume);
+						grid4DateData.push(data.data.items[i].timestamp);
+					}
+				}
+
+				// 重新计算价格的最大最小值，以达到对称的效果
+				if ((lastPrice - priceMax) * -1 > lastPrice - priceMin) {
+					priceMin = lastPrice - (lastPrice - priceMax) * -1;
+				} else {
+					priceMax = lastPrice + (lastPrice - priceMin);
+				}
+
+				priceInterval = (priceMax - lastPrice) / 4;
+				volumeInterval = volumeMax / 2;
+
+				setOptions();
+			}
+
+			function setOptions() {
+				var nowDate;
+
+				// 初始化一个echarts的对象
+				var chart = echarts.init(document.getElementById("charts"));
+
+				// echarts折线图的配置项
+				var option = {
+					animation: false,
+					//坐标轴指示器
+					axisPointer: {
+						show: true,
+						// 配置线条风格为虚线风格
+						lineStyle: {
+							type: "dashed",
+						},
+						link: [
+							{
+								xAxisIndex: [0, 1],
+							},
+							{
+								xAxisIndex: [2, 3],
+							},
+							{
+								yAxisIndex: [0, 2],
+							},
+							{
+								yAxisIndex: [1, 3],
+							},
+						],
+					},
+					// 悬浮框
+					tooltip: {
+						trigger: "axis",
+						position: function (point, params, dom, rect, size) {
+							var obj = {
+								top: 10,
+							};
+
+							console.log(size);
+
+							if (point[0] > size.viewSize[0] / 2) {
+								obj["left"] = 70;
+							} else {
+								obj["right"] = 70;
+							}
+
+							return obj;
+						},
+						formatter: function (params, ticket, callback) {
+							var html = "";
+							var x, j, c;
+
+							for (var d in params) {
+								if (params[d].seriesName == "成交量1" || params[d].seriesName == "成交量2") {
+									c = params[d];
+								}
+								if (params[d].seriesName == "最新1" || params[d].seriesName == "最新2") {
+									x = params[d];
+								}
+							}
+
+							if (!c.axisValue) {
+								return;
+							}
+
+							html +=
+								'<div class="tooltips-item"><span class="name">时间</span><span class="value">' +
+								echarts.format.formatTime("MM-dd hh:mm", parseFloat(c.axisValue)) +
+								"</span></div>";
+							html +=
+								'<div class="tooltips-item"><span class="name">最新</span><span class="value ' +
+								colorCls(typeof x.data == "number" ? x.data : x.data[1]) +
+								'">' +
+								(typeof x.data == "number" ? x.data : x.data[1]) +
+								"</span></div>";
+							html +=
+								'<div class="tooltips-item"><span class="name">涨跌幅</span><span class="value ' +
+								colorCls(typeof x.data == "number" ? x.data : x.data[1]) +
+								'">' +
+								(
+									(((typeof x.data == "number" ? x.data : x.data[1]) - lastPrice) / lastPrice) *
+									100
+								).toFixed(2) +
+								"%</span></div>";
+							html +=
+								'<div class="tooltips-item"><span class="name">涨跌额</span><span class="value ' +
+								colorCls(typeof x.data == "number" ? x.data : x.data[1]) +
+								'">' +
+								((typeof x.data == "number" ? x.data : x.data[1]) - lastPrice).toFixed(2) +
+								"</span></div>";
+							html +=
+								'<div class="tooltips-item"><span class="name">成交量</span><span class="value">' +
+								(typeof c.data == "number"
+									? (c.data / 1000000).toFixed(2)
+									: (c.data[1] / 1000000).toFixed(2)) +
+								"万手</span></div>";
+
+							return html;
+						},
+						textStyle: {
+							color: "#000",
+						},
+						borderWidth: 1,
+						borderColor: "#ECEEF2",
+						backgroundColor: "rgba(255,255,255,0.9)",
+						transitionDuration: 0,
+						axisPointer: {
+							animation: false,
+							type: "cross",
+						},
+					},
+					// grid
+					grid: [
+						// 第一个grid
+						{
+							top: 10, // 图表的外边距
+							height: 240, // 图表的高度
+							left: "5%",
+							width: "45%", //因为是左右各一个图表，使用百分比的方式显得更方便，
+						},
+						// 第二个grid，第二个图表是在第一个图表的下方，所以要把它定位到底部
+						{
+							top: 280, //设置上方的外边距是第一个图表的高度再加10，使用top是方便我们调整下方grid的高度
+							left: "5%",
+							width: "45%", // 宽度与第一个图表一个大
+							height: 80,
+						},
+						// 第三个grid，第三个图表是在第一个图表的右方，所以要把它定位到右方
+						{
+							top: 10, // 图表的外边距
+							left: "50%", //设置右边图表的左边距是第一个图表的大小，达到定位右边的效果
+							width: "45%", // 宽度与第一个图表一个大
+							height: 240,
+						},
+						// 第四个grid，第四个图表是在第三个图表的下方，所以要把它定位到底部
+						{
+							top: 280, //设置上方的外边距是第三个图表的高度再加10，使用top是方便我们调整下方grid的高度
+							left: "50%", //设置右边图表的左边距是第三个图表的大小，达到定位右边的效果
+							width: "45%", // 宽度与第一个图表一个大
+							height: 80,
+						},
+					],
+					// 多个图表则会存在对个x轴y轴，所以这里的配置我们也换成数组的方式
+					// x轴配置，
+					xAxis: [
+						// 第一个grid的x轴属性
+						{
+							// 告诉echarts，这个第一个grid的x轴
+							gridIndex: 0,
+							// 坐标轴是否留白
+							boundaryGap: false,
+							// x轴的刻度
+							axisTick: { show: false },
+							// x轴的刻度值
+							axisLabel: { show: false },
+							max: "dataMax",
+							min: "dataMin",
+							type: "time",
+							axisPointer: {
+								show: true,
+								label: {
+									show: false,
+								},
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+							splitLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+							},
+						},
+						// 第二个grid的x轴属性
+						{
+							// 告诉echarts，这个第一个grid的x轴
+							gridIndex: 1,
+							// 坐标轴是否留白
+							boundaryGap: false,
+							// x轴的刻度
+							axisTick: { show: false },
+							max: "dataMax",
+							min: "dataMin",
+							type: "time",
+							axisLabel: {
+								fontSize: 12,
+								show: true,
+								color: "#888",
+								formatter: function (value) {
+									var a = echarts.format.formatTime("hh:mm", value);
+									if (a == "11:30") {
+										return "11:30/13:00";
+									}
+									if (a == "09:30") {
+										return "        09:30";
+									}
+									return a;
+								},
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+							splitLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+							},
+							axisPointer: {
+								show: true,
+								type: "line",
+								label: {
+									show: true,
+									fontSize: 10,
+									margin: 0,
+									padding: 2,
+									shadowBlur: 0,
+									color: "#33353C",
+									formatter: function (data) {
+										return echarts.format.formatTime("hh:mm", parseFloat(data.value));
+									},
+								},
+							},
+						},
+						// 第三个grid的x轴属性
+						{
+							// 告诉echarts，这个第一个grid的x轴
+							gridIndex: 2,
+							// 坐标轴是否留白
+							boundaryGap: false,
+							// x轴的刻度
+							axisTick: { show: false },
+							// x轴的刻度值
+							axisLabel: { show: false },
+							type: "category",
+							data: grid3DateData,
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+							max: "dataMax",
+							min: "dataMin",
+							axisPointer: {
+								show: true,
+								label: {
+									show: false,
+								},
+							},
+							splitLine: {
+								show: true,
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+								interval: function (index, value) {
+									if (index == 0 || index == 1) {
+										return false;
+									}
+
+									if ((index - 1) % 30 == 0) {
+										return true;
+									}
+									return false;
+								},
+							},
+						},
+						// 第四个grid的x轴属性
+						{
+							// 告诉echarts，这个第一个grid的x轴
+							gridIndex: 3,
+							// 坐标轴是否留白
+							boundaryGap: false,
+							// x轴的刻度
+							axisTick: {
+								show: false,
+							},
+							type: "category",
+							max: "dataMax",
+							min: "dataMin",
+							data: grid4DateData,
+							axisLabel: {
+								fontSize: 12,
+								show: true,
+								showMinLabel: false,
+								color: "#888",
+								interval: function (index, value) {
+									if ((index - 1) % 30 == 0) {
+										return true;
+									}
+									return false;
+								},
+								formatter: function (value) {
+									var a = echarts.format.formatTime("hh:mm", parseFloat(value));
+									if (a == "15:00") {
+										return "15:00        ";
+									}
+									return a;
+								},
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+							splitLine: {
+								show: true,
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+								interval: function (index, value) {
+									// 第一条第二条线是不需要显示的，第一条是11：30的，第一个grid已经有这条数据了，所以不需要显示
+									// 第二条显示的话，在中间部分会出现2条线，所以也不要显示
+									if (index == 0 || index == 1) {
+										return false;
+									}
+									// 这里的意思是第一条数据后，每30分钟显示一条线
+									if ((index - 1) % 30 == 0) {
+										return true;
+									}
+									return false;
+								},
+							},
+							axisPointer: {
+								show: true,
+								type: "line",
+								label: {
+									show: true,
+									fontSize: 10,
+									margin: 0,
+									padding: 2,
+									shadowBlur: 0,
+									color: "#33353C",
+									formatter: function (data) {
+										return echarts.format.formatTime("hh:mm", parseFloat(data.value));
+									},
+								},
+							},
+						},
+					],
+					// y轴配置
+					yAxis: [
+						// 第一个grid的y轴属性
+						{
+							// 去掉刻度值旁边的指示线
+							axisTick: { show: false },
+							splitNumber: 9,
+							gridIndex: 0,
+							interval: priceInterval,
+							max: priceMax,
+							min: priceMin,
+							splitLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+							axisLabel: {
+								fontSize: 10,
+								margin: 0,
+								// y轴的数值向内显示
+								align: "left",
+								formatter: function (value, index) {
+									return value.toFixed(2);
+								},
+								color: function (value, index) {
+									// 中间基准线的数值为黑色
+									if (parseFloat(value).toFixed(2) == lastPrice) {
+										return NORMAL_COLOR;
+									}
+
+									// 上涨区域的数字为红色
+									if (value > lastPrice) {
+										return UP_COLOR;
+									}
+
+									// 下方下跌的数值为绿色
+									if (value < lastPrice) {
+										return DOWN_COLOR;
+									}
+								},
+							},
+							z: 3,
+							axisPointer: {
+								show: true,
+								type: "line",
+								label: {
+									show: true,
+									fontSize: 10,
+									margin: -44,
+									padding: 2,
+									shadowBlur: 0,
+									color: "#33353C",
+									formatter: function (data) {
+										return data.value.toFixed(2);
+									},
+								},
+							},
+						},
+						// 第二个grid的y轴属性
+						{
+							// 去掉刻度值旁边的指示线
+							axisTick: { show: false },
+							splitNumber: 3,
+							gridIndex: 1,
+							interval: volumeInterval,
+							max: volumeMax,
+							min: 0,
+							splitLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+							axisPointer: {
+								show: true,
+								type: "line",
+								label: {
+									show: true,
+									fontSize: 10,
+									padding: 2,
+									shadowBlur: 0,
+									color: "#33353C",
+									formatter: function (data) {
+										if (data.value > 1000000) {
+											return parseFloat(data.value / 1000000).toFixed(2) + "万手";
+										}
+										return data.value;
+									},
+								},
+							},
+							axisLabel: {
+								align: "left",
+								verticalAlign: "top",
+								//设置显示坐标轴的数值为不显示
+								show: true,
+								fontSize: 10,
+								margin: 0,
+								showMaxLabel: true,
+								showMinLabel: false,
+								color: "#33353C",
+								formatter: function (value, index) {
+									// 格式化成月/日，只在第一个刻度显示年份
+									if (value == volumeMax) {
+										// 方便演示
+										if (value > 1000000) {
+											value = parseFloat(value / 1000000).toFixed(2) + "万手";
+										}
+
+										return value;
+									}
+									return "";
+								},
+							},
+						},
+						// 第三个grid的y轴属性
+						{
+							// 去掉刻度值旁边的指示线
+							axisTick: { show: false },
+							splitNumber: 9,
+							position: "right",
+							gridIndex: 2,
+							interval: priceInterval,
+							max: priceMax,
+							min: priceMin,
+							splitLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+							axisLabel: {
+								fontSize: 10,
+								margin: 0,
+								// y轴的数值向内显示
+								align: "right",
+								formatter: function (value, index) {
+									var persent = (value - lastPrice) / lastPrice;
+									persent = persent < 0 ? persent * -1 : persent;
+									persent = persent * 100;
+
+									return persent.toFixed(2) + "%";
+								},
+								color: function (value, index) {
+									// 中间基准线的数值为黑色
+									if (parseFloat(value).toFixed(2) == lastPrice) {
+										return NORMAL_COLOR;
+									}
+
+									// 上涨区域的数字为红色
+									if (value > lastPrice) {
+										return UP_COLOR;
+									}
+
+									// 下方下跌的数值为绿色
+									if (value < lastPrice) {
+										return DOWN_COLOR;
+									}
+								},
+							},
+							z: 3,
+							axisPointer: {
+								show: true,
+								type: "line",
+								label: {
+									show: true,
+									fontSize: 10,
+									margin: -34,
+									padding: 2,
+									shadowBlur: 0,
+									color: "#33353C",
+									formatter: function (data) {
+										var persent = (data.value - lastPrice) / lastPrice;
+										persent = persent < 0 ? persent * -1 : persent;
+										persent = persent * 100;
+
+										return persent.toFixed(2) + "%";
+									},
+								},
+							},
+						},
+						// 第四个grid的y轴属性
+						{
+							// 去掉刻度值旁边的指示线
+							axisTick: { show: false },
+							splitNumber: 3,
+							position: "right",
+							gridIndex: 3,
+							interval: volumeInterval,
+							max: volumeMax,
+							min: 0,
+							axisLabel: {
+								//设置显示坐标轴的数值为不显示
+								show: false,
+							},
+							splitLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+									type: "solid",
+								},
+							},
+							axisPointer: {
+								show: true,
+								label: {
+									show: false,
+								},
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#ECEEF2",
+								},
+							},
+						},
+					],
+					// 数据可以通过xAxisIndex，yAxisIndex属性，来指定是哪个grid的数据
+					series: [
+						// 第一个图表的数据
+						{
+							name: "最新1",
+							// 平滑曲线
+							smooth: true,
+							// 是否显示折线上的圆点
+							symbol: "none",
+							// 线条颜色
+							lineStyle: {
+								color: "#0481F8",
+								width: 1,
+							},
+							xAxisIndex: 0,
+							yAxisIndex: 0,
+							data: grid1Data,
+							type: "line",
+							z: 3,
+							areaStyle: {
+								color: "#F8FAFF",
+							},
+						},
+						// 第二个图表的数据
+						{
+							name: "成交量1",
+							xAxisIndex: 1,
+							yAxisIndex: 1,
+							// 柱状图柱子宽度
+							barWidth: 1,
+							data: grid2Data,
+							type: "bar",
+							// 设置柱状图颜色
+							itemStyle: {
+								normal: {
+									color: function (params) {
+										return volumeColor1[params.dataIndex];
+									},
+								},
+							},
+						},
+						// 第三个图表的数据
+						{
+							name: "最新2",
+							// 平滑曲线
+							smooth: true,
+							// 是否显示折线上的圆点
+							symbol: "none",
+							// 线条颜色
+							lineStyle: {
+								color: "#0481F8",
+								width: 1,
+							},
+							z: 3,
+							xAxisIndex: 2,
+							yAxisIndex: 2,
+							data: grid3Data,
+							type: "line",
+							areaStyle: {
+								color: "#F8FAFF",
+							},
+						},
+						// 第四个图表的数据
+						{
+							name: "成交量2",
+							xAxisIndex: 3,
+							yAxisIndex: 3,
+							// 柱状图柱子宽度
+							barWidth: 1,
+							data: grid4Data,
+							type: "bar",
+							// 设置柱状图颜色
+							itemStyle: {
+								normal: {
+									color: function (params) {
+										return volumeColor2[params.dataIndex];
+									},
+								},
+							},
+						},
+					],
+				};
+
+				chart.setOption(option);
+			}
+		</script>
+	</body>
+</html>

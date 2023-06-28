@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<meta charset="utf-8"> 
+<style>
+    html{
+       overflow-x: hidden; 
+    }
+    body{margin: 0;}
+</style>
+<canvas id="canvas-5" width="391" height="349" style="border:1px solid #ccc">
+</canvas>
+<script>
+var c   = document.getElementById("canvas-5");
+var ctx = c.getContext("2d");
+// var img2 =new Image()
+// let fileRadio=782/698
+// let sW,sH,sX,sY
+
+// 782*698
+img2.onload = function() {
+    // ctx.globalAlpha=0.5
+    // ctx.scale(1.1,1.1)
+    // ctx.drawImage(this,0,0,391,349);
+    
+    // ctx.drawImage(this, -50/fileRadio,-50/fileRadio,832/fileRadio,748*fileRadio);
+    // ctx.drawImage(this, 0,0,782,698,-391,-349,782,698);
+    // ctx.drawImage(this, 0,0,782,698,0,0,391,349);
+}
+img2.src = "./testCanvas.jpg";
+
+</script>
+<!-- ctx.getImageDate(0, 0, this.width, this.height) 可以返回区域内每个像素点的数组 ImageData { width: 100, height: 100, data: Uint8ClampedArray[40000]
+    处理其中的data 内容为rgba值 可以得imageData 使用API putImageData ：ctxNew.putImageData(imageData, 0, 0) 绘制新图片到画布-->
+
+    
+<!-- drawImage(image, dx, dy) //
+drawImage(image, dx, dy, dWidth, dHeight)//
+drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) -->
+<!--全参数API： 从原图像（sx,sy）坐标处截取（sWidth,sHeight）部分尺寸，绘制到画布坐标(dx,dy) 位置，缩放为（dWidth,dHeight）尺寸-->
+
+
+<!--五参数API： 把图像绘制到画布坐标(dx,dy)位置，缩放为（dWidth,dHeight）尺寸-->
+
+<!-- 三参数API：  把图像绘制到画布坐标(dx,dy)位置，不会产生缩放-->
+
+<!-- 缩放效果原理： -->
+<!-- 1.保证canvas画布自适应前提下，三参数 五参数方案均不可实现
+2.使用requestAnimationFrame 按帧 60Hz（16.7ms）绘制 截取更小 的同宽高比原图
+3.画满画布一定要从画布坐标(0,0)dxdy绘制 缩放为画布尺寸
+4.画布与原图宽高比保持一致才能不糊图
+5.原图的截取尺寸：等宽高比 尽可能内容居中 
+
+综上需要计算的变量为sx，sy  sw，sh
+
+假设目标缩放 目标尺寸宽高减小80px、
+
+设置帧步数 frameStep *16.7ms = 切换过度时间 保持当前图可以用settimeout阻塞
+-->
+
+<script>
+    let img =new Image()
+    img.src='./testCanvas.jpg'
+let whRadio         //保证画布与图片宽高比一致
+let sW,sH,sX,sY    //截取的图片宽高、截取图片起点位置坐标
+let step=5         //每帧动画步进数
+let dx=0,dy=0      //画布坐标
+let dw,dh
+img2.onload = function() {
+    whRadio=this.width/this.height
+    dw=this.width
+    dh=this.height
+}
+</script>

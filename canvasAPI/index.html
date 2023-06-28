@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" style="overflow-x: hidden">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    #canvas {
+      /* width: 3840px;
+  height: 1760px; */
+    }
+  </style>
+  <body style="margin: 0">
+    <canvas id="canvas"></canvas>
+  </body>
+  <script>
+
+         // 获取 canvas 元素和绘图上下文
+     var canvas = document.getElementById('canvas');
+     var ctx = canvas.getContext('2d');
+
+     // 图片数组和当前图片索引
+     var images = [
+       'images/home_banner_img_03@2x.jpg',
+       'images/home_banner_img_01@2x.jpg',
+       'images/home_banner_img_02@2x.jpg',
+     ];
+     var currentIndex = 0;
+
+     // window.addEventListener('resize', function() {
+     //   canvas.width = window.innerWidth;
+     //   canvas.height = window.innerHeight;
+     //   drawImage();
+     // });
+     window.requestAnimationFrame(drawImage);
+     function drawImage() {
+        canvas.width = window.innerWidth;
+       canvas.height = window.innerHeight;
+       var image = new Image();
+       image.onload = function() {
+         // 计算宽高比例
+         var widthRatio = canvas.width / image.width;
+         var heightRatio = canvas.height / image.height;
+         var ratio = Math.min(widthRatio, heightRatio);
+
+         // 计算绘制的位置和大小
+         var x = (canvas.width - image.width * ratio) / 2;
+         var y = (canvas.height - image.height * ratio) / 2;
+         var width = image.width * ratio;
+         var height = image.height * ratio;
+
+         // 绘制图片
+         ctx.clearRect(0, 0, canvas.width, canvas.height);
+         ctx.drawImage(image, x,y, width, height);
+       };
+       image.src = 'home_banner_img_02@2x.jpg';
+     }
+     drawImage()
+     // 加载图片并绘制
+     function loadImage() {
+       var image = new Image();
+       image.src = images[currentIndex];
+       image.onload = function() {
+         // 清空画布并绘制当前图片
+         ctx.clearRect(0, 0, canvas.width, canvas.height);
+         ctx.drawImage(image, 0, 0,3840,1760);
+
+         // // 切换下一张图片
+         setTimeout(function() {
+           currentIndex = (currentIndex + 1) % images.length;
+           shrinkImage();
+         }, 3000);
+       };
+
+     }
+
+     // 缩小当前图片
+     function shrinkImage() {
+       var image = new Image();
+       image.onload = function() {
+         // 清空画布并绘制缩小后的图片
+         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+         ctx.globalAlpha = 0.8;
+         // ctx.drawImage(image, canvas.width/4, canvas.height/4, canvas.width/2, canvas.height/2);
+         ctx.drawImage(image,0, 0,3840,1760)
+         // 还原透明度并放大下一张图片
+         setTimeout(function() {
+           ctx.globalAlpha = 1.0;
+           enlargeImage();
+         }, 500);
+       };
+       image.src = images[currentIndex];
+     }
+
+     // 放大下一张图片
+     function enlargeImage() {
+       var image = new Image();
+       image.onload = function() {
+         // 清空画布并绘制放大后的图片
+         ctx.clearRect(0, 0, canvas.width, canvas.height);
+         ctx.drawImage(image, 0, 0,3840,1760);
+
+         // 切换下一张图片
+         setTimeout(function() {
+           currentIndex = (currentIndex + 1) % images.length;
+           shrinkImage();
+         }, 3000);
+       };
+       image.src = images[currentIndex];
+     }
+
+     // 初始化
+     // loadImage();
+     // https://www.cnblogs.com/boboweiqi/p/9523793.html
+
+
+    function initCanvas() {
+           this.canvas = this.$refs.canvas_BG
+           this.ctx = this.canvas.getContext('2D')
+           const parent = this.canvas.parentElement
+           this.canvas.width = parent.offsetWidth
+           this.canvas.height = parent.offsetHeight
+         }
+
+       function  loadImages(images) {
+           return new Promise((resolve, reject) => {
+             let arr = []
+             let loadedImages = -1
+             let numImages = images.length - 1
+             images.forEach(item => {
+               let img = new Image()
+               img.src = item
+               arr.push(img)
+               img.onload = () => {
+                 loadedImages++
+                 if (loadedImages === numImages) {
+                   resolve(arr)
+                 }
+               }
+             })
+           })
+         }
+    function     getImagesList() {
+           for (let i = 1; i <= this.imageLength; i++) {
+             let base = '/images/home/home_banner_img_0'
+             let imgUrl = this.$img(`${base}${i}.jpg`, {
+               format: 'webp',
+               loading: 'lazy',
+             })
+             this.imageUrls.push(imgUrl)
+           }
+           return this.loadImages(this.imageUrls)
+         }
+         drawing() {
+           window.requestAnimationFrame(function () {
+             let increment = 0.05
+             let opacity = 0
+             let imgIndex = 0
+
+             let draw = function () {
+               let image = [imgIndex]
+               this.ctx.globalAlpha = opacity
+               this.ctx.drawImage(
+                 image,
+                 0,
+                 0,
+                 this.canvas.width,
+                 this.canvas.height,
+                 (image.width - this.canvas.width) / 2,
+                 (image.height - this.canvas.height) / 2
+               )
+               opacity += increment
+               if (opacity < 1) {
+                 window.requestAnimationFrame(draw)
+               }
+             }
+             draw()
+           })
+         }
+  </script>
+</html>
