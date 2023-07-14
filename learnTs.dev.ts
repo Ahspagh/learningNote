@@ -1,4 +1,4 @@
-console.log("Hello Typescript！");
+console.log("Hello Typescript！?");
 // ts-node-dev --respawn --transpile-only app.ts
 // respawn提供了监听重启功能 transpileOnly提供了更快的编译速度 （-T 无类型检查）
 
@@ -338,3 +338,204 @@ function testArgs(key: string, ...args: any[]) {
 	console.log(key, ...args);
 }
 testArgs("gwaf", ["123", "ge"]);
+
+type OriginalType<T> = {
+	value: T;
+};
+// 去掉一层泛型
+type ModifiedType<T> = {
+	value: T extends OriginalType<infer U> ? U : never;
+};
+// 使用示例
+type Original = OriginalType<string>;
+// Original 结构为 { value: string }
+type Modified = ModifiedType<Original>;
+// Modified 结构为 { value: string }
+
+export namespace Kline {
+	export type ResKline = {
+		interval: string;
+		symbol: string;
+		limit: number;
+		order?: "asc" | "desc";
+	};
+}
+export interface Result {
+	code: string;
+	msg: string;
+}
+
+// 请求响应参数（包含data）
+export interface ResultData<T = any> extends Result {
+	data: T;
+}
+type originRes = ResultData<Kline.ResKline[]>;
+let testData1: originRes;
+// testData1.code
+// testData1.data.push
+
+type testGetPromise<T> = Promise<ResultData<T>>;
+// 去掉一层泛型
+type clearResultWrap = Omit<Promise<ResultData<Kline.ResKline[]>>, keyof ResultData<any>> &
+	Kline.ResKline[];
+type clear<T> = clearResultWrap;
+// type clearResult<T> = clearResultWrap<T, Result>;
+let testData2: testGetPromise<clearResultWrap>;
+
+// 使用openAPI将Swagger生成的接口文档json自动生成TS代码
+// https://blog.csdn.net/weixin_44241402/article/details/128964496
+// lerna 实现monorepo项目 applicetions、packages、lerna.json 、package.json
+// lerna add <package>[@version] [--dev]
+// lerna add @monorepo/common --scope=@monorepo/electron --scope=@monorepo/web
+// 相当于在application的electron和web项目均安装了额package/common的依赖
+// 使用yarn workspaces帮助我们使用一条yarn命令安装或升级所有依赖 并可以使多个项目共享同一个node_modules
+// 配置在根目录的package.json workspaces:["packages/*","applications/*"]
+interface IFoo {
+	name: string;
+}
+declare const obj1: {
+	foo: IFoo;
+};
+// const { foo = {} as Partial<IFoo> } = obj1;
+// 断言为可选类型
+// <> 也是类型断言 可以作为代码提示的辅助工具,对于复杂接口的简单实现可以不完整实现其结构但保留提示
+// 非空断言是类型断言的简写;
+// foo.func!().prop!.toFixed();
+// 即
+// ((foo.func as () => ({
+//   prop?: number;
+// }))().prop as number).toFixed();
+
+// 索引签名类型是声明 而索引类型查询和索引类型访问是读取
+// 键值类型一致的类型结构
+interface AllStringInterface {
+	[key: string]: string;
+}
+type AllStringTypes = {
+	[key: string]: string;
+};
+// 对于obj[prop]形式的访问会将数字索引转换为字符串索引访问即obj[456]和obj['456']效果一致 symbol键名同理
+interface Foo0 {
+	linbudu: 1;
+	599: 2;
+}
+type fookeys = keyof Foo0 & {};
+
+// never<字面量类型 ; 原始类型（string）<原始类型对应的箱装（String等）类型<Object类型
+type result13 = unknown extends "asd" ? 1 : 2;
+// 如果内部条件类型处理接收判断的是any 则直接返回条件类型结果组成的联合类型
+// undefined null void 与string number object没有本质上区别 都属于切实存在有实际意义的字面量类型
+// ps.关闭 --strictNullCheckes 的情况下，null 会被视为 string 等类型的子类型
+type TypeChain = never extends "linbudu"
+	? "linbudu" extends "linbudu" | "599"
+		? "linbudu" | "599" extends string
+			? string extends String
+				? String extends Object
+					? Object extends any
+						? any extends unknown
+							? unknown extends any
+								? 8
+								: 7
+							: 6
+						: 5
+					: 4
+				: 3
+			: 2
+		: 1
+	: 0;
+//type TypeChain = 8   type VerboseTypeChain=8即所有条件均成立
+// 根据结构化类型系统和类型系统设定 得到的层级连
+type VerboseTypeChain = never extends "linbudu"
+	? "linbudu" extends "linbudu" | "budulin"
+		? "linbudu" | "budulin" extends string
+			? string extends {}
+				? string extends String
+					? String extends {}
+						? {} extends object
+							? object extends {}
+								? {} extends Object
+									? Object extends {}
+										? object extends Object
+											? Object extends object
+												? Object extends any
+													? Object extends unknown
+														? any extends unknown
+															? unknown extends any
+																? 8
+																: 7
+															: 6
+														: 5
+													: 4
+												: 3
+											: 2
+										: 1
+									: 0
+								: -1
+							: -2
+						: -3
+					: -4
+				: -5
+			: -6
+		: -7
+	: -8;
+type getFalseType1 = {} extends String ? 1 : 2;
+type getFalseType2 = {} extends string ? 1 : 2;
+type getTrueType1 = Function extends {} ? 1 : 2;
+type getTrueType2 = Function extends object ? 1 : 2;
+const getKeyValue = [
+	{ x: 0, y: 0, w: 2, h: 19, i: "historyAnalysis" },
+	{ x: 2, y: 0, w: 8, h: 19, i: "depthList" },
+	{ x: 10, y: 0, w: 2, h: 19, i: "buySellOrder" },
+	{ x: 2, y: 19, w: 8, h: 4, i: "transactionTabs" },
+];
+// console.log();
+
+// 统一基础类型的字面量联合类型，可以被认做此基础类型的子类型 即 964|1 是number的子类型
+
+type Func = (...args: any[]) => any;
+type FunctionConditionType<T extends Func> = T extends (...args: any[]) => string
+	? "A string return func!"
+	: "A non-string return func!";
+type NonStringResult2 = FunctionConditionType<() => number>;
+
+// infer 关键字用于提取类型 仅在条件类型中使用，infer R 中R就表示待推断的类型
+type Swap<T extends any[]> = T extends [infer A, infer B] ? [B, A] : T;
+
+type SwapResult1 = Swap<[1, 2]>; // 符合元组结构，首尾元素替换[2, 1]
+type SwapResult2 = Swap<[1, 2, 3]>; // 不符合结构，没有发生替换，仍是 [1, 2, 3]
+
+// 甚至可以用于提取不定长度Left的类型 调换并提取首尾两个
+type SwapStartAndEnd<T extends any[]> = T extends [infer Start, ...any[], infer End]
+	? [End, Start]
+	: T;
+
+// 提取对象的属性类型
+
+type PropType<T, K extends keyof T> = T extends { [Key in K]: infer R } ? R : never;
+type PropTypeResult2 = PropType<{ name: string; age: number }, "name" | "age">; // string | number
+// 翻转键名与键值
+type ReverseKeyValue<T extends Record<string, unknown>> = T extends Record<infer K, infer V>
+	? Record<V & string, K>
+	: never;
+// V & string 用来保证属性名为string类型
+type ReverseKeyValueResult1 = ReverseKeyValue<{ key: "value" }>; // { "value": "key" }
+// 不是用V&string 将类型“V”不满足约束“string | number | symbol”。 infer 推导，将导致类型信息丢失
+// type ReverseKeyValueErr<T extends Record<string, string>> = T extends Record<infer K, infer V>
+// 	? Record<V, K>
+// 	: never;
+
+//  映射对象键： keyof 可以与映射类型结合使用，以转换或操作对象键
+let myobj = {
+	name: "asd",
+	age: 11,
+};
+type MappedObj<T> = {
+	[K in keyof T]: T[K][];
+	// 转换为数组值
+};
+//
+type resMappedObj = MappedObj<typeof myobj>;
+
+// 递归处理提取嵌套深度的类型
+type getPromiseValue<T> = T extends Promise<infer V> ? getPromiseValue<V> : T;
+type PromiseValueResult3 = getPromiseValue<Promise<Promise<boolean>>>; // boolean

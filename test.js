@@ -45,7 +45,7 @@ const list = [
 ];
 
 const params = list.filter(item => arr.indexOf(item.id) > -1);
-console.log(params);
+console.log("params", params);
 
 //if return
 if (1) {

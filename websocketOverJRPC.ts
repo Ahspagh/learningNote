@@ -1,49 +1,13 @@
 // JSON-RPC over Websocket implementation
 import PubSub from "./pubSub";
-// errors
-enum ERRORS {
-  INVALID_ORDER = -10000,
-  INVALID_ORDER_SIDE = -10001,
-  INVALID_ORDER_OFFSET = -10002,
-  INVALID_ORDER_TYPE = -10003,
-  INVALID_ORDER_TIF = -10004,
-  INVALID_INSTANCE = -10005,
-  INVALID_INSTRUMENT = -10006,
-  INVALID_EXCHANGE = -10007,
-  INVALID_SESSION = -10008,
-  INVALID_SESSION_ID = -10009,
-  INVALID_REQUEST_ID = -100010,
-  INVALID_NETWORK_ADDRESS = -10011,
-  INVALID_STREAM = -10012,
-  INVALID_INTERVAL = -10013,
-  INVALID_INDEX = -10014,
-  INVALID_AUTH = -10015,
-  INVALID_PRICE = -10016,
-  INVALID_QUANTITY = -10017,
-  NETWORK_ERROR = -20000,
-  PARSE_ERROR = -32700,
-  INVALID_REQUEST = -32600,
-  METHOD_NOT_FOUND = -32601,
-  INVALID_PARAMS = -32602,
-  INTERNAL_ERROR = -32603
-}
-// order states
-enum ORDER_STATE {
-  STARTED = 1,
-  PLACED = 2,
-  CANCELED = 3,
-  PARTIAL = 4,
-  FILLED = 5,
-  REJECTED = 6,
-  EXPIRED = 7
-}
-type JSONRPCPromise = Promise<any>;
+import { ERRORS, ORDER_STATE } from "@/enums/wsTrader";
+type JSONRPCPromise<T> = Promise<trader.JsonRPCRes<T>>;
 const JSONRPC_TIMEOUT_MS = 1000;
 export class JSONRPC {
   private requestId = 1;
-  private resolvePending: Map<number, Function> = new Map();
-  private rejectPending: Map<number, Function> = new Map();
-  ws: WebSocket;
+  private resolvePending: Map<number | string, Function> = new Map();
+  private rejectPending: Map<number | string, Function> = new Map();
+
   private retryCount: number = 5;
   private ready: boolean = false;
   private pubSub = new PubSub();
@@ -51,7 +15,7 @@ export class JSONRPC {
   private connectingCall: Map<number, string> = new Map();
   authParams: trader.authParams;
   url: string;
-
+  ws: WebSocket | null = null;
   onNotification?: (frame: trader.allResponse) => void;
   openedHandler?: () => void;
   closedHandler?: () => void;
@@ -87,7 +51,7 @@ export class JSONRPC {
           console.log("Wait^ , Your Auth config is INVALID!?");
 
           this.ready = false;
-          this.reConnect();
+          // this.reConnect();
         }
       });
       this.openedHandler && this.openedHandler();
@@ -107,15 +71,6 @@ export class JSONRPC {
       const frame = JSON.parse(data);
       if (Reflect.has(frame, "id")) {
         if (Reflect.has(frame, "error")) {
-          // if (
-          //   [ERRORS.INVALID_AUTH, ERRORS.INVALID_SESSION, ERRORS.INVALID_SESSION_ID, ERRORS.NETWORK_ERROR].includes(
-          //     frame.error.code
-          //   )
-          // ) {
-          //   this.ready = false;
-          //   this.reConnect();
-          //   return;
-          // }
           this.rejectPendingF(frame.id, frame);
           return;
         }
@@ -137,15 +92,15 @@ export class JSONRPC {
     };
   }
   close(code = 1000, msg = "close-connect") {
-    this.ws.close(code, msg);
+    this.ws!.close(code, msg);
   }
   protected getRequestId() {
     const id = this.requestId % 0x7ffffff;
     this.requestId++;
     return id;
   }
-  protected resolvePendingF(id: number, frame: trader.allResponse) {
-    const resolve = this.resolvePending.get(id);
+  protected resolvePendingF(id: number, frame: trader.allResponse, beforeId?: number) {
+    const resolve = this.resolvePending.get(beforeId ?? id);
     resolve && resolve(frame);
     this.resolvePending.delete(id);
     this.rejectPending.delete(id);
@@ -160,30 +115,35 @@ export class JSONRPC {
     console.log("ws.isready()", this.ready);
     return this.ready;
   }
-  call(method: string, params: any): JSONRPCPromise {
+  call<T>(method: string, params: any): JSONRPCPromise<T> {
     const initId = this.getRequestId(),
       request = { id: initId, method, params };
 
-    if (this.ws.readyState == WebSocket.OPEN) {
-      console.log("sent", request);
-      this.ws.send(JSON.stringify(request));
+    if (this.ws!.readyState == WebSocket.OPEN) {
+      // console.log("sent", request);
+      this.ws!.send(JSON.stringify(request));
     } else {
       this.connectingCall.set(initId, JSON.stringify(request));
+      return new Promise((resolve, reject) => {
+        // next返回的id序列号可能会重复发送config前的几个，promise的响应函数会被之后connectingCall的同id覆盖
+        this.resolvePending.set(initId + "before", (frame: JSONRPCPromise<T>) => resolve(frame));
+        this.rejectPending.set(initId + "before", (frame: JSONRPCPromise<T>) => reject(frame));
+      });
     }
 
     return new Promise((resolve, reject) => {
-      this.resolvePending.set(initId, (frame: trader.hasIdResponse) => resolve(frame));
-      this.rejectPending.set(initId, (frame: trader.hasIdResponse) => reject(frame));
+      this.resolvePending.set(initId, (frame: JSONRPCPromise<T>) => resolve(frame));
+      this.rejectPending.set(initId, (frame: JSONRPCPromise<T>) => reject(frame));
     });
   }
   protected reConnect() {
-    if (this.retryCount && this.ws.readyState != WebSocket.OPEN) {
+    if (this.retryCount && this.ws && this.ws.readyState != WebSocket.OPEN) {
       console.log(
         `Connecting not ready! Please wait ${JSONRPC_TIMEOUT_MS}ms 
         Is trying reconnect ${5 - --this.retryCount} ${5 - this.retryCount == 1 ? "time" : "times"}……`
       );
       setTimeout(() => {
-        this.ws = new WebSocket(this.url);
+        // this.ws = new WebSocket(this.url);
         this.connect();
       }, JSONRPC_TIMEOUT_MS);
     }
@@ -204,12 +164,11 @@ export class JSONRPC {
       // console.log("connectingCall", v);
       this.call(method, params)
         .then(res => {
-          // console.log("connectingCallRES", k, res);
           // this.connectingCall.set(k, res);
-          this.resolvePendingF(k, res);
+          this.resolvePendingF(k + "before", res);
         })
         .catch(err => {
-          this.rejectPendingF(k, err);
+          this.rejectPendingF(k + "before", err);
         });
       // this.ws.send(JSON.stringify(params));
       this.connectingCall.delete(k);
@@ -295,7 +254,7 @@ const getInstance: getInstanceParams = (wsServer, wsConfigParams, onopen, onclos
   }
   if (wsServer && wsConfigParams) {
     console.log("wsServer && wsConfigParams");
-    cache && cache.ws.close();
+    cache && cache.ws!.close();
     return (cache = new JSONRPC(wsServer, wsConfigParams, onopen, onclose, onNotification));
   } else {
     console.log("empty params get wsInstance");
