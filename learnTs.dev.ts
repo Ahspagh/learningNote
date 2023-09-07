@@ -68,7 +68,8 @@ enum PageUrl {
 	Setting_Page_Url = "url2",
 	Share_Page_Url = "url3",
 }
-
+type getEnum = keyof typeof PageUrl;
+const varEnum: getEnum = "Home_Page_Url";
 const home = PageUrl.Setting_Page_Url;
 
 // 在数字型枚举中，未赋值成员会开始从枚举值（其他枚举值）递增（首位成员为0）。 也可以使用延迟求值的枚举值
@@ -539,3 +540,294 @@ type resMappedObj = MappedObj<typeof myobj>;
 // 递归处理提取嵌套深度的类型
 type getPromiseValue<T> = T extends Promise<infer V> ? getPromiseValue<V> : T;
 type PromiseValueResult3 = getPromiseValue<Promise<Promise<boolean>>>; // boolean
+
+// 是否通过泛型参数传入,对联合类型存在影响
+type Condition<T> = T extends 1 | 2 | 3 ? T : never;
+// 1 | 2 | 3
+type Res1 = Condition<1 | 2 | 3 | 4 | 5>;
+// never
+type Res2 = 1 | 2 | 3 | 4 | 5 extends 1 | 2 | 3 ? 1 | 2 | 3 | 4 | 5 : never;
+type Naked<T> = T extends boolean ? "Y" : "N";
+type WrapNaked<T> = [T] extends [boolean] ? "Y" : "N";
+// 泛型参数是否被数组包裹 ，对联合类型存在影响
+type Res3 = Naked<number | boolean>; //N|y
+type Res4 = WrapNaked<number | boolean>; // N
+// 分布式类型系统：作用条件：类型参数需要是个联合类型，需要使用泛型参数方式传入，且条件类型中的泛型参数不能被包裹
+// 产生的特性：将联合类型拆开并对每个分支进行条件类型判断，最后合并结果
+//Naked<number | boolean>相当于 (number extends boolean ? "Y" : "N") | (boolean extends boolean ? "Y" : "N")
+// 通过包裹裸类型参数，禁用分布式特性
+export type NoDistribute<T> = T & {};
+type wrapped<T> = NoDistribute<T> extends boolean ? "Y" : "N";
+type Res5 = wrapped<number | boolean>; //N
+// 例如联合类型的兼容性判断，将条件与参数都包裹起来实现严格遵守了类型层级的联合类型判断
+type CompareUnion<T, U> = [T] extends [U] ? true : false;
+type CompareRes1 = CompareUnion<1 | 2, 1 | 2 | 3>; // true
+type CompareRes2 = CompareUnion<1 | 2, 1>; // false
+// 类型层级： 当条件类型的判断参数为any 则会直接返回两个结果的联合类型，而无论作为判断参数还是泛型参数都是这样效果，作为判断条件正常
+type isNever<T> = T extends never ? true : false;
+
+type isneverRes1 = isNever<never>; //never  当通过泛型传入never则直接返回never
+type isneverRes2 = CompareUnion<never, never>; //true  严格遵守
+type isneverRes3 = never extends never ? true : false; //true
+
+//善用分布式类型系统的特性，可以用来轻易进行集合间（联合类型）的运算，比如交集
+type Intersection<A, B> = A extends B ? A : never;
+type intersectionRes = Intersection<1 | 2 | 3, 2 | 3 | 4>; //3 | 2
+// keyof IObject得到一个对象属性名的联合类型，则可以对这样两个对象属性名进行集合运算
+
+// 判断any  利用any“身化万千”的特性
+type isAny<T> = 0 extends 1 & T ? true : false;
+// ：0 extends 1一定不成立  ，1&T 意味着同时符合字面量类型与另一类型 ，
+// 对于1这样的字面量类型，只有传入其本身、对应的原始类型、包含其本身的联合类型，才能得到一个有意义的值，并且这个值一定只可能是它本身
+// 这个1&T 交叉类型的计算结果一般是最精确的那个类型，而0 extends 1 无论如何也不成立 则只有1&any了
+
+type isUnknown<T> = isNever<T> extends false
+	? T extends unknown
+		? unknown extends T
+			? isAny<T> extends false
+				? true
+				: false
+			: false
+		: false
+	: false;
+// 对于 T extends unknown 和 unknown extends T，只有any和unknown符合
+type IsUnknown<T> = unknown extends T ? (isAny<T> extends true ? false : true) : false;
+
+type testISunknown = IsUnknown<any>;
+
+// 工具类型与类型编程并不完全等价 ， 类型编程的复杂度通常体现在函数的重载与泛型约束方面
+// 工具类型的分类：
+// 属性修饰工具类型：属性 元素的必选可选、只读可写
+// 结构工具类型： 对既有类型的剪裁拼接转换，例如联合类型结构转换为交叉类型结构
+// 模式匹配工具： infer 对一个既有特定位置类型的提取，比如函数类型签名中的返回值类型
+// 模板字符串工具类型：比如一个对象中的所有属性名转换为大驼峰形式
+// 访问性修饰工具
+type Partial<T> = {
+	[P in keyof T]?: T[P];
+};
+type Required<T> = {
+	[P in keyof T]-?: T[P];
+};
+// 可认为是一对工具类型 功能相反 ？ 标记为可选 ，-？相当于在原本属性上如果有？这个标记则移除
+// 同样在Partial中也可以改？为+？来显式表示添加可选标记 PS.可选标记*不*等于修改此属性类型为 原类型 | undefined
+// 类似还有声明never类型则无法再为这个属性赋值
+type ReadOnly<T> = {
+	+readonly [P in keyof T]: T[P];
+};
+type Mutable<T> = {
+	-readonly [P in keyof T]: T[P];
+};
+// 属性修饰的复杂场景：嵌套在里面的对象类型 或者 部分属性（基于传入键名、基于属性类型）
+// 结构工具类型分为结构声明和结构处理
+type Record<K extends keyof any, T> = {
+	// extends keyof any 用于标明：传入的K可以是单个或联合类型 T是属性的类型
+	[P in K]: T;
+	// 其中，Record<string, unknown> 和 Record<string, any> 是日常使用较多的形式，通常使用这两者来代替 object 。
+};
+
+type Dictionary<T> = {
+	[index: string]: T;
+};
+type NumbericDictionary<T> = {
+	[index: number]: T;
+};
+// 结构处理工具类型 Pick 和 Omit
+type Pick<T, K extends keyof T> = {
+	// T是要进行结构处理 一般是对象的原类型，K是被约束为T类型的键名联合类型
+	// 泛型约束是立即填充推导 所以传入T后会立刻得到K的约束条件，也就是输入K时会获得代码提示
+	[P in K]: T[P];
+};
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+// Pick时保留传入的这些键名类型，而Omit是移除这些传入的键
+// Exclude<A, B> 的结果就是联合类型 A 中不存在于 B 中的部分：
+//  T 的键名联合类型中剔除了 K 的部分，将其作为 Pick 的键名，就实现了剔除一部分类型的效果。
+// pick会约束第二个参数的联合类型来自对象属性 而omit并不这样要求；如下情况声明约束反而不符合预期
+type Omit1<T, K> = Pick<T, Exclude<keyof T, K>>;
+// 这个是严格的omit
+declare function combineSpread<T1, T2>(obj: T1, otherObj: T2, rest: Omit1<T1, keyof T2>): void;
+type Point3d = { x: number; y: number; z: number };
+declare const p1: Point3d;
+// combineSpread(p1, { x: 10 }, { z: 123 }); //这里能检测出少了y
+
+// 集合概念补充：
+// 差集：对于A\B两个集合而言，A相对B的差集意味着A中独有而B中不存在的组成集合，或者说A中剔除了B有的元素后还剩下的 存在相对概念
+// 补集：是差集的特殊情况，此时集合B为集合A的子集，这种情况下A相对B的差集+B=完整的A
+type Extract<T, U> = T extends U ? T : never; //交集
+type Exclude<T, U> = T extends U ? never : T; //差集
+// 这里也就是条件类型的分布式特性，当TU 都是联合类型时，T的成员会被拿出来依次进行 extends U？T1:T2计算 然后合并成一个联合类型
+type SetA = 1 | 2 | 3 | 5;
+type SetB = 0 | 1 | 2 | 4;
+type AExcludeB = Exclude<SetA, SetB>; // 3 | 5
+type BExcludeA = Exclude<SetB, SetA>; // 0 | 4
+
+export type Concurrence<A, B> = A | B; //并集
+export type Intersection1<A, B> = A extends B ? A : never; //交集
+export type Difference<A, B> = A extends B ? never : A; //差集
+export type Complement<A, B extends A> = Difference<A, B>; //补集基于差集实现，我们只需要约束集合 B 为集合 A 的子集即可。
+
+type NoNullable<T> = T extends null | undefined ? never : T; //4.8版本更新为 type NonNullable<T> = T & {}
+type _NoNullable<T> = Difference<T, null | undefined>; //集合 T 相对于 null | undefined 的差集
+
+// 模式匹配工具：条件类型与infer关键字
+// 首先是对函数类型签名的模式匹配：根据infer位置不同，可以获得不同位置的类型，在函数则是参数类型和返回值类型
+type FunctionType = (...args: any) => any;
+type parameters<T extends FunctionType> = T extends (...arg: infer P) => any ? P : never;
+type ReturnType<T extends FunctionType> = T extends (...arg: any) => infer R ? R : never;
+// 匹配第一个参数
+type FirstParameter<T extends FunctionType> = T extends (arg: infer P, ...args: any) => any
+	? P
+	: never;
+
+type ClassType = abstract new (...args: any) => any; //CLASS的通用类型签名是声明了可实例化（new）与可抽象（abstract）
+// 或使用接口声明
+export interface ClassTYpe<TInstanceType = any> {
+	new (...args: any[]): TInstanceType;
+}
+// infer在参数位置 那就是构造函数的参数部分
+type ConstrutorParameters<T extends ClassType> = T extends abstract new (...args: infer P) => any
+	? P
+	: never;
+// 返回值部分 就是class的实例类型
+type instanceType<T extends ClassType> = T extends abstract new (...args: any) => infer R
+	? R
+	: never;
+// infer约束
+// 提取数组第一个成员加上对提取字符串的条件类型
+type FirstArrayItemType<T extends any[]> = T extends [first: infer P, ...arg: any[]]
+	? P extends string
+		? P
+		: never
+	: never;
+// 上面只是对泛型进行声明约束，4.7版本之后就支持了infer约束来对特定类型地提取，则改写上面
+type FirstArrayItemType1<T extends any[]> = T extends [infer P extends string, ...any[]]
+	? P
+	: never;
+// 在连续嵌套的情况下 infer+约束可以很好的解决先infer提取再筛选带来的影响可读性问题
+
+// function checkObject(obj: any): boolean {
+// 	// 检查对象是否为 null
+// 	if (obj === null) {
+// 		return true;
+// 	}
+
+// 	// 检查对象是否为数字 0
+// 	if (typeof obj === "number" && Object.values(obj).every(value => value === 0)) {
+// 		return true;
+// 	}
+
+// 	// 检查对象是否为对象类型
+// 	if (typeof obj === "object") {
+// 		// 递归检查对象的每个属性
+// 		for (const key in obj) {
+// 			if (obj.hasOwnProperty(key)) {
+// 				// 递归调用 checkObject 函数检查属性的值
+// 				if (checkObject(obj[key]) === true) {
+// 					return true;
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	// 如果没有满足条件的情况，则返回 false
+// 	return false;
+// }
+// function allZeroHasNull(obj: any): Boolean {
+// 	// return Object.values(obj).every(value => value === 0) || Object.values(obj).some(value => value === null);
+// 	// 检查所有值是否都为零
+// 	const allZero = Object.values(obj).every(
+// 		value => value === 0 || (typeof value === "object" && allZeroHasNull(value))
+// 	);
+// 	// 检查是否存在任何值为null的情况
+// 	const hasNull = Object.values(obj).some(
+// 		value => value === null || (typeof value === "object" && allZeroHasNull(value))
+// 	);
+// 	// 如果所有值都为零或存在任何值为null，则返回true，否则返回false
+// 	return allZero || hasNull;
+// }
+// let testObj = {
+// 	today: {
+// 		total: 0,
+// 		frozen: 0,
+// 	},
+// 	yst: {
+// 		total: 1,
+// 		frozen: 0,
+// 	},
+// };
+// console.log(allZeroHasNull(testObj));
+console.log(typeof "short");
+
+function simulateAPIRequest(data, delay) {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(data);
+		}, delay);
+	});
+}
+
+// async function makeAPIRequest() {
+//   try {
+//     console.log("Making API request...");
+//     const response = await simulateAPIRequest("API response", 2000);
+//     console.log("API response:", response);
+//   } catch (error) {
+//     console.error("API request failed:", error);
+//   }
+// }
+
+// makeAPIRequest();
+// async function makeAPIRequestLoop() {
+// 	const iterable = [1, 2, 3,4];
+// 	let resArr: any[] = [];
+// 	for (const item of iterable) {
+// 		await new Promise(resolve => {
+// 			simulateAPIRequest(`API response ${item * Math.random()}`, Math.random() * 1000 * item).then(
+// 				res => {
+// 					resArr.push(res);
+// 					resolve(res);
+// 				}
+// 			);
+// 		});
+// 	}
+// 	return resArr;
+// }
+// makeAPIRequestLoop()
+// 	.then(result => {
+// 		console.log("result", result);
+// 	})
+// 	.catch(err => {});
+// interface closePositionTable {
+// 	symbol: string;
+// 	side: "buy";
+// 	exchange: string;
+// 	offset: "CLOSE";
+// 	tif: "GFD";
+// 	type: "LIMIT";
+// 	isSelected: boolean;
+// 	complete: number; //traded
+// 	position: number;
+// 	price: string;
+// 	priceType: string;
+// 	id: number | string;
+// }
+// type closePositionTableType = keyof closePositionTable;
+// const objPositionKeys: closePositionTableType = "exchange";
+
+const array = [
+	{ id: 1, name: "John" },
+	{ id: 2, name: "Jane" },
+	{ id: 2, name: "Jane" },
+	{ id: 3, name: "Bob" },
+];
+
+function findIndexWithSameProperty(array, property) {
+	for (let i = 1; i < array.length; i++) {
+		if (array[i][property] === array[i - 1][property]) {
+			return i - 1 < 0 ? 0 : i - 1;
+		}
+	}
+	return -1;
+}
+
+const index = findIndexWithSameProperty(array, "name");
+console.log(index);

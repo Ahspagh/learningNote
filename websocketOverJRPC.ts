@@ -1,6 +1,7 @@
 // JSON-RPC over Websocket implementation
 import PubSub from "./pubSub";
 import { ERRORS, ORDER_STATE } from "@/enums/wsTrader";
+import TimeElapsed from "../timeCost";
 type JSONRPCPromise<T> = Promise<trader.JsonRPCRes<T>>;
 const JSONRPC_TIMEOUT_MS = 1000;
 export class JSONRPC {
@@ -44,9 +45,18 @@ export class JSONRPC {
     }
     this.ws.onopen = () => {
       console.log("ws:onopen", this.url);
+      // config登录废弃
+      // this.call("config", this.authParams).catch(({ error }) => {
+      //   console.log("configERROR", error);
+      //   if ([ERRORS.INVALID_AUTH, ERRORS.INVALID_SESSION, ERRORS.INVALID_SESSION_ID, ERRORS.NETWORK_ERROR].includes(error.code)) {
+      //     console.log("Wait^ , Your Auth config is INVALID!?");
 
-      this.call("config", this.authParams).catch(({ error }) => {
-        console.log("configERROR", error);
+      //     this.ready = false;
+      //     // this.reConnect();
+      //   }
+      // });
+      this.call("login", this.authParams).catch(({ error }) => {
+        console.log("loginError", error);
         if ([ERRORS.INVALID_AUTH, ERRORS.INVALID_SESSION, ERRORS.INVALID_SESSION_ID, ERRORS.NETWORK_ERROR].includes(error.code)) {
           console.log("Wait^ , Your Auth config is INVALID!?");
 
@@ -67,14 +77,25 @@ export class JSONRPC {
       console.log("ws:onerror", e, this.ws);
     };
 
-    this.ws.onmessage = ({ data }) => {
+    const messageHandler = (data: any) => {
       const frame = JSON.parse(data);
-      if (Reflect.has(frame, "id")) {
+      // 这里可以用id1 专门发送一次登录订阅 (待定)
+      if (frame?.id == 1 && frame?.result == 0) {
+        // 这个demo的情况是config成功后返回的信息源  通过publish交给订阅方处理数据
+        // 目前已失效 因为在这个函数执行前首次含id的响应信息保留在.then处理  - - - rpc.call().then
+        // console.log("config成功后返回的执行发布 你订阅了么");
+        this.pubSub.publish("AuthSuccess", "okokok DATA:before request Auth", "elseResponse");
+      }
+      if (Reflect.has(frame, "id")&&!Reflect.has(frame,'proxy')) {
+        if (frame.method === "order") {
+          this.orderFrameResolve(frame);
+        }
+
         if (Reflect.has(frame, "error")) {
           this.rejectPendingF(frame.id, frame);
           return;
         }
-        console.log("recvIdRes", frame);
+        // console.log("recvIdRes", frame);
         this.resolvePendingF(frame.id, frame);
         // order请求会返回多次不确定次数状态的变化 也有id
         // 带有对应id的请求和返回在then内处理 （下单 取消 调仓）
@@ -90,6 +111,28 @@ export class JSONRPC {
       }
       this.onmessage(frame);
     };
+
+    let msgCount = 0;
+    let totalTimeCost = 0;
+    let lastLogTime = -1;
+    this.ws.onmessage = ({ data }) => {
+      msgCount++;
+      const startTime = Date.now();
+      try {
+        messageHandler(data);
+      } finally {
+        const endTime = Date.now();
+        const timeCost = endTime - startTime;
+        totalTimeCost += timeCost;
+        if (lastLogTime < 0 || endTime - lastLogTime >= 30000) {
+          console.log("[ws] received %s messages, timeCost(ms): %s, totalTimeCost(ms): %s", msgCount, timeCost, totalTimeCost);
+          lastLogTime = endTime;
+        }
+        if (timeCost > 10) {
+          console.log("[ws] heavy message, cost(ms): %s, message: %s", timeCost, data);
+        }
+      }
+    };
   }
   close(code = 1000, msg = "close-connect") {
     this.ws!.close(code, msg);
@@ -99,13 +142,13 @@ export class JSONRPC {
     this.requestId++;
     return id;
   }
-  protected resolvePendingF(id: number, frame: trader.allResponse, beforeId?: number) {
-    const resolve = this.resolvePending.get(beforeId ?? id);
+  protected resolvePendingF(id: number | string, frame: trader.allResponse) {
+    const resolve = this.resolvePending.get(id);
     resolve && resolve(frame);
     this.resolvePending.delete(id);
     this.rejectPending.delete(id);
   }
-  protected rejectPendingF(id: number, frame: trader.allResponse) {
+  protected rejectPendingF(id: number | string, frame: trader.allResponse) {
     const reject = this.rejectPending.get(id);
     reject && reject(frame);
     this.resolvePending.delete(id);
@@ -115,9 +158,9 @@ export class JSONRPC {
     console.log("ws.isready()", this.ready);
     return this.ready;
   }
-  call<T>(method: string, params: any): JSONRPCPromise<T> {
+  call<T>(method: string, params: any, proxy?: boolean): JSONRPCPromise<T> {
     const initId = this.getRequestId(),
-      request = { id: initId, method, params };
+      request = { id: initId, method, params, proxy };
 
     if (this.ws!.readyState == WebSocket.OPEN) {
       // console.log("sent", request);
@@ -136,6 +179,7 @@ export class JSONRPC {
       this.rejectPending.set(initId, (frame: JSONRPCPromise<T>) => reject(frame));
     });
   }
+
   protected reConnect() {
     if (this.retryCount && this.ws && this.ws.readyState != WebSocket.OPEN) {
       console.log(
@@ -177,36 +221,15 @@ export class JSONRPC {
   public subscribe(topic: string, fn: (data: any) => void) {
     this.pubSub.subscribe(topic, fn);
   }
-  public unSubscribe(topic: string, fn?: () => void) {
+  public unSubscribe(topic: string, fn?: (data: any) => void) {
     this.pubSub.unSubscribe(topic, fn);
   }
-  onmessage(frame: trader.allResponse) {
-    if (frame?.id == 1 && frame?.result == 0) {
-      // 这个demo的情况是config成功后返回的信息源  通过publish交给订阅方处理数据
-      // 目前已失效 因为在这个函数执行前首次含id的响应信息保留在.then处理  - - - rpc.call().then
-      console.log("config成功后返回的执行发布 你订阅了么");
-      this.pubSub.publish("AuthSuccess", "okokok DATA:before request Auth", "elseResponse");
-    }
+  protected onmessage(frame: trader.allResponse) {
     if (Reflect.has(frame, "error")) {
       console.log("ws-error", frame.error.message);
       return;
     }
-    // 下单结果的处理流程: 下单请求后通过.then获得请求id；订阅`order/${id}` 接收到订单state完成或错误等结束状态取消订阅
-    if (frame?.id && frame?.result != 0 && !Reflect.has(frame, "error") && Reflect.has(frame.result, "traded")) {
-      const orderResult = frame.result;
-      this.pubSub.publish(`order/${frame.id}`, orderResult);
-      if ([ORDER_STATE.CANCELED, ORDER_STATE.EXPIRED, ORDER_STATE.FILLED, ORDER_STATE.REJECTED].includes(orderResult.state)) {
-        setTimeout(() => {
-          console.log(`取消订阅order/${frame.id}`);
-
-          this.pubSub.unSubscribe("order/${frame.id}");
-        }, 1000);
-      }
-      // 收到最后发布消息后取消订阅
-
-      return;
-    }
-
+    // 数据流类型处理
     if (Reflect.has(frame, "push")) {
       const pushFrame = frame as trader.pushFrame;
       const pushFrameData = pushFrame.data;
@@ -225,6 +248,19 @@ export class JSONRPC {
       }
       return;
     }
+    if (Reflect.has(frame, "proxy")) {
+      if(frame.method === "update"){
+        // 含有proxy，method为Update的数据流协议
+        const streamFrame = frame as etfPricer.proxyUpdate;
+        this.pubSub.publish("update/proxy", streamFrame);
+      }
+      if(frame.stream==="bbo"){
+        // 含有proxy，method为Update的数据流协议
+        const streamFrame = frame as etfPricer.proxyUpdate;
+        this.pubSub.publish("bbo/proxy", streamFrame);
+      }
+      return;
+    }
     if (Reflect.has(frame, "stream")) {
       const streamFrame = frame as trader.streamFrame;
       const streamData = streamFrame.data;
@@ -233,6 +269,29 @@ export class JSONRPC {
       this.pubSub.publish(streamTopic, { streamData, product: streamFrame.product, stream: streamFrame.stream });
       // 深度行情的发布的订阅与websocket服务端订阅时略有不同 服务端订阅只需symbol 如订阅rb2305 返回的stream只是depth
       return;
+    }
+    
+  }
+  protected orderFrameResolve(frame: trader.JsonRPCRes<trader.orderResult>) {
+    // 下单结果的处理流程: 下单请求后通过.then获得请求id；订阅`order/${id}` 接收到订单state完成或错误等结束状态取消订阅 && Reflect.has(frame.result, "traded")
+    // 特殊处理：then后订阅id 然后接受订阅信息的情况
+    if (frame?.id && frame?.result != 0 && !Reflect.has(frame, "error")) {
+      // 这里result!=0就相当于判断method为order了
+      let timeElapsed = new TimeElapsed();
+      this.pubSub.publish("method/order", frame); //无差别发布order响应
+      console.log("publish method/order cost: %s", timeElapsed.elapsed());
+      const orderResult = frame.result;
+      timeElapsed = new TimeElapsed();
+      this.pubSub.publish(`order/${frame.id}`, frame);
+      console.log("publish order/{orderId} cost: %s", timeElapsed.elapsed());
+      if ([ORDER_STATE.CANCELED, ORDER_STATE.EXPIRED, ORDER_STATE.FILLED, ORDER_STATE.REJECTED].includes(orderResult.state)) {
+        setTimeout(() => {
+          console.log(`取消订阅order/${frame.id}`);
+
+          this.pubSub.unSubscribe("order/${frame.id}");
+        }, 1000);
+      }
+      // 收到最后发布消息后取消订阅
     }
   }
 }
